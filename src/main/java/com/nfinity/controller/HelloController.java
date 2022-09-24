@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class HelloController {
     @GetMapping
     public String test(){
-        return "hello, nft123";
+        return "hello, Cat";
     }
 }
