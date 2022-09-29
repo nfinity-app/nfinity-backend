@@ -19,12 +19,12 @@ import java.util.Random;
 public class CollectionService {
 //    @Value("${aws.s3.bucket.name}")
 //    private String bucketName;
-    private CollectionRepository collectionRepository;
+//    private CollectionRepository collectionRepository;
     private S3Util s3Util;
 
-    public List<CollectionEntity> getCollectionList(){
-        return collectionRepository.findAll();
-    }
+//    public List<CollectionEntity> getCollectionList(){
+//        return collectionRepository.findAll();
+//    }
 
     public void uploadNftFiles(List<MultipartFile> multipartFileList) throws IOException {
         String bucketName = "nft.business.bucket.test";

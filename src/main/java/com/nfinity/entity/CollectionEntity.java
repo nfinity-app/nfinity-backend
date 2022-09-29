@@ -2,15 +2,15 @@ package com.nfinity.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import javax.persistence.*;
+//import javax.persistence.*;
 import java.math.BigDecimal;
 
-@Entity
+//@Entity
 @Data
-@Table(name = "collection")
+//@Table(name = "collection")
 public class CollectionEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
     private String icon;

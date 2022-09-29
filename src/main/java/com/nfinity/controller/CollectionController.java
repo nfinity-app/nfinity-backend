@@ -18,11 +18,11 @@ public class CollectionController {
     private CollectionService collectionService;
 
 
-    @GetMapping("/collections")
-    public List<CollectionEntity> getCollectionList(@RequestParam(required = false, defaultValue = "1") int page,
-                                                    @RequestParam(required = false, defaultValue = "50") int size){
-        return collectionService.getCollectionList();
-    }
+//    @GetMapping("/collections")
+//    public List<CollectionEntity> getCollectionList(@RequestParam(required = false, defaultValue = "1") int page,
+//                                                    @RequestParam(required = false, defaultValue = "50") int size){
+//        return collectionService.getCollectionList();
+//    }
 
     @PostMapping("/nfts")
     public void uploadNfts(HttpServletRequest request) throws IOException {
