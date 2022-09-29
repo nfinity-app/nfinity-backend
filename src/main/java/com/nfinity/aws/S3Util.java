@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -22,6 +23,7 @@ public class S3Util {
             // or block with Transfer.waitForCompletion()
             XferMgrProgress.waitForCompletion(xfer);
         } catch (AmazonServiceException e) {
+            System.out.println("upload to s3: " + Arrays.toString(e.getStackTrace()));
             System.err.println(e.getErrorMessage());
             System.exit(1);
         }
