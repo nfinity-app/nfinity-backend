@@ -11,5 +11,7 @@ public class FolderEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
+    @Column(name = "s3_name")
+    private String s3Name;
     private String icon;
 }
