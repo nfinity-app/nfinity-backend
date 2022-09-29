@@ -73,3 +73,5 @@ create table if not exists draft_collection_folder_nft(
 create unique index index_draft_collection_folder_nft_nft_id on draft_collection_folder_nft (nft_id);
 create index index_draft_collection_folder_nft_folder_id on draft_collection_folder_nft (folder_id);
 create index index_draft_collection_folder_nft_collection_id on draft_collection_folder_nft (collection_id);
+
+alter table folder add s3_name varchar(64) not null;
