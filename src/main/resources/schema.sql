@@ -23,6 +23,7 @@ create table IF NOT EXISTS collection(
 create table if not exists folder(
     id int PRIMARY KEY AUTO_INCREMENT,
     name varchar(64) not null,
+    s3_name varchar(64) not null,
     icon varchar(1024) not null
 );
 
