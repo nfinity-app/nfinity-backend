@@ -8,12 +8,13 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Entity
-@Table(name = "folder")
-public class FolderEntity {
+@Table(name = "collection_folder_nft")
+public class CollectionFolderNftEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private String name;
-    private String s3Name;
-    private String icon;
+    private Long id;
+
+    private int collectionId;
+    private int folderId;
+    private int nftId;
 }

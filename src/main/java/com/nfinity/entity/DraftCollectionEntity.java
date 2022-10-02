@@ -1,16 +1,19 @@
 package com.nfinity.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-//import javax.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.*;
 import java.math.BigDecimal;
 
-//@Entity
-@Data
-//@Table(name = "draft_collection")
+@Getter
+@Setter
+@Entity
+@Table(name = "draft_collection")
 public class DraftCollectionEntity {
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
     private String icon;

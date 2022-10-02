@@ -1,17 +1,17 @@
 package com.nfinity.vo;
 
 import com.nfinity.enums.ErrorCode;
+import lombok.Data;
 
+@Data
 public class Result<T> {
     private int code;
     private String message;
     private T data;
 
-    public Result() {
-    }
-
-    public Result(int code, T data) {
+    public Result(int code, String message, T data) {
         this.code = code;
+        this.message = message;
         this.data = data;
     }
 
@@ -20,11 +20,11 @@ public class Result<T> {
         this.message = message;
     }
 
-    public static Result fail(int code, String message){
-        return new Result(code, message);
+    public static <T> Result<T> fail(ErrorCode errorCode){
+        return new Result<>(errorCode.getCode(), errorCode.getMessage());
     }
 
-    public Result<T> succeed(ErrorCode errorCode, T data){
-        return new Result<>(errorCode.getCode(), data);
+    public static <T> Result<T> succeed(ErrorCode errorCode, T data){
+        return new Result<>(errorCode.getCode(), errorCode.getMessage(), data);
     }
 }
