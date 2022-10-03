@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class NftDeletionInputVO {
+public class NftsInputVO {
     @NotEmpty
     private List<@NotNull NftVO> records;
 }

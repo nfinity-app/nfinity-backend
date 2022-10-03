@@ -87,7 +87,7 @@ public class NftServiceImpl implements NftService {
         List<NftVO> nftVOList = new ArrayList<>();
         List<FolderNftEntity> folderNftEntityList = new ArrayList<>();
 
-        // save data to table nft
+        //1. save data to table nft
         for (S3ObjectSummary os : s3ObjectSummaries) {
             //1. save data to table nft
             String key = os.getKey();
@@ -103,7 +103,7 @@ public class NftServiceImpl implements NftService {
             folderNftMap.put(savedNftEntity.getId(), s3FolderName);
         }
 
-        // save data to table folder_nft
+        //2. save data to table folder_nft
         for(Map.Entry<Long, String> entry : folderNftMap.entrySet()) {
             FolderNftEntity folderNftEntity = new FolderNftEntity();
             folderNftEntity.setNftId(entry.getKey());

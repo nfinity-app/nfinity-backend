@@ -106,7 +106,7 @@ public class FolderServiceImpl implements FolderService {
 
     @Override
     @Transactional
-    public int deleteFolderNfts(Long folderId, NftDeletionInputVO nftDeletionInputVO) {
+    public int deleteFolderNfts(Long folderId, NftsInputVO nftDeletionInputVO) {
         List<NftVO> nftVOList = nftDeletionInputVO.getRecords();
         List<Long> nftIds = new ArrayList<>();
 
@@ -120,5 +120,19 @@ public class FolderServiceImpl implements FolderService {
         nftRepository.deleteAllById(nftIds);
 
         return nftIds.size();
+    }
+
+    @Override
+    public int addNftsToFolder(Long folderId, NftsInputVO nftsInputVO) {
+        //add nfts to table folder_nft
+        List<FolderNftEntity> folderNftEntityList = new ArrayList<>();
+        for(NftVO nftVO : nftsInputVO.getRecords()){
+            FolderNftEntity folderNftEntity = folderNftRepository.findByNftId(nftVO.getId());
+            folderNftEntity.setFolderId(folderId);
+            folderNftEntityList.add(folderNftEntity);
+        }
+        folderNftRepository.saveAll(folderNftEntityList);
+
+        return folderNftEntityList.size();
     }
 }

@@ -62,9 +62,20 @@ public class FolderController {
     }
 
     @DeleteMapping("/folders/{id}/nfts")
-    public Result<Integer> deleteFolderNfts(@PathVariable("id") Long folderId, @RequestBody NftDeletionInputVO nftDeletionInputVO){
+    public Result<Integer> deleteFolderNfts(@PathVariable("id") Long folderId, @RequestBody NftsInputVO nftDeletionInputVO){
         try {
             int count = folderService.deleteFolderNfts(folderId, nftDeletionInputVO);
+            return Result.succeed(ErrorCode.OK, count);
+        }catch (Exception e){
+            log.error("delete folder nfts error.", e);
+            return Result.fail(ErrorCode.ERROR);
+        }
+    }
+
+    @PostMapping("/folders/{id}/nfts")
+    public Result<Integer> addNftsToFolder(@PathVariable("id") Long folderId, @RequestBody NftsInputVO nftsInputVO){
+        try {
+            int count = folderService.addNftsToFolder(folderId, nftsInputVO);
             return Result.succeed(ErrorCode.OK, count);
         }catch (Exception e){
             log.error("delete folder nfts error.", e);

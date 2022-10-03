@@ -11,5 +11,7 @@ public interface FolderService {
 
     PageModel<NftVO> getFolderNfts(Long folderId, int page, int size);
 
-    int deleteFolderNfts(Long folderId, NftDeletionInputVO nftDeletionInputVO);
+    int deleteFolderNfts(Long folderId, NftsInputVO nftDeletionInputVO);
+
+    int addNftsToFolder(Long folderId, NftsInputVO nftsInputVO);
 }
