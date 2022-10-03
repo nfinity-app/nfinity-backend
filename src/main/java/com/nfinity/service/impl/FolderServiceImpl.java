@@ -2,8 +2,10 @@ package com.nfinity.service.impl;
 
 import com.nfinity.entity.FolderEntity;
 import com.nfinity.entity.FolderNftEntity;
+import com.nfinity.entity.NftEntity;
 import com.nfinity.repository.FolderNftRepository;
 import com.nfinity.repository.FolderRepository;
+import com.nfinity.repository.NftRepository;
 import com.nfinity.service.FolderService;
 import com.nfinity.vo.*;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 public class FolderServiceImpl implements FolderService {
     private final FolderRepository folderRepository;
     private final FolderNftRepository folderNftRepository;
+    private final NftRepository nftRepository;
 
     @Override
     @Transactional
@@ -81,5 +84,28 @@ public class FolderServiceImpl implements FolderService {
         }
 
         return folderVOList.size();
+    }
+
+    @Override
+    public PageModel<NftVO> getFolderNfts(Long folderId, int page, int size) {
+        List<NftVO> nftVOList = new ArrayList<>();
+
+        int total = folderNftRepository.countByFolderId(folderId);
+
+        List<Long> nftIds = folderNftRepository.findAllByFolderId(folderId, PageRequest.of(page - 1, size)).stream()
+                .map(FolderNftEntity::getNftId).collect(Collectors.toList());
+
+        List<NftEntity> nftEntities = nftRepository.findAllById(nftIds);
+
+        for(NftEntity nftEntity : nftEntities){
+            NftVO nftVO = new NftVO();
+            BeanUtils.copyProperties(nftEntity, nftVO);
+            nftVOList.add(nftVO);
+        }
+
+        PageModel<NftVO> pageModel = new PageModel<>();
+        pageModel.setTotal(total);
+        pageModel.setRecords(nftVOList);
+        return pageModel;
     }
 }

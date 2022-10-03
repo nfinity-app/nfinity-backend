@@ -48,4 +48,16 @@ public class FolderController {
             return Result.fail(ErrorCode.ERROR);
         }
     }
+
+    @GetMapping("/folders/{id}/nfts")
+    public Result<PageModel<NftVO>> getFolderNfts(@PathVariable("id") Long folderId, @RequestParam(required = false, defaultValue = "1") int page,
+                                                  @RequestParam(required = false, defaultValue = "50") int size){
+        try {
+            PageModel<NftVO> pageModel = folderService.getFolderNfts(folderId, page, size);
+            return Result.succeed(ErrorCode.OK, pageModel);
+        }catch (Exception e){
+            log.error("get folder nfts error.", e);
+            return Result.fail(ErrorCode.ERROR);
+        }
+    }
 }
