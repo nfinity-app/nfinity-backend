@@ -60,4 +60,15 @@ public class FolderController {
             return Result.fail(ErrorCode.ERROR);
         }
     }
+
+    @DeleteMapping("/folders/{id}/nfts")
+    public Result<Integer> deleteFolderNfts(@PathVariable("id") Long folderId, @RequestBody NftDeletionInputVO nftDeletionInputVO){
+        try {
+            int count = folderService.deleteFolderNfts(folderId, nftDeletionInputVO);
+            return Result.succeed(ErrorCode.OK, count);
+        }catch (Exception e){
+            log.error("delete folder nfts error.", e);
+            return Result.fail(ErrorCode.ERROR);
+        }
+    }
 }

@@ -14,4 +14,6 @@ public interface FolderNftRepository extends JpaRepository<FolderNftEntity, Long
     List<FolderNftEntity> findAllByFolderId(Long folderId, Pageable pageable);
 
     int countByFolderId(Long folderId);
+
+    void deleteByFolderIdAndNftId(Long folderId, Long nftId);
 }
