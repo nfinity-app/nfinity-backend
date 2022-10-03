@@ -8,7 +8,7 @@ import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 @Data
-public class FolderInputVO {
+public class FolderCreationInputVO {
     @NotBlank
     @JsonProperty("folder_name")
     private String folderName;

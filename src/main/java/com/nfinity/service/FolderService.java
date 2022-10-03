@@ -1,11 +1,14 @@
 package com.nfinity.service;
 
-import com.nfinity.vo.FolderInputVO;
-import com.nfinity.vo.FolderOutputVO;
+import com.nfinity.vo.FolderCreationInputVO;
+import com.nfinity.vo.FolderDeletionInputVO;
+import com.nfinity.vo.FolderVO;
 import com.nfinity.vo.PageModel;
 
 public interface FolderService {
-    Long createFolderWithNfts(FolderInputVO folderInputVO);
+    Long createFolderWithNfts(FolderCreationInputVO folderInputVO);
 
-    PageModel<FolderOutputVO> getFolderList(int page, int size);
+    PageModel<FolderVO> getFolderList(int page, int size);
+
+    int deleteFolders(FolderDeletionInputVO folderDeletionInputVO);
 }

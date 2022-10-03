@@ -5,10 +5,7 @@ import com.nfinity.entity.FolderNftEntity;
 import com.nfinity.repository.FolderNftRepository;
 import com.nfinity.repository.FolderRepository;
 import com.nfinity.service.FolderService;
-import com.nfinity.vo.FolderInputVO;
-import com.nfinity.vo.FolderOutputVO;
-import com.nfinity.vo.NftVO;
-import com.nfinity.vo.PageModel;
+import com.nfinity.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageRequest;
@@ -22,13 +19,12 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class FolderServiceImpl implements FolderService {
-
     private final FolderRepository folderRepository;
     private final FolderNftRepository folderNftRepository;
 
     @Override
     @Transactional
-    public Long createFolderWithNfts(FolderInputVO folderInputVO) {
+    public Long createFolderWithNfts(FolderCreationInputVO folderInputVO) {
         //1. save data to table folder
         FolderEntity folderEntity = new FolderEntity();
         folderEntity.setName(folderInputVO.getFolderName());
@@ -49,18 +45,41 @@ public class FolderServiceImpl implements FolderService {
     }
 
     @Override
-    public PageModel<FolderOutputVO> getFolderList(int page, int size) {
+    public PageModel<FolderVO> getFolderList(int page, int size) {
         long total = folderRepository.count();
-        List<FolderOutputVO> voList = folderRepository.findAll(PageRequest.of(page - 1, size)).stream()
+        List<FolderVO> voList = folderRepository.findAll(PageRequest.of(page - 1, size)).stream()
                 .map(folderEntity -> {
-                    FolderOutputVO folderOutputVO = new FolderOutputVO();
+                    FolderVO folderOutputVO = new FolderVO();
                     BeanUtils.copyProperties(folderEntity, folderOutputVO);
                     return folderOutputVO;
                 }).collect(Collectors.toList());
 
-        PageModel<FolderOutputVO> pageModel = new PageModel<>();
+        PageModel<FolderVO> pageModel = new PageModel<>();
         pageModel.setTotal(total);
         pageModel.setRecords(voList);
         return pageModel;
+    }
+
+    @Override
+    @Transactional
+    public int deleteFolders(FolderDeletionInputVO folderDeletionInputVO) {
+        List<FolderVO> folderVOList = folderDeletionInputVO.getRecords();
+        //1. delete from table folder by folder id
+        List<FolderEntity> folderEntityList = new ArrayList<>();
+        List<Long> folderIds = new ArrayList<>();
+        for(FolderVO folderVO : folderVOList) {
+            FolderEntity folderEntity = new FolderEntity();
+            folderEntity.setId(folderVO.getId());
+            folderEntityList.add(folderEntity);
+            folderIds.add(folderVO.getId());
+        }
+        folderRepository.deleteAll(folderEntityList);
+
+        //2. delete from table folder_nft by folder id
+        for(Long folderId : folderIds) {
+            folderNftRepository.deleteAllByFolderId(folderId);
+        }
+
+        return folderVOList.size();
     }
 }

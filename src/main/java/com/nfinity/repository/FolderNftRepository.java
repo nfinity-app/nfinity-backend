@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FolderNftRepository extends JpaRepository<FolderNftEntity, Long> {
     FolderNftEntity findByNftId(Long nftId);
+
+    void deleteAllByFolderId(Long folderId);
 }
