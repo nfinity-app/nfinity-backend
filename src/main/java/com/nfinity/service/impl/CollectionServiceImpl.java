@@ -60,17 +60,16 @@ public class CollectionServiceImpl implements CollectionService {
 
         //2. save data to table collection_folder_nft
         List<CollectionFolderNftEntity> collectionFolderNftEntityList = new ArrayList<>();
-        for(NftVO nftRequestVO: vo.getRecords()) {
-            CollectionFolderNftEntity collectionFolderNftEntity = new CollectionFolderNftEntity();
-            collectionFolderNftEntity.setCollectionId(collectionId);
-            collectionFolderNftEntity.setFolderId(vo.getFolderId());
-            collectionFolderNftEntity.setNftId(nftRequestVO.getId());
-            collectionFolderNftEntityList.add(collectionFolderNftEntity);
+        for(NftVO nftVO: vo.getRecords()) {
+            if(Status.ENABLE.getValue() == nftVO.getStatus()) {
+                CollectionFolderNftEntity collectionFolderNftEntity = new CollectionFolderNftEntity();
+                collectionFolderNftEntity.setCollectionId(collectionId);
+                collectionFolderNftEntity.setFolderId(vo.getFolderId());
+                collectionFolderNftEntity.setNftId(nftVO.getId());
+                collectionFolderNftEntityList.add(collectionFolderNftEntity);
+            }
         }
-
         collectionFolderNftRepository.saveAll(collectionFolderNftEntityList);
-
-        //TODO: 3. update nft status in the table nft
 
         return collectionId;
     }

@@ -42,12 +42,12 @@ public class NftServiceImpl implements NftService {
 
     @Override
     public PageModel<NftVO> uploadNftFiles(List<MultipartFile> multipartFileList) throws IOException {
-        uploadNftFilesToS3(multipartFileList);
+        String s3Dir = uploadNftFilesToS3(multipartFileList);
         List<S3ObjectSummary> s3ObjectSummaries = listS3Objects();
-        return saveNftsToDB(s3ObjectSummaries);
+        return saveNftsToDB(s3ObjectSummaries, s3Dir);
     }
 
-    private void uploadNftFilesToS3(List<MultipartFile> multipartFileList) throws IOException {
+    private String uploadNftFilesToS3(List<MultipartFile> multipartFileList) throws IOException {
         //1. get src files, create src directory
         String srcDir = "s3" + File.separator;
         List<File> files = new ArrayList<>();
@@ -66,6 +66,8 @@ public class NftServiceImpl implements NftService {
 
         //3. upload files to s3
         s3Util.uploadFileListToS3(bucketName, s3Dir, srcDir, files);
+
+        return s3Dir;
     }
 
     private List<S3ObjectSummary> listS3Objects(){
@@ -80,7 +82,7 @@ public class NftServiceImpl implements NftService {
     }
 
     @Transactional
-    PageModel<NftVO> saveNftsToDB(List<S3ObjectSummary> s3ObjectSummaries){
+    PageModel<NftVO> saveNftsToDB(List<S3ObjectSummary> s3ObjectSummaries, String s3Dir){
         NftVO nftVO = new NftVO();
         Map<Long, String> folderNftMap = new HashMap<>();
         List<NftEntity> nftEntityList = new ArrayList<>();
@@ -91,16 +93,18 @@ public class NftServiceImpl implements NftService {
         for (S3ObjectSummary os : s3ObjectSummaries) {
             //1. save data to table nft
             String key = os.getKey();
-            NftEntity nftEntity = new NftEntity();
-            nftEntity.setPath(S3_FILE_PATH + bucketName + File.separator + key);
-            nftEntity.setStatus(Status.ENABLE.getValue());
-            NftEntity savedNftEntity = nftRepository.save(nftEntity);
-            nftEntityList.add(savedNftEntity);
+            if(key.startsWith(s3Dir)) {
+                NftEntity nftEntity = new NftEntity();
+                nftEntity.setPath(S3_FILE_PATH + bucketName + File.separator + key);
+                nftEntity.setStatus(Status.ENABLE.getValue());
+                NftEntity savedNftEntity = nftRepository.save(nftEntity);
+                nftEntityList.add(savedNftEntity);
 
-            //2.get nft id, and correlate nft id and s3 folder name
-            int index = key.lastIndexOf("/");
-            String s3FolderName = key.substring(0, index);
-            folderNftMap.put(savedNftEntity.getId(), s3FolderName);
+                //2.get nft id, and correlate nft id and s3 folder name
+                int index = key.lastIndexOf("/");
+                String s3FolderName = key.substring(0, index);
+                folderNftMap.put(savedNftEntity.getId(), s3FolderName);
+            }
         }
 
         //2. save data to table folder_nft
