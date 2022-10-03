@@ -2,10 +2,7 @@ package com.nfinity.controller;
 
 import com.nfinity.enums.ErrorCode;
 import com.nfinity.service.CollectionService;
-import com.nfinity.vo.CollectionInputVO;
-import com.nfinity.vo.CollectionOutputVO;
-import com.nfinity.vo.PageModel;
-import com.nfinity.vo.Result;
+import com.nfinity.vo.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +33,28 @@ public class CollectionController {
             return Result.succeed(ErrorCode.OK, collectionId);
         }catch (Exception e){
             log.error("create collection failed.", e);
+            return Result.fail(ErrorCode.ERROR);
+        }
+    }
+
+    @GetMapping("/collections/{id}")
+    public Result<CollectionOutputVO> getCollectionDetail(@PathVariable("id") Long collectionId){
+        try {
+            CollectionOutputVO collectionOutputVO = collectionService.getCollectionDetail(collectionId);
+            return Result.succeed(ErrorCode.OK, collectionOutputVO);
+        }catch (Exception e){
+            log.error("get collection detail error.", e);
+            return Result.fail(ErrorCode.ERROR);
+        }
+    }
+
+    @PatchMapping("/collections/{id}")
+    public Result<Integer> editCollectionDetail(@PathVariable("id") Long collectionId, @RequestBody CollectionDetailVO vo){
+        try {
+            int count = collectionService.editCollectionDetail(collectionId, vo);
+            return Result.succeed(ErrorCode.OK, count);
+        }catch (Exception e){
+            log.error("edit collection detail error.", e);
             return Result.fail(ErrorCode.ERROR);
         }
     }

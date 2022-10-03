@@ -78,7 +78,7 @@ public class FolderController {
             int count = folderService.addNftsToFolder(folderId, nftsInputVO);
             return Result.succeed(ErrorCode.OK, count);
         }catch (Exception e){
-            log.error("delete folder nfts error.", e);
+            log.error("add nfts to folder error.", e);
             return Result.fail(ErrorCode.ERROR);
         }
     }

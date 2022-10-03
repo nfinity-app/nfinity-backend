@@ -6,10 +6,7 @@ import com.nfinity.enums.Status;
 import com.nfinity.repository.CollectionFolderNftRepository;
 import com.nfinity.repository.CollectionRepository;
 import com.nfinity.service.CollectionService;
-import com.nfinity.vo.CollectionInputVO;
-import com.nfinity.vo.CollectionOutputVO;
-import com.nfinity.vo.NftVO;
-import com.nfinity.vo.PageModel;
+import com.nfinity.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageRequest;
@@ -19,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -75,6 +73,35 @@ public class CollectionServiceImpl implements CollectionService {
         //TODO: 3. update nft status in the table nft
 
         return collectionId;
+    }
+
+    @Override
+    public CollectionOutputVO getCollectionDetail(Long collectionId) {
+        CollectionEntity collectionEntity = collectionRepository.findById(collectionId).get();
+
+        CollectionOutputVO collectionOutputVO = new CollectionOutputVO();
+        BeanUtils.copyProperties(collectionEntity, collectionOutputVO);
+
+        return collectionOutputVO;
+    }
+
+    @Override
+    public int editCollectionDetail(Long collectionId, CollectionDetailVO vo) {
+        CollectionEntity entity = collectionRepository.findById(collectionId).get();
+
+        if(Objects.nonNull(vo.getMintPrice())) {
+            entity.setMintPrice(vo.getMintPrice());
+        }
+        if(Objects.nonNull(vo.getMintStatus())) {
+            entity.setStatus(vo.getMintStatus());
+        }
+        if(Objects.nonNull(vo.getDescription())) {
+            entity.setDescription(vo.getDescription());
+        }
+
+        CollectionEntity updatedEntity = collectionRepository.save(entity);
+
+        return entity.equals(updatedEntity) ? 0 : 1;
     }
 }
 
