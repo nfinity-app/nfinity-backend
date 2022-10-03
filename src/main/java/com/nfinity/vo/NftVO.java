@@ -6,9 +6,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class NftInputVO {
+public class NftVO {
     @NotNull
-    private Integer id;
+    private Long id;
     @NotBlank
     private String path;
     @NotNull

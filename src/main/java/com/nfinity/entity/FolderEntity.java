@@ -12,8 +12,7 @@ import javax.persistence.*;
 public class FolderEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
     private String name;
-    private String s3Name;
     private String icon;
 }

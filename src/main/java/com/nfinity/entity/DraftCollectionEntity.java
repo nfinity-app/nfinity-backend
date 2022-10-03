@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 public class DraftCollectionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
     private String name;
     private String icon;
     private int category;

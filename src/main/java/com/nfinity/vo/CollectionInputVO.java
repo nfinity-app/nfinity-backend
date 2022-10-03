@@ -50,9 +50,9 @@ public class CollectionInputVO {
 
     @NotNull
     @JsonProperty("folder_id")
-    private Integer folderId;
+    private Long folderId;
 
     @NotEmpty
     @Valid
-    private List<@NotNull NftInputVO> records;
+    private List<@NotNull NftVO> records;
 }
