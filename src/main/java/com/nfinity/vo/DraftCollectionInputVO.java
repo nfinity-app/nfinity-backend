@@ -1,35 +1,44 @@
-package com.nfinity.entity;
+package com.nfinity.vo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Setter
-@Entity
-@Table(name = "draft_collection")
-public class DraftCollectionEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String name;
-    private String icon;
-    private int category;
+public class DraftCollectionInputVO {
+    @JsonProperty("collection_name")
+    private String collectionName;
+
+    private Integer category;
+
     @JsonProperty("domain_name")
     private String domainName;
+
     @JsonProperty("contract_chain")
     private String contractChain;
+
     private String symbol;
+
     @JsonProperty("total_supply")
-    private int totalSupply;
+    private Integer totalSupply;
+
     @JsonProperty("mint_price")
     private BigDecimal mintPrice;
+
     private String description;
+
     @JsonProperty("airdrop_retention")
-    private int airdropRetention;
+    private Integer airdropRetention;
+
     @JsonProperty("retained_qty")
-    private int retainedQty;
-    private int status;
+    private Integer retainedQty;
+
+    @JsonProperty("folder_id")
+    private Long folderId;
+
+    private List<NftVO> records;
 }

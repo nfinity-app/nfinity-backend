@@ -2,16 +2,23 @@ package com.nfinity.service.impl;
 
 import com.nfinity.entity.CollectionEntity;
 import com.nfinity.entity.CollectionFolderNftEntity;
+import com.nfinity.entity.DraftCollectionEntity;
+import com.nfinity.entity.DraftCollectionFolderNftEntity;
+import com.nfinity.enums.MintStatus;
 import com.nfinity.enums.Status;
 import com.nfinity.repository.CollectionFolderNftRepository;
 import com.nfinity.repository.CollectionRepository;
+import com.nfinity.repository.DraftCollectionFolderNftRepository;
+import com.nfinity.repository.DraftCollectionRepository;
 import com.nfinity.service.CollectionService;
+import com.nfinity.util.BeansUtil;
 import com.nfinity.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -24,6 +31,8 @@ import java.util.stream.Collectors;
 public class CollectionServiceImpl implements CollectionService {
     private final CollectionRepository collectionRepository;
     private final CollectionFolderNftRepository collectionFolderNftRepository;
+    private final DraftCollectionRepository draftCollectionRepository;
+    private final DraftCollectionFolderNftRepository draftCollectionFolderNftRepository;
 
     public PageModel<CollectionOutputVO> getCollectionList(int page, int size){
         PageModel<CollectionOutputVO> pageModel = new PageModel<>();
@@ -54,7 +63,7 @@ public class CollectionServiceImpl implements CollectionService {
         collectionEntity.setAddress("");
         collectionEntity.setRevenue(new BigDecimal(0));
         collectionEntity.setMintedQty(0);
-        collectionEntity.setStatus(Status.ENABLE.getValue());
+        collectionEntity.setStatus(MintStatus.PENDING.getValue());
 
         Long collectionId = collectionRepository.save(collectionEntity).getId();
 
@@ -101,6 +110,32 @@ public class CollectionServiceImpl implements CollectionService {
         CollectionEntity updatedEntity = collectionRepository.save(entity);
 
         return entity.equals(updatedEntity) ? 0 : 1;
+    }
+
+    @Override
+    public Long saveDraftCollection(DraftCollectionInputVO vo) {
+        DraftCollectionEntity entity = new DraftCollectionEntity();
+        BeanUtils.copyProperties(vo, entity, BeansUtil.getNullFields(vo));
+        entity.setName(vo.getCollectionName());
+        entity.setStatus(MintStatus.DRAFTED.getValue());
+
+        Long collectionId = draftCollectionRepository.save(entity).getId();
+
+        if(!CollectionUtils.isEmpty(vo.getRecords())){
+            List<DraftCollectionFolderNftEntity> nftEntityList = new ArrayList<>();
+            for(NftVO nftVO : vo.getRecords()){
+                if(Status.ENABLE.getValue() == nftVO.getStatus()){
+                    DraftCollectionFolderNftEntity nftEntity = new DraftCollectionFolderNftEntity();
+                    nftEntity.setCollectionId(collectionId);
+                    nftEntity.setFolderId(vo.getFolderId());
+                    nftEntity.setNftId(nftVO.getId());
+                    nftEntityList.add(nftEntity);
+                }
+            }
+            draftCollectionFolderNftRepository.saveAll(nftEntityList);
+        }
+
+        return collectionId;
     }
 }
 

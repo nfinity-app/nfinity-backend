@@ -58,4 +58,15 @@ public class CollectionController {
             return Result.fail(ErrorCode.ERROR);
         }
     }
+
+    @PostMapping("/collection/draft")
+    public Result<Long> saveDraftCollection(@RequestBody DraftCollectionInputVO vo){
+        try {
+            Long collectionId = collectionService.saveDraftCollection(vo);
+            return Result.succeed(ErrorCode.OK, collectionId);
+        }catch (Exception e){
+            log.error("save draft collection failed.", e);
+            return Result.fail(ErrorCode.ERROR);
+        }
+    }
 }

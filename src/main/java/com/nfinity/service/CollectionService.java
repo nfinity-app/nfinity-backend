@@ -1,9 +1,6 @@
 package com.nfinity.service;
 
-import com.nfinity.vo.CollectionDetailVO;
-import com.nfinity.vo.CollectionInputVO;
-import com.nfinity.vo.CollectionOutputVO;
-import com.nfinity.vo.PageModel;
+import com.nfinity.vo.*;
 
 public interface CollectionService {
     PageModel<CollectionOutputVO> getCollectionList(int page, int size);
@@ -13,4 +10,6 @@ public interface CollectionService {
     CollectionOutputVO getCollectionDetail(Long collectionId);
 
     int editCollectionDetail(Long collectionId, CollectionDetailVO vo);
+
+    Long saveDraftCollection(DraftCollectionInputVO vo);
 }

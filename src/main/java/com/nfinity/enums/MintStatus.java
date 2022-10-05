@@ -6,10 +6,10 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum MintStatus {
-    DRAFTED(0),
-    PENDING(1),
-    PUBLISHED(2),
-    SUSPENDED(3);
+    DRAFTED(1),
+    PENDING(2),
+    PUBLISHED(3),
+    SUSPENDED(4);
 
     private final int value;
 }

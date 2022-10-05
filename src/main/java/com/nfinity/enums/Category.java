@@ -7,10 +7,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Category {
     //0-Apparel, 1-Beauty, 2-Fashion, 3-Influencer
-    APPAREL(0),
-    BEAUTY(1),
-    FASHION(2),
-    INFLUENCER(3);
+    APPAREL(1),
+    BEAUTY(2),
+    FASHION(3),
+    INFLUENCER(4);
 
     private final int value;
 }

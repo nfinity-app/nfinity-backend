@@ -17,19 +17,21 @@ create table IF NOT EXISTS collection(
     revenue decimal NOT NULL,
     address varchar(128) NOT NULL,
     minted_qty int NOT NULL,
-    status int NOT NULL -- 0-drafted, 1-pending, 2-published, 3-suspended
+    status int NOT NULL -- 1-drafted, 2-pending, 3-published, 4-suspended
 );
 
 create table if not exists folder(
     id bigint PRIMARY KEY AUTO_INCREMENT,
     name varchar(64) not null,
     icon varchar(1024) not null
+--    mint_status int -- 1-unminted, 2-minted
 );
 
 create table if not exists nft(
     id bigint PRIMARY KEY AUTO_INCREMENT,
     path varchar(1024) not null,
-    status int not null -- 0-disable, 1-enable
+    status int not null -- 1-disable, 2-enable
+--    mint_status int -- 1-unminted, 2-minted
 );
 
 create table if not exists folder_nft(
@@ -64,7 +66,7 @@ create table IF NOT EXISTS draft_collection(
     description varchar(1024),
     airdrop_retention int,
     retained_qty int,
-    status int NOT NULL -- 0-drafted, 1-pending, 2-published, 3-suspended
+    status int NOT NULL -- 1-drafted, 2-pending, 3-published, 4-suspended
 );
 
 create table if not exists draft_collection_folder_nft(
@@ -77,9 +79,7 @@ create unique index index_draft_collection_folder_nft_nft_id on draft_collection
 create index index_draft_collection_folder_nft_folder_id on draft_collection_folder_nft (folder_id);
 create index index_draft_collection_folder_nft_collection_id on draft_collection_folder_nft (collection_id);
 
-
-alter table folder add s3_name varchar(64) not null;
-alter table folder drop column s3_name;
+-- modify table structure
 alter table folder_nft add s3_folder_name varchar(64);
 
 alter table collection_folder_nft add id bigint primary key auto_increment;
