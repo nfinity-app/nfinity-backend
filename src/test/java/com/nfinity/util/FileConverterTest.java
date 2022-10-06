@@ -15,14 +15,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FileConverterTest {
 
-    @Test
+//    @Test
     void multipartFileToFile() throws IOException {
         MultipartFile multipartFile = new MockMultipartFile("source.tmp", "hello world".getBytes());
         File file = FileConverter.multipartFileToFile(multipartFile, "s3/");
         assertEquals(FileUtil.readAsString(file), "hello world");
     }
 
-    @Test
+//    @Test
     void multipartFileToFile_2() throws IOException {
         File file = new File("/Users/a1234/Downloads/images/image.jpeg");
         FileInputStream inputStream = new FileInputStream(file);
