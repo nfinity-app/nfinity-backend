@@ -14,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -24,7 +23,7 @@ import java.util.List;
 public class NftController {
     private final NftService nftService;
     @PostMapping("/nfts")
-    public Result<PageModel<NftVO>> uploadNfts(HttpServletRequest request) throws IOException {
+    public Result<PageModel<NftVO>> uploadNfts(HttpServletRequest request) {
         try {
             //get files from http request
             MultipartHttpServletRequest multipartHttpServletRequest = (MultipartHttpServletRequest) request;

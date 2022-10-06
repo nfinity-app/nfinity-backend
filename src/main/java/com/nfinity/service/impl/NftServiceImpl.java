@@ -79,7 +79,6 @@ public class NftServiceImpl implements NftService {
 
     @Transactional
     PageModel<NftVO> saveNftsToDB(List<S3ObjectSummary> s3ObjectSummaries, String s3Dir){
-        NftVO nftVO = new NftVO();
         Map<Long, String> folderNftMap = new HashMap<>();
         List<NftEntity> nftEntityList = new ArrayList<>();
         List<NftVO> nftVOList = new ArrayList<>();
@@ -115,6 +114,7 @@ public class NftServiceImpl implements NftService {
         folderNftRepository.saveAll(folderNftEntityList);
 
         for(NftEntity nftEntity : nftEntityList){
+            NftVO nftVO = new NftVO();
             BeanUtils.copyProperties(nftEntity, nftVO);
             nftVOList.add(nftVO);
         }
