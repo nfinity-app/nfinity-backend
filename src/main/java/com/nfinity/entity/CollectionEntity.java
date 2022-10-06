@@ -29,4 +29,5 @@ public class CollectionEntity {
     private BigDecimal revenue;
     private int mintedQty;
     private int status;
+    private int contractStatus;
 }

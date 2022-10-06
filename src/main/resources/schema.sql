@@ -17,21 +17,20 @@ create table IF NOT EXISTS collection(
     revenue decimal NOT NULL,
     address varchar(128) NOT NULL,
     minted_qty int NOT NULL,
-    status int NOT NULL -- 1-drafted, 2-pending, 3-published, 4-suspended
+    status int NOT NULL, -- 1-drafted, 2-pending, 3-published, 4-suspended
+    contract_status int not null -- 1-init, 2-pending, 3-published, 4-failed
 );
 
 create table if not exists folder(
     id bigint PRIMARY KEY AUTO_INCREMENT,
     name varchar(64) not null,
     icon varchar(1024) not null
---    mint_status int -- 1-unminted, 2-minted
 );
 
 create table if not exists nft(
     id bigint PRIMARY KEY AUTO_INCREMENT,
     path varchar(1024) not null,
     status int not null -- 1-disable, 2-enable
---    mint_status int -- 1-unminted, 2-minted
 );
 
 create table if not exists folder_nft(

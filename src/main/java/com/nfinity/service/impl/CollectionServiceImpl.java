@@ -4,6 +4,7 @@ import com.nfinity.entity.CollectionEntity;
 import com.nfinity.entity.CollectionFolderNftEntity;
 import com.nfinity.entity.DraftCollectionEntity;
 import com.nfinity.entity.DraftCollectionFolderNftEntity;
+import com.nfinity.enums.ContractStatus;
 import com.nfinity.enums.MintStatus;
 import com.nfinity.enums.Status;
 import com.nfinity.repository.CollectionFolderNftRepository;
@@ -64,6 +65,7 @@ public class CollectionServiceImpl implements CollectionService {
         collectionEntity.setRevenue(new BigDecimal(0));
         collectionEntity.setMintedQty(0);
         collectionEntity.setStatus(MintStatus.PENDING.getValue());
+        collectionEntity.setContractStatus(ContractStatus.INIT.getValue());
 
         Long collectionId = collectionRepository.save(collectionEntity).getId();
 
@@ -113,6 +115,7 @@ public class CollectionServiceImpl implements CollectionService {
     }
 
     @Override
+    @Transactional
     public Long saveDraftCollection(DraftCollectionInputVO vo) {
         DraftCollectionEntity entity = new DraftCollectionEntity();
         BeanUtils.copyProperties(vo, entity, BeansUtil.getNullFields(vo));
