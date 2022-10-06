@@ -78,29 +78,3 @@ create table if not exists draft_collection_folder_nft(
 create unique index index_draft_collection_folder_nft_nft_id on draft_collection_folder_nft (nft_id);
 create index index_draft_collection_folder_nft_folder_id on draft_collection_folder_nft (folder_id);
 create index index_draft_collection_folder_nft_collection_id on draft_collection_folder_nft (collection_id);
-
--- modify table structure
-alter table folder_nft add s3_folder_name varchar(64);
-
-alter table collection_folder_nft add id bigint primary key auto_increment;
-alter table draft_collection_folder_nft add id bigint primary key auto_increment;
-alter table folder_nft add id bigint primary key auto_increment;
-
-alter table collection modify id bigint auto_increment;
-alter table folder modify id bigint auto_increment;
-alter table nft modify id bigint auto_increment;
-alter table draft_collection modify id bigint auto_increment;
-
-alter table collection_folder_nft modify id bigint auto_increment;
-alter table collection_folder_nft modify collection_id bigint;
-alter table collection_folder_nft modify folder_id bigint;
-alter table collection_folder_nft modify nft_id bigint;
-
-alter table draft_collection_folder_nft modify id bigint auto_increment;
-alter table draft_collection_folder_nft modify collection_id bigint;
-alter table draft_collection_folder_nft modify folder_id bigint;
-alter table draft_collection_folder_nft modify nft_id bigint;
-
-alter table folder_nft modify id bigint auto_increment;
-alter table folder_nft modify folder_id bigint;
-alter table folder_nft modify nft_id bigint;

@@ -55,14 +55,14 @@ public class NftServiceImpl implements NftService {
             files.add(FileConverter.multipartFileToFile(multipartFile, srcDir));
         }
         for (File file : files) {
-            log.debug("src file name: " + file.getName());
+            log.debug("[upload nfts] src file name: " + file.getName());
         }
 
         //2. create s3 directory
         Random random = new Random();
         //todo: To update a real account username until account creation
         String s3Dir = "username/" + random.nextInt(10000);
-        log.info("s3 folder name: " + s3Dir);
+        log.info("[upload nfts] dest(s3) folder name: " + s3Dir);
 
         //3. upload files to s3
         s3Util.uploadFileListToS3(bucketName, s3Dir, srcDir, files);
@@ -71,14 +71,10 @@ public class NftServiceImpl implements NftService {
     }
 
     private List<S3ObjectSummary> listS3Objects(){
-        log.debug("Objects in S3 bucket: " + bucketName);
+        log.debug("[upload nfts] Objects in S3 bucket: " + bucketName);
         final AmazonS3 s3 = AmazonS3ClientBuilder.standard().withRegion(Regions.US_EAST_1).build();
         ListObjectsV2Result result = s3.listObjectsV2(bucketName);
-        List<S3ObjectSummary> objects = result.getObjectSummaries();
-        for (S3ObjectSummary os : objects) {
-            log.info("get image:  " + os.getKey());
-        }
-        return objects;
+        return result.getObjectSummaries();
     }
 
     @Transactional
@@ -94,6 +90,8 @@ public class NftServiceImpl implements NftService {
             //1. save data to table nft
             String key = os.getKey();
             if(key.startsWith(s3Dir)) {
+                log.info("[upload nfts] get image:  " + key);
+
                 NftEntity nftEntity = new NftEntity();
                 nftEntity.setPath(S3_FILE_PATH + bucketName + File.separator + key);
                 nftEntity.setStatus(Status.ENABLE.getValue());

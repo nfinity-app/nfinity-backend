@@ -1,0 +1,18 @@
+server:
+  port: 80
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://database-1.cyjhjgzophkw.us-east-1.rds.amazonaws.com:3306/nft_business?autoReconnect=true
+    username: admin
+    password: SkiCdft1VcW2lQc0wZ0I
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+aws:
+  s3:
+    bucket:
+      name: nft.business.bucket.test
