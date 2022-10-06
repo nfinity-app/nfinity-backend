@@ -60,12 +60,23 @@ public class CollectionController {
     }
 
     @PostMapping("/collection/draft")
-    public Result<Long> saveDraftCollection(@RequestBody DraftCollectionInputVO vo){
+    public Result<Long> saveDraftCollection(@RequestBody DraftCollectionVO vo){
         try {
             Long collectionId = collectionService.saveDraftCollection(vo);
             return Result.succeed(ErrorCode.OK, collectionId);
         }catch (Exception e){
             log.error("save draft collection failed.", e);
+            return Result.fail(ErrorCode.ERROR);
+        }
+    }
+
+    @GetMapping("/collections/draft/{id}")
+    public Result<DraftCollectionVO> getDraftCollectionDetail(@PathVariable("id") Long collectionId){
+        try {
+            DraftCollectionVO draftCollectionVO = collectionService.getDraftCollectionDetail(collectionId);
+            return Result.succeed(ErrorCode.OK, draftCollectionVO);
+        }catch (Exception e){
+            log.error("get collection detail error.", e);
             return Result.fail(ErrorCode.ERROR);
         }
     }

@@ -17,4 +17,5 @@ public class DraftCollectionFolderNftEntity {
     private Long collectionId;
     private Long folderId;
     private Long nftId;
+    private int nftStatus;
 }

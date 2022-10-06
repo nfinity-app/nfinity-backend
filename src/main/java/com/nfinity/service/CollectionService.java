@@ -11,5 +11,7 @@ public interface CollectionService {
 
     int editCollectionDetail(Long collectionId, CollectionDetailVO vo);
 
-    Long saveDraftCollection(DraftCollectionInputVO vo);
+    Long saveDraftCollection(DraftCollectionVO vo);
+
+    DraftCollectionVO getDraftCollectionDetail(Long collectionId);
 }

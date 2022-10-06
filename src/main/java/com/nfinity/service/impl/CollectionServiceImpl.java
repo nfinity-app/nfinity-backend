@@ -1,16 +1,10 @@
 package com.nfinity.service.impl;
 
-import com.nfinity.entity.CollectionEntity;
-import com.nfinity.entity.CollectionFolderNftEntity;
-import com.nfinity.entity.DraftCollectionEntity;
-import com.nfinity.entity.DraftCollectionFolderNftEntity;
+import com.nfinity.entity.*;
 import com.nfinity.enums.ContractStatus;
 import com.nfinity.enums.MintStatus;
 import com.nfinity.enums.Status;
-import com.nfinity.repository.CollectionFolderNftRepository;
-import com.nfinity.repository.CollectionRepository;
-import com.nfinity.repository.DraftCollectionFolderNftRepository;
-import com.nfinity.repository.DraftCollectionRepository;
+import com.nfinity.repository.*;
 import com.nfinity.service.CollectionService;
 import com.nfinity.util.BeansUtil;
 import com.nfinity.vo.*;
@@ -25,6 +19,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,6 +29,8 @@ public class CollectionServiceImpl implements CollectionService {
     private final CollectionFolderNftRepository collectionFolderNftRepository;
     private final DraftCollectionRepository draftCollectionRepository;
     private final DraftCollectionFolderNftRepository draftCollectionFolderNftRepository;
+    private final FolderRepository folderRepository;
+    private final NftRepository nftRepository;
 
     public PageModel<CollectionOutputVO> getCollectionList(int page, int size){
         PageModel<CollectionOutputVO> pageModel = new PageModel<>();
@@ -116,7 +113,7 @@ public class CollectionServiceImpl implements CollectionService {
 
     @Override
     @Transactional
-    public Long saveDraftCollection(DraftCollectionInputVO vo) {
+    public Long saveDraftCollection(DraftCollectionVO vo) {
         DraftCollectionEntity entity = new DraftCollectionEntity();
         BeanUtils.copyProperties(vo, entity, BeansUtil.getNullFields(vo));
         entity.setName(vo.getCollectionName());
@@ -127,18 +124,55 @@ public class CollectionServiceImpl implements CollectionService {
         if(!CollectionUtils.isEmpty(vo.getRecords())){
             List<DraftCollectionFolderNftEntity> nftEntityList = new ArrayList<>();
             for(NftVO nftVO : vo.getRecords()){
-                if(Status.ENABLE.getValue() == nftVO.getStatus()){
-                    DraftCollectionFolderNftEntity nftEntity = new DraftCollectionFolderNftEntity();
-                    nftEntity.setCollectionId(collectionId);
-                    nftEntity.setFolderId(vo.getFolderId());
-                    nftEntity.setNftId(nftVO.getId());
-                    nftEntityList.add(nftEntity);
-                }
+                DraftCollectionFolderNftEntity nftEntity = new DraftCollectionFolderNftEntity();
+                nftEntity.setCollectionId(collectionId);
+                nftEntity.setFolderId(vo.getFolderId());
+                nftEntity.setNftId(nftVO.getId());
+                nftEntity.setNftStatus(nftVO.getStatus());
+                nftEntityList.add(nftEntity);
             }
             draftCollectionFolderNftRepository.saveAll(nftEntityList);
         }
 
         return collectionId;
+    }
+
+    @Override
+    public DraftCollectionVO getDraftCollectionDetail(Long collectionId) {
+        DraftCollectionVO draftCollectionVO = new DraftCollectionVO();
+
+        DraftCollectionEntity draftCollectionEntity;
+        Optional<DraftCollectionEntity> optional = draftCollectionRepository.findById(collectionId);
+        if(optional.isPresent()){
+            draftCollectionEntity = optional.get();
+            BeanUtils.copyProperties(draftCollectionEntity, draftCollectionVO, BeansUtil.getNullFields(draftCollectionEntity));
+            draftCollectionVO.setCollectionName(draftCollectionEntity.getName());
+        }
+
+        List<DraftCollectionFolderNftEntity> draftNftEntityList = draftCollectionFolderNftRepository.findAllByCollectionId(collectionId);
+        //one collection corresponds to only one folder
+        if(!CollectionUtils.isEmpty(draftNftEntityList)) {
+            Long folderId = draftNftEntityList.get(0).getFolderId();
+            String folderName = folderRepository.findById(folderId).get().getName();
+            draftCollectionVO.setFolderId(folderId);
+            draftCollectionVO.setFolderName(folderName);
+
+            List<NftVO> nftVOList = new ArrayList<>(draftNftEntityList.size());
+            for (DraftCollectionFolderNftEntity entity : draftNftEntityList) {
+                NftVO vo = new NftVO();
+                Long nftId = entity.getNftId();
+                String path = nftRepository.findById(nftId).get().getPath();
+                int nftStatus = entity.getNftStatus();
+
+                vo.setId(nftId);
+                vo.setPath(path);
+                vo.setStatus(nftStatus);
+                nftVOList.add(vo);
+            }
+            draftCollectionVO.setRecords(nftVOList);
+        }
+
+        return draftCollectionVO;
     }
 }
 

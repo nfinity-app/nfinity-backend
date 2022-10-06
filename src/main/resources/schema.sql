@@ -72,7 +72,8 @@ create table if not exists draft_collection_folder_nft(
     id bigint primary key auto_increment,
     collection_id bigint,
     folder_id bigint,
-    nft_id bigint
+    nft_id bigint,
+    nft_status int -- 1-disable, 2-enable
 );
 create unique index index_draft_collection_folder_nft_nft_id on draft_collection_folder_nft (nft_id);
 create index index_draft_collection_folder_nft_folder_id on draft_collection_folder_nft (folder_id);

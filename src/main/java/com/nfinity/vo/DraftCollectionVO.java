@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class DraftCollectionInputVO {
+public class DraftCollectionVO {
     @JsonProperty("collection_name")
     private String collectionName;
 
@@ -39,6 +39,9 @@ public class DraftCollectionInputVO {
 
     @JsonProperty("folder_id")
     private Long folderId;
+
+    @JsonProperty("folder_name")
+    private String folderName;
 
     private List<NftVO> records;
 }
