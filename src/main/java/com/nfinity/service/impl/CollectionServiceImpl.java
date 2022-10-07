@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,19 +30,29 @@ public class CollectionServiceImpl implements CollectionService {
     private final DraftCollectionFolderNftRepository draftCollectionFolderNftRepository;
     private final FolderRepository folderRepository;
     private final NftRepository nftRepository;
+    private final ChainNftContractRepository chainNftContractRepository;
 
     public PageModel<CollectionOutputVO> getCollectionList(int page, int size){
         PageModel<CollectionOutputVO> pageModel = new PageModel<>();
 
         long total = collectionRepository.count();
-        List<CollectionOutputVO> collectionVOList = collectionRepository.findAll(PageRequest.of(page - 1, size))
-                .stream()
-                .map(collectionEntity -> {
-                    CollectionOutputVO collectionVO = new CollectionOutputVO();
-                    BeanUtils.copyProperties(collectionEntity, collectionVO);
-                    return collectionVO;
-                })
-                .collect(Collectors.toList());
+        List<CollectionOutputVO> collectionVOList = new ArrayList<>();
+
+        List<CollectionEntity> collectionEntityList = collectionRepository.findAll(PageRequest.of(page - 1, size)).toList();
+
+        for(CollectionEntity collectionEntity : collectionEntityList) {
+            CollectionOutputVO collectionVO = new CollectionOutputVO();
+            BeanUtils.copyProperties(collectionEntity, collectionVO);
+
+            Long collectionId = collectionEntity.getId();
+
+            ChainNftContractEntity chainNftContractEntity = chainNftContractRepository.findByCollectionId(collectionId);
+
+            collectionVO.setAddress(chainNftContractEntity.getContractAddr());
+            collectionVO.setMintedQty((int) chainNftContractEntity.getMintNum());
+            collectionVO.setRevenue(chainNftContractEntity.getProfit());
+            collectionVOList.add(collectionVO);
+        }
 
         pageModel.setTotal(total);
         pageModel.setRecords(collectionVOList);
@@ -88,6 +97,11 @@ public class CollectionServiceImpl implements CollectionService {
 
         CollectionOutputVO collectionOutputVO = new CollectionOutputVO();
         BeanUtils.copyProperties(collectionEntity, collectionOutputVO);
+
+        ChainNftContractEntity chainNftContractEntity = chainNftContractRepository.findByCollectionId(collectionId);
+        collectionOutputVO.setRevenue(chainNftContractEntity.getProfit());
+        collectionOutputVO.setAddress(chainNftContractEntity.getContractAddr());
+        collectionOutputVO.setMintedQty((int) chainNftContractEntity.getMintNum());
 
         return collectionOutputVO;
     }
