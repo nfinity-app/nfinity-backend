@@ -14,4 +14,6 @@ public interface CollectionService {
     Long saveDraftCollection(DraftCollectionVO vo);
 
     DraftCollectionVO getDraftCollectionDetail(Long collectionId);
+
+    String getGasFee(GasFeeInputVO vo);
 }

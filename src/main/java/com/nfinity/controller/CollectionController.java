@@ -37,6 +37,17 @@ public class CollectionController {
         }
     }
 
+    @GetMapping("/collection/gas-fee")
+    public Result<String> getGasFee(@RequestBody GasFeeInputVO vo){
+        try {
+            String gasFee = collectionService.getGasFee(vo);
+            return Result.succeed(ErrorCode.OK, gasFee);
+        }catch (Exception e){
+            log.error("get gas fee error.", e);
+            return Result.fail(ErrorCode.ERROR);
+        }
+    }
+
     @GetMapping("/collections/{id}")
     public Result<CollectionOutputVO> getCollectionDetail(@PathVariable("id") Long collectionId){
         try {
@@ -76,7 +87,7 @@ public class CollectionController {
             DraftCollectionVO draftCollectionVO = collectionService.getDraftCollectionDetail(collectionId);
             return Result.succeed(ErrorCode.OK, draftCollectionVO);
         }catch (Exception e){
-            log.error("get collection detail error.", e);
+            log.error("get draft collection detail error.", e);
             return Result.fail(ErrorCode.ERROR);
         }
     }

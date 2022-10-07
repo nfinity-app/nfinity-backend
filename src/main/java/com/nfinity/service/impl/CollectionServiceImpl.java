@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -196,6 +197,19 @@ public class CollectionServiceImpl implements CollectionService {
         }
 
         return draftCollectionVO;
+    }
+
+    /**
+     * fixed gas fee
+     * @param vo input vo
+     * @return gas fee
+     */
+    @Override
+    public String getGasFee(GasFeeInputVO vo) {
+        BigDecimal gasPrice = new BigDecimal("5000000000");
+        BigDecimal gasLimit = new BigDecimal("5000000");
+        BigDecimal gasFee = gasPrice.multiply(gasLimit).divide(new BigDecimal("1000000000000000000"), RoundingMode.HALF_UP);
+        return gasFee.stripTrailingZeros().toPlainString();
     }
 }
 
