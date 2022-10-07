@@ -47,9 +47,12 @@ public class CollectionServiceImpl implements CollectionService {
 
             ChainNftContractEntity chainNftContractEntity = chainNftContractRepository.findByCollectionId(collectionId);
 
-            collectionVO.setAddress(chainNftContractEntity.getContractAddr());
-            collectionVO.setMintedQty((int) chainNftContractEntity.getMintNum());
-            collectionVO.setRevenue(chainNftContractEntity.getProfit());
+            if(Objects.nonNull(chainNftContractEntity)) {
+                collectionVO.setAddress(chainNftContractEntity.getContractAddr());
+                collectionVO.setMintedQty((int) chainNftContractEntity.getMintNum());
+                collectionVO.setRevenue(chainNftContractEntity.getProfit());
+            }
+
             collectionVOList.add(collectionVO);
         }
 
@@ -97,22 +100,30 @@ public class CollectionServiceImpl implements CollectionService {
 
     @Override
     public CollectionOutputVO getCollectionDetail(Long collectionId) {
-        CollectionEntity collectionEntity = collectionRepository.findById(collectionId).get();
-
+        Optional<CollectionEntity> optional = collectionRepository.findById(collectionId);
         CollectionOutputVO collectionOutputVO = new CollectionOutputVO();
-        BeanUtils.copyProperties(collectionEntity, collectionOutputVO);
+        if(optional.isPresent()){
+            CollectionEntity collectionEntity = optional.get();
+            BeanUtils.copyProperties(collectionEntity, collectionOutputVO);
+        }
 
         ChainNftContractEntity chainNftContractEntity = chainNftContractRepository.findByCollectionId(collectionId);
-        collectionOutputVO.setRevenue(chainNftContractEntity.getProfit());
-        collectionOutputVO.setAddress(chainNftContractEntity.getContractAddr());
-        collectionOutputVO.setMintedQty((int) chainNftContractEntity.getMintNum());
+        if(Objects.nonNull(chainNftContractEntity)) {
+            collectionOutputVO.setRevenue(chainNftContractEntity.getProfit());
+            collectionOutputVO.setAddress(chainNftContractEntity.getContractAddr());
+            collectionOutputVO.setMintedQty((int) chainNftContractEntity.getMintNum());
+        }
 
         return collectionOutputVO;
     }
 
     @Override
     public int editCollectionDetail(Long collectionId, CollectionDetailVO vo) {
-        CollectionEntity entity = collectionRepository.findById(collectionId).get();
+        Optional<CollectionEntity> optional = collectionRepository.findById(collectionId);
+        if(optional.isEmpty()){
+            return 0;
+        }
+        CollectionEntity entity = optional.get();
 
         if(Objects.nonNull(vo.getMintPrice())) {
             entity.setMintPrice(vo.getMintPrice());
@@ -177,19 +188,27 @@ public class CollectionServiceImpl implements CollectionService {
         //one collection corresponds to only one folder
         if(!CollectionUtils.isEmpty(draftNftEntityList)) {
             Long folderId = draftNftEntityList.get(0).getFolderId();
-            String folderName = folderRepository.findById(folderId).get().getName();
             draftCollectionVO.setFolderId(folderId);
-            draftCollectionVO.setFolderName(folderName);
+
+            Optional<FolderEntity> folderEntityOptional = folderRepository.findById(folderId);
+            if(folderEntityOptional.isPresent()) {
+                String folderName = folderEntityOptional.get().getName();
+                draftCollectionVO.setFolderName(folderName);
+            }
 
             List<NftVO> nftVOList = new ArrayList<>(draftNftEntityList.size());
             for (DraftCollectionFolderNftEntity entity : draftNftEntityList) {
                 NftVO vo = new NftVO();
                 Long nftId = entity.getNftId();
-                String path = nftRepository.findById(nftId).get().getPath();
-                int nftStatus = entity.getNftStatus();
-
                 vo.setId(nftId);
-                vo.setPath(path);
+
+                Optional<NftEntity> nftEntityOptional = nftRepository.findById(nftId);
+                if(nftEntityOptional.isPresent()) {
+                    String path =nftEntityOptional.get().getPath();
+                    vo.setPath(path);
+                }
+
+                int nftStatus = entity.getNftStatus();
                 vo.setStatus(nftStatus);
                 nftVOList.add(vo);
             }

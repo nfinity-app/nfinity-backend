@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 
 @Data
 public class CollectionOutputVO {
-    private int id;
+    private Long id;
     private String name;
     private String icon;
     private int category;
