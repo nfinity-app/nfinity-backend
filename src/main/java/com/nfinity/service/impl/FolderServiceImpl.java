@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,10 +29,13 @@ public class FolderServiceImpl implements FolderService {
     @Override
     @Transactional
     public Long createFolderWithNfts(FolderCreationInputVO folderInputVO) {
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         //1. save data to table folder
         FolderEntity folderEntity = new FolderEntity();
         folderEntity.setName(folderInputVO.getFolderName());
         folderEntity.setIcon(folderInputVO.getRecords().get(0).getPath());
+        folderEntity.setCreateTime(timestamp);
+        folderEntity.setUpdateTime(timestamp);
 
         Long folderId = folderRepository.save(folderEntity).getId();
 
@@ -40,6 +44,8 @@ public class FolderServiceImpl implements FolderService {
         for(NftVO vo : folderInputVO.getRecords()){
             FolderNftEntity folderNftEntity = folderNftRepository.findByNftId(vo.getId());
             folderNftEntity.setFolderId(folderId);
+            folderNftEntity.setCreateTime(timestamp);
+            folderNftEntity.setUpdateTime(timestamp);
             folderNftEntityList.add(folderNftEntity);
         }
         folderNftRepository.saveAll(folderNftEntityList);
@@ -124,11 +130,14 @@ public class FolderServiceImpl implements FolderService {
 
     @Override
     public int addNftsToFolder(Long folderId, NftsInputVO nftsInputVO) {
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         //add nfts to table folder_nft
         List<FolderNftEntity> folderNftEntityList = new ArrayList<>();
         for(NftVO nftVO : nftsInputVO.getRecords()){
             FolderNftEntity folderNftEntity = folderNftRepository.findByNftId(nftVO.getId());
             folderNftEntity.setFolderId(folderId);
+            folderNftEntity.setCreateTime(timestamp);
+            folderNftEntity.setUpdateTime(timestamp);
             folderNftEntityList.add(folderNftEntity);
         }
         folderNftRepository.saveAll(folderNftEntityList);

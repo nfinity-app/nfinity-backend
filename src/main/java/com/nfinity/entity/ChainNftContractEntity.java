@@ -30,9 +30,9 @@ public class ChainNftContractEntity {
     private String name;
     private String symbol;
     private String txId;
-    private long blocktime;
-    private long blocknum;
+    private long blockTime;
+    private long blockNum;
     private BigDecimal fee;
-    private Timestamp createdAt;
-    private Timestamp updatedAt;
+    private Timestamp createTime;
+    private Timestamp updateTime;
 }

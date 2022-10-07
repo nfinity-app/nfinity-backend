@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.*;
 
 import static com.nfinity.constant.Constant.S3_FILE_PATH;
@@ -79,6 +80,7 @@ public class NftServiceImpl implements NftService {
 
     @Transactional
     PageModel<NftVO> saveNftsToDB(List<S3ObjectSummary> s3ObjectSummaries, String s3Dir){
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Map<Long, String> folderNftMap = new HashMap<>();
         List<NftEntity> nftEntityList = new ArrayList<>();
         List<NftVO> nftVOList = new ArrayList<>();
@@ -94,7 +96,11 @@ public class NftServiceImpl implements NftService {
                 NftEntity nftEntity = new NftEntity();
                 nftEntity.setPath(S3_FILE_PATH + bucketName + File.separator + key);
                 nftEntity.setStatus(Status.ENABLE.getValue());
+                nftEntity.setCreateTime(timestamp);
+                nftEntity.setUpdateTime(timestamp);
+
                 NftEntity savedNftEntity = nftRepository.save(nftEntity);
+
                 nftEntityList.add(savedNftEntity);
 
                 //2.get nft id, and correlate nft id and s3 folder name
@@ -109,6 +115,8 @@ public class NftServiceImpl implements NftService {
             FolderNftEntity folderNftEntity = new FolderNftEntity();
             folderNftEntity.setNftId(entry.getKey());
             folderNftEntity.setS3FolderName(entry.getValue());
+            folderNftEntity.setCreateTime(timestamp);
+            folderNftEntity.setUpdateTime(timestamp);
             folderNftEntityList.add(folderNftEntity);
         }
         folderNftRepository.saveAll(folderNftEntityList);

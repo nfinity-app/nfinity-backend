@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 
 @Getter
 @Setter
@@ -18,4 +19,6 @@ public class FolderNftEntity {
     private Long nftId;
     @Column(name = "s3_folder_name")
     private String s3FolderName;
+    private Timestamp createTime;
+    private Timestamp updateTime;
 }

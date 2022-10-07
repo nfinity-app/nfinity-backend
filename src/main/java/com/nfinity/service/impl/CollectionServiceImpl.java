@@ -16,10 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.sql.Timestamp;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -62,6 +60,7 @@ public class CollectionServiceImpl implements CollectionService {
     @Override
     @Transactional
     public Long createCollection(CollectionInputVO vo) {
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         //1. save data to table collection, and get collection id
         CollectionEntity collectionEntity = new CollectionEntity();
         BeanUtils.copyProperties(vo, collectionEntity);
@@ -72,6 +71,8 @@ public class CollectionServiceImpl implements CollectionService {
         collectionEntity.setMintedQty(0);
         collectionEntity.setStatus(MintStatus.PENDING.getValue());
         collectionEntity.setContractStatus(ContractStatus.INIT.getValue());
+        collectionEntity.setCreateTime(timestamp);
+        collectionEntity.setUpdateTime(timestamp);
 
         Long collectionId = collectionRepository.save(collectionEntity).getId();
 
@@ -83,6 +84,8 @@ public class CollectionServiceImpl implements CollectionService {
                 collectionFolderNftEntity.setCollectionId(collectionId);
                 collectionFolderNftEntity.setFolderId(vo.getFolderId());
                 collectionFolderNftEntity.setNftId(nftVO.getId());
+                collectionFolderNftEntity.setCreateTime(timestamp);
+                collectionFolderNftEntity.setUpdateTime(timestamp);
                 collectionFolderNftEntityList.add(collectionFolderNftEntity);
             }
         }
@@ -120,6 +123,7 @@ public class CollectionServiceImpl implements CollectionService {
             entity.setDescription(vo.getDescription());
         }
 
+        entity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
         CollectionEntity updatedEntity = collectionRepository.save(entity);
 
         return entity.equals(updatedEntity) ? 0 : 1;
@@ -128,10 +132,13 @@ public class CollectionServiceImpl implements CollectionService {
     @Override
     @Transactional
     public Long saveDraftCollection(DraftCollectionVO vo) {
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         DraftCollectionEntity entity = new DraftCollectionEntity();
         BeanUtils.copyProperties(vo, entity, BeansUtil.getNullFields(vo));
         entity.setName(vo.getCollectionName());
         entity.setStatus(MintStatus.DRAFTED.getValue());
+        entity.setCreateTime(timestamp);
+        entity.setUpdateTime(timestamp);
 
         Long collectionId = draftCollectionRepository.save(entity).getId();
 
@@ -143,6 +150,8 @@ public class CollectionServiceImpl implements CollectionService {
                 nftEntity.setFolderId(vo.getFolderId());
                 nftEntity.setNftId(nftVO.getId());
                 nftEntity.setNftStatus(nftVO.getStatus());
+                nftEntity.setCreateTime(timestamp);
+                nftEntity.setUpdateTime(timestamp);
                 nftEntityList.add(nftEntity);
             }
             draftCollectionFolderNftRepository.saveAll(nftEntityList);

@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 
 @Getter
 @Setter
@@ -15,4 +16,6 @@ public class NftEntity {
     private Long id;
     private String path;
     private int status;
+    private Timestamp createTime;
+    private Timestamp updateTime;
 }

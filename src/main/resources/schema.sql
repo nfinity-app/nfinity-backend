@@ -18,26 +18,34 @@ create table IF NOT EXISTS collection(
     address varchar(128) NOT NULL,
     minted_qty int NOT NULL,
     status int NOT NULL, -- 1-drafted, 2-pending, 3-published, 4-suspended
-    contract_status int not null -- 1-init, 2-pending, 3-published, 4-failed
+    contract_status int not null, -- 1-init, 2-pending, 3-published, 4-failed
+    create_time timestamp not null,
+    update_time timestamp not null
 );
 
 create table if not exists folder(
     id bigint PRIMARY KEY AUTO_INCREMENT,
     name varchar(64) not null,
-    icon varchar(1024) not null
+    icon varchar(1024) not null,
+    create_time timestamp not null,
+    update_time timestamp not null
 );
 
 create table if not exists nft(
     id bigint PRIMARY KEY AUTO_INCREMENT,
     path varchar(1024) not null,
-    status int not null -- 1-disable, 2-enable
+    status int not null, -- 1-disable, 2-enable
+    create_time timestamp not null,
+    update_time timestamp not null
 );
 
 create table if not exists folder_nft(
     id bigint primary key auto_increment,
     folder_id bigint,
     nft_id bigint,
-    s3_folder_name varchar(64)
+    s3_folder_name varchar(64),
+    create_time timestamp not null,
+    update_time timestamp not null
 );
 create unique index index_folder_nft_nft_id on folder_nft (nft_id);
 create index index_folder_nft_folder_id on folder_nft (folder_id);
@@ -46,7 +54,9 @@ create table if not exists collection_folder_nft(
     id bigint primary key auto_increment,
     collection_id bigint,
     folder_id bigint,
-    nft_id bigint
+    nft_id bigint,
+    create_time timestamp not null,
+    update_time timestamp not null
 );
 create unique index index_collection_folder_nft_nft_id on collection_folder_nft (nft_id);
 create index index_collection_folder_nft_folder_id on collection_folder_nft (folder_id);
@@ -65,7 +75,9 @@ create table IF NOT EXISTS draft_collection(
     description varchar(1024),
     airdrop_retention int,
     retained_qty int,
-    status int NOT NULL -- 1-drafted, 2-pending, 3-published, 4-suspended
+    status int NOT NULL, -- 1-drafted
+    create_time timestamp not null,
+    update_time timestamp not null
 );
 
 create table if not exists draft_collection_folder_nft(
@@ -73,7 +85,9 @@ create table if not exists draft_collection_folder_nft(
     collection_id bigint,
     folder_id bigint,
     nft_id bigint,
-    nft_status int -- 1-disable, 2-enable
+    nft_status int, -- 1-disable, 2-enable
+    create_time timestamp not null,
+    update_time timestamp not null
 );
 create unique index index_draft_collection_folder_nft_nft_id on draft_collection_folder_nft (nft_id);
 create index index_draft_collection_folder_nft_folder_id on draft_collection_folder_nft (folder_id);

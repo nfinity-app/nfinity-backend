@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 @Getter
 @Setter
@@ -32,4 +33,6 @@ public class DraftCollectionEntity {
     @JsonProperty("retained_qty")
     private int retainedQty;
     private int status;
+    private Timestamp createTime;
+    private Timestamp updateTime;
 }
