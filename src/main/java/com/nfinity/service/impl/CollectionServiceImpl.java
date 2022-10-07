@@ -208,7 +208,7 @@ public class CollectionServiceImpl implements CollectionService {
     public String getGasFee(GasFeeInputVO vo) {
         BigDecimal gasPrice = new BigDecimal("5000000000");
         BigDecimal gasLimit = new BigDecimal("5000000");
-        BigDecimal gasFee = gasPrice.multiply(gasLimit).divide(new BigDecimal("1000000000000000000"), RoundingMode.HALF_UP);
+        BigDecimal gasFee = gasPrice.multiply(gasLimit).divide(new BigDecimal("1000000000000000000"), 10, RoundingMode.HALF_UP);
         return gasFee.stripTrailingZeros().toPlainString();
     }
 }
