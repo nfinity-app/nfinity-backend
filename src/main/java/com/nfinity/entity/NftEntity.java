@@ -15,7 +15,7 @@ public class NftEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String path;
-    private int status;
+    private int mintStatus;
     private Timestamp createTime;
     private Timestamp updateTime;
 }

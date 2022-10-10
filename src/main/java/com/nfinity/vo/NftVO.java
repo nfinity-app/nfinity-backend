@@ -1,5 +1,6 @@
 package com.nfinity.vo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -13,4 +14,6 @@ public class NftVO {
     private String path;
     @NotNull
     private Integer status;
+    @JsonProperty("mint_status")
+    private Integer mintStatus;
 }

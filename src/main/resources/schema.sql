@@ -27,6 +27,7 @@ create table if not exists folder(
     id bigint PRIMARY KEY AUTO_INCREMENT,
     name varchar(64) not null,
     icon varchar(1024) not null,
+    mint_status int not null, -- 1-unminted, 2-minted
     create_time timestamp not null,
     update_time timestamp not null
 );
@@ -34,7 +35,7 @@ create table if not exists folder(
 create table if not exists nft(
     id bigint PRIMARY KEY AUTO_INCREMENT,
     path varchar(1024) not null,
-    status int not null, -- 1-disable, 2-enable
+    mint_status int not null, -- 1-unminted, 2-minted
     create_time timestamp not null,
     update_time timestamp not null
 );
@@ -55,6 +56,7 @@ create table if not exists collection_folder_nft(
     collection_id bigint,
     folder_id bigint,
     nft_id bigint,
+    nft_status int not null, -- 1-disable, 2-enable
     create_time timestamp not null,
     update_time timestamp not null
 );

@@ -3,6 +3,7 @@ package com.nfinity.service.impl;
 import com.nfinity.entity.FolderEntity;
 import com.nfinity.entity.FolderNftEntity;
 import com.nfinity.entity.NftEntity;
+import com.nfinity.enums.MintStatus;
 import com.nfinity.repository.FolderNftRepository;
 import com.nfinity.repository.FolderRepository;
 import com.nfinity.repository.NftRepository;
@@ -34,6 +35,7 @@ public class FolderServiceImpl implements FolderService {
         FolderEntity folderEntity = new FolderEntity();
         folderEntity.setName(folderInputVO.getFolderName());
         folderEntity.setIcon(folderInputVO.getRecords().get(0).getPath());
+        folderEntity.setMintStatus(MintStatus.UNMINTED.getValue());
         folderEntity.setCreateTime(timestamp);
         folderEntity.setUpdateTime(timestamp);
 
@@ -44,7 +46,6 @@ public class FolderServiceImpl implements FolderService {
         for(NftVO vo : folderInputVO.getRecords()){
             FolderNftEntity folderNftEntity = folderNftRepository.findByNftId(vo.getId());
             folderNftEntity.setFolderId(folderId);
-            folderNftEntity.setCreateTime(timestamp);
             folderNftEntity.setUpdateTime(timestamp);
             folderNftEntityList.add(folderNftEntity);
         }

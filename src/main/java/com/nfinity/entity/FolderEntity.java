@@ -16,6 +16,7 @@ public class FolderEntity {
     private Long id;
     private String name;
     private String icon;
+    private int mintStatus;
     private Timestamp createTime;
     private Timestamp updateTime;
 }

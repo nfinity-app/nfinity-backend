@@ -8,7 +8,7 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.nfinity.aws.S3Util;
 import com.nfinity.entity.FolderNftEntity;
 import com.nfinity.entity.NftEntity;
-import com.nfinity.enums.Status;
+import com.nfinity.enums.MintStatus;
 import com.nfinity.repository.FolderNftRepository;
 import com.nfinity.repository.NftRepository;
 import com.nfinity.service.NftService;
@@ -95,7 +95,7 @@ public class NftServiceImpl implements NftService {
 
                 NftEntity nftEntity = new NftEntity();
                 nftEntity.setPath(S3_FILE_PATH + bucketName + File.separator + key);
-                nftEntity.setStatus(Status.ENABLE.getValue());
+                nftEntity.setMintStatus(MintStatus.UNMINTED.getValue());
                 nftEntity.setCreateTime(timestamp);
                 nftEntity.setUpdateTime(timestamp);
 
