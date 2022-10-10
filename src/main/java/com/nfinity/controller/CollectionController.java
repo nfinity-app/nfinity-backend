@@ -38,9 +38,9 @@ public class CollectionController {
     }
 
     @GetMapping("/collection/gas-fee")
-    public Result<String> getGasFee(@RequestBody GasFeeInputVO vo){
+    public Result<String> getGasFee(@RequestParam(name = "chain_type")String chainType, @RequestParam(name = "tx_type") Integer txType){
         try {
-            String gasFee = collectionService.getGasFee(vo);
+            String gasFee = collectionService.getGasFee(chainType, txType);
             return Result.succeed(ErrorCode.OK, gasFee);
         }catch (Exception e){
             log.error("get gas fee error.", e);

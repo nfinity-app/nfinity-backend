@@ -15,5 +15,5 @@ public interface CollectionService {
 
     DraftCollectionVO getDraftCollectionDetail(Long collectionId);
 
-    String getGasFee(GasFeeInputVO vo);
+    String getGasFee(String chainType, Integer txType);
 }

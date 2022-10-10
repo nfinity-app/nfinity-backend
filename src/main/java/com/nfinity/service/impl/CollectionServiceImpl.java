@@ -236,11 +236,10 @@ public class CollectionServiceImpl implements CollectionService {
 
     /**
      * fixed gas fee
-     * @param vo input vo
      * @return gas fee
      */
     @Override
-    public String getGasFee(GasFeeInputVO vo) {
+    public String getGasFee(String chainType, Integer txType) {
         BigDecimal gasPrice = new BigDecimal("5000000000");
         BigDecimal gasLimit = new BigDecimal("5000000");
         BigDecimal gasFee = gasPrice.multiply(gasLimit).divide(new BigDecimal("1000000000000000000"), 10, RoundingMode.HALF_UP);
