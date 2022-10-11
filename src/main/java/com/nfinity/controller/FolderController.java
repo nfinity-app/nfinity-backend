@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @Slf4j
 @RestController
 @RequestMapping("/nft-business/v1")
@@ -16,7 +18,7 @@ public class FolderController {
     private final FolderService folderService;
 
     @PostMapping("/folder/nfts")
-    public Result<Long> createFolderWithNfts(@RequestBody FolderCreationInputVO folderInputVO){
+    public Result<Long> createFolderWithNfts(@Valid @RequestBody FolderCreationInputVO folderInputVO){
         try {
             Long folderId = folderService.createFolderWithNfts(folderInputVO);
             return Result.succeed(ErrorCode.OK, folderId);
@@ -39,7 +41,7 @@ public class FolderController {
     }
 
     @DeleteMapping("/folders")
-    public Result<Integer> deleteFolders(@RequestBody FolderDeletionInputVO folderDeletionInputVO){
+    public Result<Integer> deleteFolders(@Valid @RequestBody FolderDeletionInputVO folderDeletionInputVO){
         try {
             int count = folderService.deleteFolders(folderDeletionInputVO);
             return Result.succeed(ErrorCode.OK, count);
@@ -62,7 +64,7 @@ public class FolderController {
     }
 
     @DeleteMapping("/folders/{id}/nfts")
-    public Result<Integer> deleteFolderNfts(@PathVariable("id") Long folderId, @RequestBody NftsInputVO nftDeletionInputVO){
+    public Result<Integer> deleteFolderNfts(@PathVariable("id") Long folderId, @Valid @RequestBody NftsInputVO nftDeletionInputVO){
         try {
             int count = folderService.deleteFolderNfts(folderId, nftDeletionInputVO);
             return Result.succeed(ErrorCode.OK, count);
@@ -73,7 +75,7 @@ public class FolderController {
     }
 
     @PostMapping("/folders/{id}/nfts")
-    public Result<Integer> addNftsToFolder(@PathVariable("id") Long folderId, @RequestBody NftsInputVO nftsInputVO){
+    public Result<Integer> addNftsToFolder(@PathVariable("id") Long folderId, @Valid @RequestBody NftsInputVO nftsInputVO){
         try {
             int count = folderService.addNftsToFolder(folderId, nftsInputVO);
             return Result.succeed(ErrorCode.OK, count);

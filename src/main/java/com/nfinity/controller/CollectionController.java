@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @Slf4j
 @RestController
 @RequestMapping("/nft-business/v1")
@@ -27,7 +29,7 @@ public class CollectionController {
     }
 
     @PostMapping("/collection")
-    public Result<Long> createCollection(@RequestBody CollectionInputVO collectionRequestVO){
+    public Result<Long> createCollection(@Valid @RequestBody CollectionInputVO collectionRequestVO){
         try {
             Long collectionId = collectionService.createCollection(collectionRequestVO);
             return Result.succeed(ErrorCode.OK, collectionId);

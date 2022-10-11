@@ -68,7 +68,7 @@ public class CollectionServiceImpl implements CollectionService {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         //1. save data to table collection, and get collection id
         CollectionEntity collectionEntity = new CollectionEntity();
-        BeanUtils.copyProperties(vo, collectionEntity);
+        BeanUtils.copyProperties(vo, collectionEntity, BeansUtil.getNullFields(vo));
         collectionEntity.setName(vo.getCollectionName());
         collectionEntity.setIcon(vo.getRecords().get(0).getPath());
         collectionEntity.setAddress("");

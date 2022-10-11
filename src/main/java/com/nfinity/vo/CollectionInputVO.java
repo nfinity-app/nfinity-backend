@@ -44,7 +44,6 @@ public class CollectionInputVO {
     @JsonProperty("airdrop_retention")
     private Integer airdropRetention;
 
-    @NotNull
     @JsonProperty("retained_qty")
     private Integer retainedQty;
 
