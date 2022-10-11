@@ -4,6 +4,7 @@ import com.nfinity.entity.*;
 import com.nfinity.enums.ContractStatus;
 import com.nfinity.enums.DisplayStatus;
 import com.nfinity.enums.MintStatus;
+import com.nfinity.enums.Status;
 import com.nfinity.repository.*;
 import com.nfinity.service.CollectionService;
 import com.nfinity.util.BeansUtil;
@@ -83,15 +84,16 @@ public class CollectionServiceImpl implements CollectionService {
         List<CollectionFolderNftEntity> collectionFolderNftEntityList = new ArrayList<>();
         for(NftVO nftVO: vo.getRecords()) {
             //2. save data to table collection_folder_nft
-            CollectionFolderNftEntity collectionFolderNftEntity = new CollectionFolderNftEntity();
-            collectionFolderNftEntity.setCollectionId(collectionId);
-            collectionFolderNftEntity.setFolderId(vo.getFolderId());
-            collectionFolderNftEntity.setNftId(nftVO.getId());
-            collectionFolderNftEntity.setNftStatus(nftVO.getStatus());
-            collectionFolderNftEntity.setCreateTime(timestamp);
-            collectionFolderNftEntity.setUpdateTime(timestamp);
-            collectionFolderNftEntityList.add(collectionFolderNftEntity);
-
+            if(Status.ENABLE.getValue() == nftVO.getStatus()) {
+                CollectionFolderNftEntity collectionFolderNftEntity = new CollectionFolderNftEntity();
+                collectionFolderNftEntity.setCollectionId(collectionId);
+                collectionFolderNftEntity.setFolderId(vo.getFolderId());
+                collectionFolderNftEntity.setNftId(nftVO.getId());
+                collectionFolderNftEntity.setNftStatus(nftVO.getStatus());
+                collectionFolderNftEntity.setCreateTime(timestamp);
+                collectionFolderNftEntity.setUpdateTime(timestamp);
+                collectionFolderNftEntityList.add(collectionFolderNftEntity);
+            }
 
             //3. update mint status from unminted to minted in the table nft
             Optional<NftEntity> nftEntityOptional = nftRepository.findById(nftVO.getId());
