@@ -16,5 +16,7 @@ aws:
   s3:
     bucket:
       name: nft.business.bucket.test
+
 aes:
-  key: O6LuPj0YAlmu5oaLeo/9Zw==
+  secret:
+    key: QYkZPA1SiXLgFb8d2iIPUMMKPYljnfgRhwGOk2depVc=
