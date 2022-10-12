@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Long login(UserVO vo) throws CryptorException {
-        if(StringUtils.isBlank(vo.getEmail()) && StringUtils.isBlank(vo.getUserName())){
+        if(StringUtils.isBlank(vo.getEmail()) || StringUtils.isBlank(vo.getUserName())){
             throw new BusinessException("The email or user name is empty");
         }
         UserEntity userEntity = userRepository.findByEmailOrUserName(vo.getEmail(), vo.getUserName());
