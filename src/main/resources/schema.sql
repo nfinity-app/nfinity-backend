@@ -94,3 +94,16 @@ create table if not exists draft_collection_folder_nft(
 create unique index index_draft_collection_folder_nft_nft_id on draft_collection_folder_nft (nft_id);
 create index index_draft_collection_folder_nft_folder_id on draft_collection_folder_nft (folder_id);
 create index index_draft_collection_folder_nft_collection_id on draft_collection_folder_nft (collection_id);
+
+create table if not exists user
+(
+    id bigint primary key auto_increment,
+    email varchar(64) not null,
+    user_name varchar(64),
+    password varchar(128) not null,
+    telephone varchar(64),
+    create_time timestamp not null,
+    update_time timestamp not null
+);
+create unique index index_user_email on user (email);
+create unique index index_user_user_name on user (user_name);

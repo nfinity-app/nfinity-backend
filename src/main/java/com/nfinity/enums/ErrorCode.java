@@ -7,7 +7,8 @@ import org.apache.http.HttpStatus;
 public enum ErrorCode {
     OK(HttpStatus.SC_OK, "ok"),
     ERROR(HttpStatus.SC_BAD_REQUEST, "bad request"),
-    NOT_FOUND(HttpStatus.SC_NOT_FOUND, "not found");
+    NOT_FOUND(HttpStatus.SC_NOT_FOUND, "not found"),
+    CONFLICT(HttpStatus.SC_CONFLICT, "conflict");
 
     private final int code;
     private final String message;
