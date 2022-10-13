@@ -7,13 +7,11 @@ public interface CollectionService {
 
     Long createCollection(CollectionInputVO vo);
 
-    CollectionOutputVO getCollectionDetail(Long collectionId);
+    CollectionDetailOutputVO getCollectionDetail(Long collectionId);
 
-    int editCollectionDetail(Long collectionId, CollectionDetailVO vo);
+    int editCollectionDetail(Long collectionId, CollectionDetailInputVO vo);
 
     Long saveDraftCollection(DraftCollectionVO vo);
-
-    DraftCollectionVO getDraftCollectionDetail(Long collectionId);
 
     String getGasFee(String chainType, Integer txType);
 }

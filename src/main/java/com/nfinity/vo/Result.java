@@ -1,34 +1,35 @@
 package com.nfinity.vo;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.nfinity.enums.ErrorCode;
 import lombok.Data;
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Result<T> {
     private int code;
     private String message;
     private T data;
 
-    public Result(int code, String message, T data) {
-        this.code = code;
-        this.message = message;
-        this.data = data;
-    }
-
-    public Result(int code, String message) {
-        this.code = code;
-        this.message = message;
-    }
-
     public static <T> Result<T> fail(ErrorCode errorCode){
-        return new Result<>(errorCode.getCode(), errorCode.getMessage());
+        Result<T> result = new Result<>();
+        result.setCode(errorCode.getCode());
+        result.setMessage(errorCode.getMessage());
+        return result;
     }
 
     public static <T> Result<T> fail(int code, String message){
-        return new Result<>(code, message);
+        Result<T> result = new Result<>();
+        result.setCode(code);
+        result.setMessage(message);
+        return result;
     }
 
     public static <T> Result<T> succeed(ErrorCode errorCode, T data){
-        return new Result<>(errorCode.getCode(), errorCode.getMessage(), data);
+        Result<T> result = new Result<>();
+        result.setCode(errorCode.getCode());
+        result.setMessage(errorCode.getMessage());
+        result.setData(data);
+        return result;
     }
 }

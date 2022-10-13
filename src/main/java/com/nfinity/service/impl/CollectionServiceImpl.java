@@ -26,8 +26,6 @@ import java.util.*;
 public class CollectionServiceImpl implements CollectionService {
     private final CollectionRepository collectionRepository;
     private final CollectionFolderNftRepository collectionFolderNftRepository;
-    private final DraftCollectionRepository draftCollectionRepository;
-    private final DraftCollectionFolderNftRepository draftCollectionFolderNftRepository;
     private final FolderRepository folderRepository;
     private final NftRepository nftRepository;
     private final ChainNftContractRepository chainNftContractRepository;
@@ -117,26 +115,7 @@ public class CollectionServiceImpl implements CollectionService {
     }
 
     @Override
-    public CollectionOutputVO getCollectionDetail(Long collectionId) {
-        Optional<CollectionEntity> optional = collectionRepository.findById(collectionId);
-        CollectionOutputVO collectionOutputVO = new CollectionOutputVO();
-        if(optional.isPresent()){
-            CollectionEntity collectionEntity = optional.get();
-            BeanUtils.copyProperties(collectionEntity, collectionOutputVO);
-        }
-
-        ChainNftContractEntity chainNftContractEntity = chainNftContractRepository.findByCollectionId(collectionId);
-        if(Objects.nonNull(chainNftContractEntity)) {
-            collectionOutputVO.setRevenue(chainNftContractEntity.getProfit());
-            collectionOutputVO.setAddress(chainNftContractEntity.getContractAddr());
-            collectionOutputVO.setMintedQty((int) chainNftContractEntity.getMintNum());
-        }
-
-        return collectionOutputVO;
-    }
-
-    @Override
-    public int editCollectionDetail(Long collectionId, CollectionDetailVO vo) {
+    public int editCollectionDetail(Long collectionId, CollectionDetailInputVO vo) {
         Optional<CollectionEntity> optional = collectionRepository.findById(collectionId);
         if(optional.isEmpty()){
             return 0;
@@ -163,59 +142,70 @@ public class CollectionServiceImpl implements CollectionService {
     @Transactional
     public Long saveDraftCollection(DraftCollectionVO vo) {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        DraftCollectionEntity entity = new DraftCollectionEntity();
-        BeanUtils.copyProperties(vo, entity, BeansUtil.getNullFields(vo));
-        entity.setName(vo.getCollectionName());
-        entity.setStatus(DisplayStatus.DRAFTED.getValue());
-        entity.setCreateTime(timestamp);
-        entity.setUpdateTime(timestamp);
+        CollectionEntity collectionEntity = new CollectionEntity();
+        BeanUtils.copyProperties(vo, collectionEntity, BeansUtil.getNullFields(vo));
+        collectionEntity.setName(vo.getCollectionName());
+        collectionEntity.setStatus(DisplayStatus.DRAFTED.getValue());
+        collectionEntity.setCreateTime(timestamp);
+        collectionEntity.setUpdateTime(timestamp);
 
-        Long collectionId = draftCollectionRepository.save(entity).getId();
+        Long collectionId = collectionRepository.save(collectionEntity).getId();
 
         if(!CollectionUtils.isEmpty(vo.getRecords())){
-            List<DraftCollectionFolderNftEntity> nftEntityList = new ArrayList<>();
+            List<CollectionFolderNftEntity> entityList = new ArrayList<>();
             for(NftVO nftVO : vo.getRecords()){
-                DraftCollectionFolderNftEntity nftEntity = new DraftCollectionFolderNftEntity();
-                nftEntity.setCollectionId(collectionId);
-                nftEntity.setFolderId(vo.getFolderId());
-                nftEntity.setNftId(nftVO.getId());
-                nftEntity.setNftStatus(nftVO.getStatus());
-                nftEntity.setCreateTime(timestamp);
-                nftEntity.setUpdateTime(timestamp);
-                nftEntityList.add(nftEntity);
+                CollectionFolderNftEntity entity = new CollectionFolderNftEntity();
+                entity.setCollectionId(collectionId);
+                entity.setFolderId(vo.getFolderId());
+                entity.setNftId(nftVO.getId());
+                entity.setNftStatus(nftVO.getStatus());
+                entity.setCreateTime(timestamp);
+                entity.setUpdateTime(timestamp);
+                entityList.add(entity);
             }
-            draftCollectionFolderNftRepository.saveAll(nftEntityList);
+            collectionFolderNftRepository.saveAll(entityList);
         }
 
         return collectionId;
     }
 
     @Override
-    public DraftCollectionVO getDraftCollectionDetail(Long collectionId) {
-        DraftCollectionVO draftCollectionVO = new DraftCollectionVO();
+    public CollectionDetailOutputVO getCollectionDetail(Long collectionId) {
+        CollectionDetailOutputVO collectionVO = new CollectionDetailOutputVO();
 
-        DraftCollectionEntity draftCollectionEntity;
-        Optional<DraftCollectionEntity> optional = draftCollectionRepository.findById(collectionId);
+        //1. get data from table collection
+        Optional<CollectionEntity> optional = collectionRepository.findById(collectionId);
         if(optional.isPresent()){
-            draftCollectionEntity = optional.get();
-            BeanUtils.copyProperties(draftCollectionEntity, draftCollectionVO, BeansUtil.getNullFields(draftCollectionEntity));
-            draftCollectionVO.setCollectionName(draftCollectionEntity.getName());
+            CollectionEntity collectionEntity = optional.get();
+            BeanUtils.copyProperties(collectionEntity, collectionVO, BeansUtil.getNullFields(collectionEntity));
+            collectionVO.setCollectionName(collectionEntity.getName());
         }
 
-        List<DraftCollectionFolderNftEntity> draftNftEntityList = draftCollectionFolderNftRepository.findAllByCollectionId(collectionId);
-        //one collection corresponds to only one folder
-        if(!CollectionUtils.isEmpty(draftNftEntityList)) {
-            Long folderId = draftNftEntityList.get(0).getFolderId();
-            draftCollectionVO.setFolderId(folderId);
+        //2. get data from chain_nft_contract
+        ChainNftContractEntity chainNftContractEntity = chainNftContractRepository.findByCollectionId(collectionId);
+        if(Objects.nonNull(chainNftContractEntity)) {
+            collectionVO.setRevenue(chainNftContractEntity.getProfit());
+            collectionVO.setAddress(chainNftContractEntity.getContractAddr());
+            collectionVO.setMintedQty((int) chainNftContractEntity.getMintNum());
+        }
 
+        //3. get data from table collection_folder_nft
+        List<CollectionFolderNftEntity> entityList = collectionFolderNftRepository.findAllByCollectionId(collectionId);
+        //one collection corresponds to only one folder
+        if(!CollectionUtils.isEmpty(entityList)) {
+            Long folderId = entityList.get(0).getFolderId();
+            collectionVO.setFolderId(folderId);
+
+            //4. get data from table folder
             Optional<FolderEntity> folderEntityOptional = folderRepository.findById(folderId);
             if(folderEntityOptional.isPresent()) {
                 String folderName = folderEntityOptional.get().getName();
-                draftCollectionVO.setFolderName(folderName);
+                collectionVO.setFolderName(folderName);
             }
 
-            List<NftVO> nftVOList = new ArrayList<>(draftNftEntityList.size());
-            for (DraftCollectionFolderNftEntity entity : draftNftEntityList) {
+            //5. get data from table nft
+            List<NftVO> nftVOList = new ArrayList<>(entityList.size());
+            for (CollectionFolderNftEntity entity : entityList) {
                 NftVO vo = new NftVO();
                 Long nftId = entity.getNftId();
                 vo.setId(nftId);
@@ -230,10 +220,10 @@ public class CollectionServiceImpl implements CollectionService {
                 vo.setStatus(nftStatus);
                 nftVOList.add(vo);
             }
-            draftCollectionVO.setRecords(nftVOList);
+            collectionVO.setRecords(nftVOList);
         }
 
-        return draftCollectionVO;
+        return collectionVO;
     }
 
     /**

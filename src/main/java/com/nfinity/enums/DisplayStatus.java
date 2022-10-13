@@ -9,7 +9,8 @@ public enum DisplayStatus {
     DRAFTED(1),
     PENDING(2),
     PUBLISHED(3),
-    SUSPENDED(4);
+    SUSPENDED(4),
+    FAILED(5);
 
     private final int value;
 }

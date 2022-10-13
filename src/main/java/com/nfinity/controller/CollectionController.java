@@ -50,19 +50,8 @@ public class CollectionController {
         }
     }
 
-    @GetMapping("/collections/{id}")
-    public Result<CollectionOutputVO> getCollectionDetail(@PathVariable("id") Long collectionId){
-        try {
-            CollectionOutputVO collectionOutputVO = collectionService.getCollectionDetail(collectionId);
-            return Result.succeed(ErrorCode.OK, collectionOutputVO);
-        }catch (Exception e){
-            log.error("get collection detail error.", e);
-            return Result.fail(ErrorCode.ERROR);
-        }
-    }
-
     @PatchMapping("/collections/{id}")
-    public Result<Integer> editCollectionDetail(@PathVariable("id") Long collectionId, @RequestBody CollectionDetailVO vo){
+    public Result<Integer> editCollectionDetail(@PathVariable("id") Long collectionId, @RequestBody CollectionDetailInputVO vo){
         try {
             int count = collectionService.editCollectionDetail(collectionId, vo);
             return Result.succeed(ErrorCode.OK, count);
@@ -83,11 +72,11 @@ public class CollectionController {
         }
     }
 
-    @GetMapping("/collections/draft/{id}")
-    public Result<DraftCollectionVO> getDraftCollectionDetail(@PathVariable("id") Long collectionId){
+    @GetMapping("/collections/{id}")
+    public Result<CollectionDetailOutputVO> getDraftCollectionDetail(@PathVariable("id") Long collectionId){
         try {
-            DraftCollectionVO draftCollectionVO = collectionService.getDraftCollectionDetail(collectionId);
-            return Result.succeed(ErrorCode.OK, draftCollectionVO);
+            CollectionDetailOutputVO collectionVO = collectionService.getCollectionDetail(collectionId);
+            return Result.succeed(ErrorCode.OK, collectionVO);
         }catch (Exception e){
             log.error("get draft collection detail error.", e);
             return Result.fail(ErrorCode.ERROR);

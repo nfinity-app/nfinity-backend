@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-public class CollectionDetailVO {
+public class CollectionDetailInputVO {
     @JsonProperty("mint_price")
     private BigDecimal mintPrice;
 
