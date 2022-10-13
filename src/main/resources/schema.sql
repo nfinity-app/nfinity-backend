@@ -17,7 +17,7 @@ create table IF NOT EXISTS collection(
     revenue decimal,
     address varchar(128),
     minted_qty int,
-    status int NOT NULL, -- 1-drafted, 2-pending, 3-published, 4-suspended
+    status int NOT NULL, -- 1-drafted, 2-pending, 3-published, 4-suspended, 5-failed
     contract_status int, -- 1-init, 2-pending, 3-published, 4-failed
     create_time timestamp not null,
     update_time timestamp not null
@@ -63,37 +63,6 @@ create table if not exists collection_folder_nft(
 create index index_collection_folder_nft_nft_id on collection_folder_nft (nft_id);
 create index index_collection_folder_nft_folder_id on collection_folder_nft (folder_id);
 create index index_collection_folder_nft_collection_id on collection_folder_nft (collection_id);
-
-# create table IF NOT EXISTS draft_collection(
-#     id bigint PRIMARY KEY AUTO_INCREMENT,
-#     name varchar(64),
-#     icon varchar(1024),
-#     category int not null,
-#     domain_name varchar(128),
-#     contract_chain varchar(128),
-#     symbol varchar(32) ,
-#     total_supply int,
-#     mint_price decimal,
-#     description varchar(1024),
-#     airdrop_retention int,
-#     retained_qty int,
-#     status int NOT NULL, -- 1-drafted
-#     create_time timestamp not null,
-#     update_time timestamp not null
-# );
-#
-# create table if not exists draft_collection_folder_nft(
-#     id bigint primary key auto_increment,
-#     collection_id bigint,
-#     folder_id bigint,
-#     nft_id bigint,
-#     nft_status int, -- 1-disable, 2-enable
-#     create_time timestamp not null,
-#     update_time timestamp not null
-# );
-# create unique index index_draft_collection_folder_nft_nft_id on draft_collection_folder_nft (nft_id);
-# create index index_draft_collection_folder_nft_folder_id on draft_collection_folder_nft (folder_id);
-# create index index_draft_collection_folder_nft_collection_id on draft_collection_folder_nft (collection_id);
 
 create table if not exists user
 (
