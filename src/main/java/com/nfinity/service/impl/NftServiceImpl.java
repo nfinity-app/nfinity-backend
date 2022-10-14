@@ -24,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -42,13 +41,13 @@ public class NftServiceImpl implements NftService {
     private final S3Util s3Util;
 
     @Override
-    public PageModel<NftVO> uploadNftFiles(List<MultipartFile> multipartFileList) throws IOException {
+    public PageModel<NftVO> uploadNftFiles(List<MultipartFile> multipartFileList) throws Exception {
         String s3Dir = uploadNftFilesToS3(multipartFileList);
         List<S3ObjectSummary> s3ObjectSummaries = listS3Objects();
         return saveNftsToDB(s3ObjectSummaries, s3Dir);
     }
 
-    private String uploadNftFilesToS3(List<MultipartFile> multipartFileList) throws IOException {
+    private String uploadNftFilesToS3(List<MultipartFile> multipartFileList) throws Exception {
         //1. get src files, create src directory
         String srcDir = "s3" + File.separator;
         List<File> files = new ArrayList<>();

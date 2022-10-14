@@ -4,9 +4,8 @@ import com.nfinity.vo.NftVO;
 import com.nfinity.vo.PageModel;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 public interface NftService {
-    PageModel<NftVO> uploadNftFiles(List<MultipartFile> multipartFileList) throws IOException;
+    PageModel<NftVO> uploadNftFiles(List<MultipartFile> multipartFileList) throws Exception;
 }
