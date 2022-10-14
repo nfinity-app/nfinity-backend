@@ -71,6 +71,7 @@ create table if not exists user
     user_name varchar(64),
     password varchar(128) not null,
     telephone varchar(64),
+    address_status int not null, -- 1-disable, 2-enable
     create_time timestamp not null,
     update_time timestamp not null
 );
@@ -110,3 +111,6 @@ drop index index_collection_folder_nft_nft_id on collection_folder_nft;
 
 create index index_collection_folder_nft_nft_id
     on collection_folder_nft (nft_id);
+
+drop table draft_collection;
+drop table draft_collection_folder_nft;

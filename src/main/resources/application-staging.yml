@@ -19,4 +19,7 @@ aws:
 
 aes:
   secret:
-    key: QYkZPA1SiXLgFb8d2iIPUMMKPYljnfgRhwGOk2depVc=
+    key: 2bfde271b18bf9da516386f000cf1fec
+    iv: f6cf862bc0bdeeca
+md5:
+  salt: NfinityMint

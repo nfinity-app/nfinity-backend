@@ -8,7 +8,6 @@ import com.nfinity.service.UserService;
 import com.nfinity.util.AESEncryption;
 import com.nfinity.vo.UserVO;
 import lombok.RequiredArgsConstructor;
-import org.cryptonode.jncryptor.CryptorException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
@@ -22,9 +21,13 @@ import java.util.Objects;
 public class UserServiceImpl implements UserService {
     @Value("${aes.secret.key}")
     private String aesKey;
+    @Value("${aes.secret.iv}")
+    private String aesIv;
+    @Value("${md5.salt}")
+    private String md5Salt;
     private final UserRepository userRepository;
     @Override
-    public Long register(UserVO vo) throws CryptorException {
+    public Long register(UserVO vo) throws Exception {
         UserEntity userEntity = userRepository.findByEmail(vo.getEmail());
 
         if(Objects.isNull(userEntity)){
@@ -41,7 +44,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Long login(UserVO vo) throws CryptorException {
+    public Long login(UserVO vo) throws Exception {
         UserEntity userEntity = userRepository.findByEmailOrUserName(vo.getEmail(), vo.getUserName());
 
         if(Objects.isNull(userEntity)){
@@ -56,8 +59,8 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private String getMd5Password(String password) throws CryptorException {
-        String decodedPassword = AESEncryption.decrypt(password, aesKey);
-        return DigestUtils.md5DigestAsHex(decodedPassword.getBytes(StandardCharsets.UTF_8));
+    private String getMd5Password(String password) throws Exception {
+        String decodedPassword = AESEncryption.decrypt(password, aesKey, aesIv);
+        return DigestUtils.md5DigestAsHex((decodedPassword + md5Salt).getBytes(StandardCharsets.UTF_8));
     }
 }

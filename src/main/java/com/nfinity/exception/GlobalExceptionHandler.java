@@ -2,6 +2,7 @@ package com.nfinity.exception;
 
 import com.nfinity.enums.ErrorCode;
 import com.nfinity.vo.Result;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
@@ -34,6 +36,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = Exception.class)
     public <T> Result<T> handleCommonException(Exception e){
+        log.error("common exception", e);
         return Result.fail(ErrorCode.SERVER_ERROR.getCode(), e.getMessage());
     }
 }
