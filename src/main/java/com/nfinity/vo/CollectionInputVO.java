@@ -12,6 +12,8 @@ import java.util.List;
 
 @Data
 public class CollectionInputVO {
+    private Long id;
+
     @NotBlank
     @JsonProperty("collection_name")
     private String collectionName;

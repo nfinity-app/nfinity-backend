@@ -10,11 +10,11 @@ create table IF NOT EXISTS collection(
     contract_chain varchar(128),
     symbol varchar(32),
     total_supply int,
-    mint_price decimal,
+    mint_price decimal(40, 18),
     description varchar(1024),
     airdrop_retention int,
     retained_qty int,
-    revenue decimal,
+    revenue decimal(40, 18),
     address varchar(128),
     minted_qty int,
     status int NOT NULL, -- 1-drafted, 2-pending, 3-published, 4-suspended, 5-failed
@@ -78,39 +78,5 @@ create table if not exists user
 create unique index index_user_email on user (email);
 create unique index index_user_user_name on user (user_name);
 
-alter table collection
-    modify name varchar(64) null;
-alter table collection
-    modify icon varchar(1024) null;
-alter table collection
-    modify category int null;
-alter table collection
-    modify domain_name varchar(128) null;
-alter table collection
-    modify contract_chain varchar(128) null;
-alter table collection
-    modify symbol varchar(32) null;
-alter table collection
-    modify total_supply int null;
-alter table collection
-    modify mint_price decimal null;
-alter table collection
-    modify description varchar(1024) null;
-alter table collection
-    modify airdrop_retention int null;
-alter table collection
-    modify revenue decimal null;
-alter table collection
-    modify address varchar(128) null;
-alter table collection
-    modify minted_qty int null;
-alter table collection
-    modify contract_status int null;
-
-drop index index_collection_folder_nft_nft_id on collection_folder_nft;
-
-create index index_collection_folder_nft_nft_id
-    on collection_folder_nft (nft_id);
-
-drop table draft_collection;
-drop table draft_collection_folder_nft;
+alter table collection modify revenue decimal(40, 18) null;
+alter table collection modify mint_price decimal(40, 18) null;
