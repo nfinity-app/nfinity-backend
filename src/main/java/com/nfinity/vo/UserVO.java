@@ -1,6 +1,5 @@
 package com.nfinity.vo;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,12 +9,21 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 public class UserVO {
+    private Long id;
 
-    @JsonProperty("user_name")
-    private String userName;
+    @NotBlank
     private String email;
+
+    @NotBlank
+    private String username;
+
     @NotBlank
     private String password;
+
+    private String photo;
+
+    private String telephone;
+
     @NotNull
     private Integer type;
 }

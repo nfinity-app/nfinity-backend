@@ -68,9 +68,11 @@ create table if not exists user
 (
     id bigint primary key auto_increment,
     email varchar(64) not null,
-    user_name varchar(64),
+    username varchar(64),
     password varchar(128) not null,
     telephone varchar(64),
+    photo varchar(1024),
+    status int not null comment '1-disable, 2-enable',
     address_status int not null, -- 1-disable, 2-enable
     create_time timestamp not null,
     update_time timestamp not null

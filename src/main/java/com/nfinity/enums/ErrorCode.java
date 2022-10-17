@@ -10,6 +10,7 @@ public enum ErrorCode {
     NOT_FOUND(HttpStatus.SC_NOT_FOUND, "not found"),
     CONFLICT(HttpStatus.SC_CONFLICT, "conflict"),
     UNAUTHORIZED(HttpStatus.SC_UNAUTHORIZED, "unauthorized"),
+    FORBIDDEN(HttpStatus.SC_FORBIDDEN, "forbidden"),
     SERVER_ERROR(HttpStatus.SC_INTERNAL_SERVER_ERROR, "server error"),
     ;
 

@@ -21,7 +21,10 @@ import org.springframework.util.CollectionUtils;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -122,10 +125,10 @@ public class CollectionServiceImpl implements CollectionService {
     }
 
     @Override
-    public int editCollectionDetail(Long collectionId, CollectionDetailInputVO vo) {
+    public Long editCollectionDetail(Long collectionId, CollectionDetailInputVO vo) {
         Optional<CollectionEntity> optional = collectionRepository.findById(collectionId);
         if(optional.isEmpty()){
-            return 0;
+            return null;
         }
         CollectionEntity entity = optional.get();
 
@@ -142,7 +145,7 @@ public class CollectionServiceImpl implements CollectionService {
         entity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
         CollectionEntity updatedEntity = collectionRepository.save(entity);
 
-        return entity.equals(updatedEntity) ? 0 : 1;
+        return updatedEntity.getId();
     }
 
     @Override

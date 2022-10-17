@@ -15,9 +15,12 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String email;
-    private String userName;
+    private String username;
     private String password;
+    private String photo;
     private String telephone;
+    private int status;
+    private int addressStatus;
     private Timestamp createTime;
     private Timestamp updateTime;
 }

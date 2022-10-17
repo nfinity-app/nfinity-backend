@@ -8,10 +8,7 @@ import com.nfinity.vo.UserVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -31,13 +28,20 @@ public class UserController {
             }
             userId = userService.register(vo);
         }else if(LoginType.LOGIN.getValue() == vo.getType()){
-            if(StringUtils.isBlank(vo.getEmail()) || StringUtils.isBlank(vo.getUserName())){
+            if(StringUtils.isBlank(vo.getEmail()) || StringUtils.isBlank(vo.getUsername())){
                 return Result.fail(ErrorCode.ERROR.getCode(), "The email or user name is empty");
             }
             userId = userService.login(vo);
         }else{
             return Result.fail(ErrorCode.ERROR.getCode(), "type is incorrect");
         }
+        return Result.succeed(ErrorCode.OK, userId);
+    }
+
+    @GetMapping("users/{username}/emails/{email}/verification-codes/{code}")
+    public Result<Long> verifyCode(@PathVariable String username, @PathVariable String email,
+                                   @PathVariable String code){
+        Long userId = userService.checkVerificationCode(username, email, code);
         return Result.succeed(ErrorCode.OK, userId);
     }
 }

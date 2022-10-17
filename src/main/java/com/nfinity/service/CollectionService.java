@@ -9,7 +9,7 @@ public interface CollectionService {
 
     CollectionDetailOutputVO getCollectionDetail(Long collectionId);
 
-    int editCollectionDetail(Long collectionId, CollectionDetailInputVO vo);
+    Long editCollectionDetail(Long collectionId, CollectionDetailInputVO vo);
 
     Long saveDraftCollection(DraftCollectionVO vo);
 
