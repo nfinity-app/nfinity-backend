@@ -14,9 +14,6 @@ create table IF NOT EXISTS collection(
     description varchar(1024),
     airdrop_retention int,
     retained_qty int,
-    revenue decimal,
-    address varchar(128),
-    minted_qty int,
     status int NOT NULL, -- 1-drafted, 2-pending, 3-published, 4-suspended, 5-failed
     contract_status int, -- 1-init, 2-pending, 3-published, 4-failed
     create_time timestamp not null,
@@ -27,7 +24,7 @@ create table if not exists folder(
     id bigint PRIMARY KEY AUTO_INCREMENT,
     name varchar(64) not null,
     icon varchar(1024) not null,
-    mint_status int not null, -- 1-unminted, 2-minted
+    mint_status int not null, -- 1-init, 2-deployed
     create_time timestamp not null,
     update_time timestamp not null
 );
@@ -35,7 +32,7 @@ create table if not exists folder(
 create table if not exists nft(
     id bigint PRIMARY KEY AUTO_INCREMENT,
     path varchar(1024) not null,
-    mint_status int not null, -- 1-unminted, 2-minted
+    mint_status int not null comment '1-init, 2-deployed, 3-minting, 4-minted',
     create_time timestamp not null,
     update_time timestamp not null
 );
@@ -56,7 +53,7 @@ create table if not exists collection_folder_nft(
     collection_id bigint,
     folder_id bigint,
     nft_id bigint,
-    nft_status int not null, -- 1-disable, 2-enable
+    nft_status int not null comment '1-disable, 2-enable',
     create_time timestamp not null,
     update_time timestamp not null
 );
@@ -68,49 +65,52 @@ create table if not exists user
 (
     id bigint primary key auto_increment,
     email varchar(64) not null,
-    user_name varchar(64),
+    username varchar(64),
     password varchar(128) not null,
     telephone varchar(64),
     address_status int not null, -- 1-disable, 2-enable
+    vault_id varchar(32) comment 'fireblocks vault id',
     create_time timestamp not null,
     update_time timestamp not null
 );
 create unique index index_user_email on user (email);
-create unique index index_user_user_name on user (user_name);
+create unique index index_user_user_name on user (username);
+
+create table if not exists `order`
+(
+    id bigint primary key auto_increment,
+    collection_id bigint,
+    user_id bigint,
+    payment_id varchar(64),
+    mint_qty int,
+    amount decimal,
+    create_time timestamp,
+    update_time timestamp
+);
+create index index_order_collection_id on `order`(collection_id);
+create index index_order_user_id on `order`(user_id);
+create unique index index_order_payment_id on `order`(payment_id);
+
+create table if not exists order_nft
+(
+    id bigint primary key auto_increment,
+    order_id bigint,
+    user_id bigint,
+    nft_id bigint,
+    token_id bigint,
+    create_time timestamp,
+    update_time timestamp
+);
+create index index_order_nft_order_id on order_nft(order_id);
+create index index_order_nft_nft_id on order_nft(nft_id);
+create index index_order_nft_user_id on order_nft(user_id);
 
 alter table collection
-    modify name varchar(64) null;
-alter table collection
-    modify icon varchar(1024) null;
-alter table collection
-    modify category int null;
-alter table collection
-    modify domain_name varchar(128) null;
-alter table collection
-    modify contract_chain varchar(128) null;
-alter table collection
-    modify symbol varchar(32) null;
-alter table collection
-    modify total_supply int null;
-alter table collection
-    modify mint_price decimal null;
-alter table collection
-    modify description varchar(1024) null;
-alter table collection
-    modify airdrop_retention int null;
-alter table collection
-    modify revenue decimal null;
-alter table collection
-    modify address varchar(128) null;
-alter table collection
-    modify minted_qty int null;
-alter table collection
-    modify contract_status int null;
+    drop column revenue;
 
-drop index index_collection_folder_nft_nft_id on collection_folder_nft;
+alter table collection
+    drop column address;
 
-create index index_collection_folder_nft_nft_id
-    on collection_folder_nft (nft_id);
+alter table collection
+    drop column minted_qty;
 
-drop table draft_collection;
-drop table draft_collection_folder_nft;

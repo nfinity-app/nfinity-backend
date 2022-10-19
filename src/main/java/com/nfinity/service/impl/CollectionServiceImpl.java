@@ -69,9 +69,6 @@ public class CollectionServiceImpl implements CollectionService {
         BeanUtils.copyProperties(vo, collectionEntity, BeansUtil.getNullFields(vo));
         collectionEntity.setName(vo.getCollectionName());
         collectionEntity.setIcon(vo.getRecords().get(0).getPath());
-        collectionEntity.setAddress("");
-        collectionEntity.setRevenue(new BigDecimal(0));
-        collectionEntity.setMintedQty(0);
         collectionEntity.setStatus(DisplayStatus.PENDING.getValue());
         collectionEntity.setContractStatus(ContractStatus.INIT.getValue());
         collectionEntity.setCreateTime(timestamp);
@@ -97,7 +94,7 @@ public class CollectionServiceImpl implements CollectionService {
             Optional<NftEntity> nftEntityOptional = nftRepository.findById(nftVO.getId());
             if(nftEntityOptional.isPresent()){
                 NftEntity nftEntity = nftEntityOptional.get();
-                nftEntity.setMintStatus(MintStatus.MINTED.getValue());
+                nftEntity.setMintStatus(MintStatus.DEPLOYED.getValue());
                 nftRepository.save(nftEntity);
             }
         }
@@ -107,7 +104,7 @@ public class CollectionServiceImpl implements CollectionService {
         Optional<FolderEntity> folderEntityOptional = folderRepository.findById(vo.getFolderId());
         if(folderEntityOptional.isPresent()){
             FolderEntity folderEntity = folderEntityOptional.get();
-            folderEntity.setMintStatus(MintStatus.MINTED.getValue());
+            folderEntity.setMintStatus(MintStatus.DEPLOYED.getValue());
             folderRepository.save(folderEntity);
         }
 

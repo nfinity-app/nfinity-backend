@@ -35,7 +35,7 @@ public class FolderServiceImpl implements FolderService {
         FolderEntity folderEntity = new FolderEntity();
         folderEntity.setName(folderInputVO.getFolderName());
         folderEntity.setIcon(folderInputVO.getRecords().get(0).getPath());
-        folderEntity.setMintStatus(MintStatus.UNMINTED.getValue());
+        folderEntity.setMintStatus(MintStatus.INIT.getValue());
         folderEntity.setCreateTime(timestamp);
         folderEntity.setUpdateTime(timestamp);
 

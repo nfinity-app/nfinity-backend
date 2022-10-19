@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface CollectionFolderNftRepository extends JpaRepository<CollectionFolderNftEntity, Long> {
     List<CollectionFolderNftEntity> findAllByCollectionId(Long collectionId);
+
+    List<CollectionFolderNftEntity> findAllByCollectionIdAndNftStatus(Long collectionId, int nftStatus);
 }

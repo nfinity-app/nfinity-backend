@@ -6,8 +6,11 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum MintStatus {
-    UNMINTED(1),
-    MINTED(2);
+    INIT(1),
+    DEPLOYED(2),
+    MINTING(3),
+    MINTED(4),
+    ;
 
     private final int value;
 }

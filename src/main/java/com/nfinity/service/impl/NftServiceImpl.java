@@ -94,7 +94,7 @@ public class NftServiceImpl implements NftService {
 
                 NftEntity nftEntity = new NftEntity();
                 nftEntity.setPath(S3_FILE_PATH + bucketName + File.separator + key);
-                nftEntity.setMintStatus(MintStatus.UNMINTED.getValue());
+                nftEntity.setMintStatus(MintStatus.INIT.getValue());
                 nftEntity.setCreateTime(timestamp);
                 nftEntity.setUpdateTime(timestamp);
 

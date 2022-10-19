@@ -26,9 +26,6 @@ public class CollectionEntity {
     private String description;
     private int airdropRetention;
     private int retainedQty;
-    private String address;
-    private BigDecimal revenue;
-    private int mintedQty;
     private int status;
     private int contractStatus;
     private Timestamp createTime;

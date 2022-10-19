@@ -11,6 +11,8 @@ public enum ErrorCode {
     CONFLICT(HttpStatus.SC_CONFLICT, "conflict"),
     UNAUTHORIZED(HttpStatus.SC_UNAUTHORIZED, "unauthorized"),
     SERVER_ERROR(HttpStatus.SC_INTERNAL_SERVER_ERROR, "server error"),
+
+    NOT_ENOUGH(100010, "nft is not enough"),
     ;
 
     private final int code;
