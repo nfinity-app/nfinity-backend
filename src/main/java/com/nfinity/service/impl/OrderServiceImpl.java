@@ -42,7 +42,6 @@ public class OrderServiceImpl implements OrderService {
         Long orderId = orderRepository.save(orderEntity).getId();
 
         int mintQty = vo.getMintQty();
-        OrderNftEntity orderNftEntity = new OrderNftEntity();
 
         List<CollectionFolderNftEntity> collectionFolderNftEntityList = collectionFolderNftRepository.findAllByCollectionIdAndNftStatus(vo.getCollectionId(), Status.ENABLE.getValue());
         if(!CollectionUtils.isEmpty(collectionFolderNftEntityList)) {
@@ -55,9 +54,12 @@ public class OrderServiceImpl implements OrderService {
 
                     if(nftEntity.getMintStatus() == MintStatus.INIT.getValue() || nftEntity.getMintStatus() == MintStatus.DEPLOYED.getValue()) {
                         //2. save data to table order_collection_nft
+                        long tokenId = 0;
+                        OrderNftEntity orderNftEntity = new OrderNftEntity();
                         orderNftEntity.setOrderId(orderId);
                         orderNftEntity.setUserId(vo.getUserId());
                         orderNftEntity.setNftId(nftEntity.getId());
+                        orderNftEntity.setTokenId(++tokenId);
                         orderNftEntity.setCreateTime(timestamp);
                         orderNftEntity.setUpdateTime(timestamp);
                         orderNftRepository.save(orderNftEntity);
