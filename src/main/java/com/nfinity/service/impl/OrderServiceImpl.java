@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -117,6 +118,26 @@ public class OrderServiceImpl implements OrderService {
             chainNftContractEntity.setMintNum(mintedQty + vo.getMintQty());
             chainNftContractEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
             chainNftContractRepository.save(chainNftContractEntity);
+        }else{
+            //add data to table chain_nft_contract
+            ChainNftContractEntity addContractEntity = new ChainNftContractEntity();
+            addContractEntity.setMintNum(vo.getMintQty());
+            addContractEntity.setAirdropNum(10);
+            addContractEntity.setAirdropStatus(1);
+            addContractEntity.setBlockNum(1);
+            addContractEntity.setBlockTime(3);
+            addContractEntity.setChainType("1");
+            addContractEntity.setCollectionId(vo.getCollectionId());
+            addContractEntity.setContractAddr("fvsgrjhdbdhrehrt");
+            addContractEntity.setContractType(1);
+            addContractEntity.setFee(BigDecimal.valueOf(0));
+            addContractEntity.setPrice(BigDecimal.valueOf(2.34));
+            addContractEntity.setProfit(BigDecimal.valueOf(3923.32));
+            addContractEntity.setStatus(1);
+            addContractEntity.setTotalNum(1000);
+            addContractEntity.setCreateTime(timestamp);
+            addContractEntity.setUpdateTime(timestamp);
+            chainNftContractRepository.save(addContractEntity);
         }
 
         return orderId;

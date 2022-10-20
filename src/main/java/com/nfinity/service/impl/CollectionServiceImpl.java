@@ -209,8 +209,10 @@ public class CollectionServiceImpl implements CollectionService {
 
                 Optional<NftEntity> nftEntityOptional = nftRepository.findById(nftId);
                 if(nftEntityOptional.isPresent()) {
-                    String path =nftEntityOptional.get().getPath();
+                    String path = nftEntityOptional.get().getPath();
+                    int mintStatus = nftEntityOptional.get().getMintStatus();
                     vo.setPath(path);
+                    vo.setMintStatus(mintStatus);
                 }
 
                 int nftStatus = entity.getNftStatus();
