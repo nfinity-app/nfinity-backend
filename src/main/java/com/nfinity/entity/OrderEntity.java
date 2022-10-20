@@ -20,6 +20,7 @@ public class OrderEntity {
     private String paymentId;
     private int mintQty;
     private BigDecimal amount;
+    private int status;
     private Timestamp createTime;
     private Timestamp updateTime;
 }

@@ -5,12 +5,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
-import java.math.BigDecimal;
 
 @Setter
 @Getter
-public class OrderVO {
-    @NotNull
+public class PreOrderVO {
     private Long id;
 
     @NotNull
@@ -22,16 +20,6 @@ public class OrderVO {
     private Long userId;
 
     @NotNull
-    @JsonProperty("payment_id")
-    private String paymentId;
-
-    @NotNull
     @JsonProperty("mint_qty")
     private Integer mintQty;
-
-    @NotNull
-    private BigDecimal amount;
-
-    @NotNull
-    private Integer status;
 }

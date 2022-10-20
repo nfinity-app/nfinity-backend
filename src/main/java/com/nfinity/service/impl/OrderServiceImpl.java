@@ -1,13 +1,17 @@
 package com.nfinity.service.impl;
 
 import com.nfinity.entity.*;
+import com.nfinity.enums.ErrorCode;
 import com.nfinity.enums.MintStatus;
+import com.nfinity.enums.OrderStatus;
 import com.nfinity.enums.Status;
+import com.nfinity.exception.BusinessException;
 import com.nfinity.repository.*;
 import com.nfinity.service.OrderService;
 import com.nfinity.vo.CollectibleVO;
 import com.nfinity.vo.OrderVO;
 import com.nfinity.vo.PageModel;
+import com.nfinity.vo.PreOrderVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageRequest;
@@ -16,9 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -28,22 +30,54 @@ public class OrderServiceImpl implements OrderService {
     private final OrderNftRepository orderNftRepository;
     private final CollectionFolderNftRepository collectionFolderNftRepository;
     private final NftRepository nftRepository;
+    private final ChainNftContractRepository chainNftContractRepository;
+
+    @Override
+    public Long createPreOrder(PreOrderVO vo) {
+        Long collectionId = vo.getCollectionId();
+        int mintQty = vo.getMintQty();
+
+        int remainingQty = collectionFolderNftRepository.countAllByCollectionIdAndMintStatus(collectionId);
+        if(mintQty < remainingQty){
+            //place a reservation
+            OrderVO orderVO = new OrderVO();
+            BeanUtils.copyProperties(vo, orderVO);
+            return createOrder(orderVO, OrderStatus.UNPAID.getValue());
+        }else{
+            throw new BusinessException(ErrorCode.NOT_ENOUGH);
+        }
+    }
 
     @Override
     @Transactional
-    public Long createOrder(OrderVO vo) {
+    public Long updateOrder(OrderVO vo) {
+        Optional<OrderEntity> optional = orderRepository.findById(vo.getId());
+        if(optional.isPresent()){
+            OrderEntity orderEntity = optional.get();
+            orderEntity.setStatus(vo.getStatus());
+            orderEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+            return orderRepository.save(orderEntity).getId();
+        }else{
+            throw new BusinessException(ErrorCode.NOT_FOUND);
+        }
+    }
+
+    private Long createOrder(OrderVO vo, int orderStatus){
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
         //1. save data to table order
         OrderEntity orderEntity = new OrderEntity();
         BeanUtils.copyProperties(vo, orderEntity);
+        orderEntity.setStatus(orderStatus);
         orderEntity.setCreateTime(timestamp);
         orderEntity.setUpdateTime(timestamp);
         Long orderId = orderRepository.save(orderEntity).getId();
 
         int mintQty = vo.getMintQty();
 
-        List<CollectionFolderNftEntity> collectionFolderNftEntityList = collectionFolderNftRepository.findAllByCollectionIdAndNftStatus(vo.getCollectionId(), Status.ENABLE.getValue());
+        List<CollectionFolderNftEntity> collectionFolderNftEntityList = collectionFolderNftRepository
+                .findAllByCollectionIdAndNftStatus(vo.getCollectionId(), Status.ENABLE.getValue());
+
         if(!CollectionUtils.isEmpty(collectionFolderNftEntityList)) {
             int size = collectionFolderNftEntityList.size();
             for (int i = 0; i < size && mintQty > 0; i++) {
@@ -52,14 +86,16 @@ public class OrderServiceImpl implements OrderService {
                 if(optional.isPresent()){
                     NftEntity nftEntity = optional.get();
 
-                    if(nftEntity.getMintStatus() == MintStatus.INIT.getValue() || nftEntity.getMintStatus() == MintStatus.DEPLOYED.getValue()) {
+                    if(nftEntity.getMintStatus() == MintStatus.DEPLOYED.getValue()) {
                         //2. save data to table order_collection_nft
-                        long tokenId = 0;
                         OrderNftEntity orderNftEntity = new OrderNftEntity();
                         orderNftEntity.setOrderId(orderId);
                         orderNftEntity.setUserId(vo.getUserId());
                         orderNftEntity.setNftId(nftEntity.getId());
-                        orderNftEntity.setTokenId(++tokenId);
+
+                        //TODO: remove, just for ios test
+                        orderNftEntity.setTokenId((long) new Random().nextInt(99));
+
                         orderNftEntity.setCreateTime(timestamp);
                         orderNftEntity.setUpdateTime(timestamp);
                         orderNftRepository.save(orderNftEntity);
@@ -73,6 +109,16 @@ public class OrderServiceImpl implements OrderService {
                     }
                 }
             }
+        }
+
+        //TODO: remove, just for ios Test
+        //update minted qty
+        ChainNftContractEntity chainNftContractEntity = chainNftContractRepository.findByCollectionId(vo.getCollectionId());
+        if(Objects.nonNull(chainNftContractEntity)){
+            long mintedQty = chainNftContractEntity.getMintNum();
+            chainNftContractEntity.setMintNum(mintedQty + vo.getMintQty());
+            chainNftContractEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+            chainNftContractRepository.save(chainNftContractEntity);
         }
 
         return orderId;
