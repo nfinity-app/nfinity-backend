@@ -17,6 +17,7 @@ import com.nfinity.vo.NftVO;
 import com.nfinity.vo.PageModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -66,6 +67,9 @@ public class NftServiceImpl implements NftService {
 
         //3. upload files to s3
         s3Util.uploadFileListToS3(bucketName, s3Dir, srcDir, files);
+
+        //4. clear files in the srcDir
+        FileUtils.cleanDirectory(new File(srcDir));
 
         return s3Dir;
     }

@@ -19,6 +19,7 @@ repositories {
 }
 
 dependencies {
+	implementation 'org.netbeans.external:org-apache-commons-io:RELEASE113'
 	implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
 	implementation 'org.apache.commons:commons-lang3:3.12.0'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
