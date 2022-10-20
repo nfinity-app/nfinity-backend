@@ -35,6 +35,7 @@ public class OrderServiceImpl implements OrderService {
     private final ChainNftContractRepository chainNftContractRepository;
 
     @Override
+    @Transactional
     public Long createPreOrder(PreOrderVO vo) {
         Long collectionId = vo.getCollectionId();
         int mintQty = vo.getMintQty();

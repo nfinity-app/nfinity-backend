@@ -1,6 +1,5 @@
 package com.nfinity.service.impl;
 
-import com.nfinity.aws.PinPointUtil;
 import com.nfinity.entity.UserEntity;
 import com.nfinity.enums.ErrorCode;
 import com.nfinity.enums.Status;
@@ -20,7 +19,6 @@ import org.springframework.util.DigestUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
-import java.time.Duration;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
@@ -52,16 +50,15 @@ public class UserServiceImpl implements UserService {
             entity.setCreateTime(timestamp);
             entity.setUpdateTime(timestamp);
 
-            Long id = userRepository.save(entity).getId();
+            return userRepository.save(entity).getId();
 
             //save verification code to redis
-            String verificationCode = generateVerificationCode();
-            redisTemplate.opsForValue().set(vo.getEmail(), verificationCode, Duration.ofMinutes(30));
+//            String verificationCode = generateVerificationCode();
+//            redisTemplate.opsForValue().set(vo.getEmail(), verificationCode, Duration.ofMinutes(30));
+//
+//            //send email to user
+//            PinPointUtil.sendEmail(vo.getUsername(), vo.getEmail(), verificationCode);
 
-            //send email to user
-            PinPointUtil.sendEmail(vo.getUsername(), vo.getEmail(), verificationCode);
-
-            return id;
         }else{
             throw new BusinessException(ErrorCode.CONFLICT);
         }
