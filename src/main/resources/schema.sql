@@ -17,8 +17,8 @@ create table IF NOT EXISTS collection(
     revenue decimal(40, 18),
     address varchar(128),
     minted_qty int,
-    status int NOT NULL, -- 1-drafted, 2-pending, 3-published, 4-suspended, 5-failed
-    contract_status int, -- 1-init, 2-pending, 3-published, 4-failed
+    status int NOT NULL comment '1-drafted, 2-pending, 3-published, 4-suspended, 5-failed',
+    contract_status int comment '1-init, 2-pending, 3-published, 4-failed',
     create_time timestamp not null,
     update_time timestamp not null
 );
@@ -27,7 +27,7 @@ create table if not exists folder(
     id bigint PRIMARY KEY AUTO_INCREMENT,
     name varchar(64) not null,
     icon varchar(1024) not null,
-    mint_status int not null, -- 1-init, 2-deployed
+    mint_status int not null comment '1-init, 2-deployed',
     create_time timestamp not null,
     update_time timestamp not null
 );
@@ -73,7 +73,7 @@ create table if not exists user
     telephone varchar(64),
     photo varchar(1024),
     status int not null comment '1-disable, 2-enable',
-    address_status int not null, -- 1-disable, 2-enable
+    address_status int not null comment '1-disable, 2-enable',
     vault_id varchar(32) comment 'fireblocks vault id',
     create_time timestamp not null,
     update_time timestamp not null
@@ -89,7 +89,7 @@ create table if not exists `order`
     payment_id varchar(64),
     mint_qty int,
     amount decimal,
-    status int, -- 1-unpaid, 2-succeed, 3-failed, 4-cancelled
+    status int comment '1-unpaid, 2-succeed, 3-failed, 4-cancelled',
     create_time timestamp,
     update_time timestamp
 );
