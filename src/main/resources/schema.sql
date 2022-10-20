@@ -88,7 +88,7 @@ create table if not exists `order`
     user_id bigint,
     payment_id varchar(64),
     mint_qty int,
-    amount decimal,
+    amount decimal(40, 18),
     status int comment '1-unpaid, 2-succeed, 3-failed, 4-cancelled',
     create_time timestamp,
     update_time timestamp
