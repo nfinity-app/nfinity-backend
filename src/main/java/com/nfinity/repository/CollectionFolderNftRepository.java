@@ -15,4 +15,5 @@ public interface CollectionFolderNftRepository extends JpaRepository<CollectionF
 
     @Query(value = "select count(*) from collection_folder_nft a, nft b where a.collection_id = ?1 and a.nft_id = b.id and b.mint_status = 2", nativeQuery = true)
     int countAllByCollectionIdAndMintStatus(Long collectionId);
+    CollectionFolderNftEntity findByCollectionIdAndNftId(Long collectionId, Long id);
 }

@@ -51,9 +51,9 @@ public class CollectionController {
     }
 
     @PatchMapping("/collections/{id}")
-    public Result<Integer> editCollectionDetail(@PathVariable("id") Long collectionId, @RequestBody CollectionDetailInputVO vo){
+    public Result<Long> editCollectionDetail(@PathVariable("id") Long collectionId, @RequestBody CollectionDetailInputVO vo){
         try {
-            int count = collectionService.editCollectionDetail(collectionId, vo);
+            Long count = collectionService.editCollectionDetail(collectionId, vo);
             return Result.succeed(ErrorCode.OK, count);
         }catch (Exception e){
             log.error("edit collection detail error.", e);

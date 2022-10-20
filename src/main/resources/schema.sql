@@ -10,10 +10,13 @@ create table IF NOT EXISTS collection(
     contract_chain varchar(128),
     symbol varchar(32),
     total_supply int,
-    mint_price decimal,
+    mint_price decimal(40, 18),
     description varchar(1024),
     airdrop_retention int,
     retained_qty int,
+    revenue decimal(40, 18),
+    address varchar(128),
+    minted_qty int,
     status int NOT NULL, -- 1-drafted, 2-pending, 3-published, 4-suspended, 5-failed
     contract_status int, -- 1-init, 2-pending, 3-published, 4-failed
     create_time timestamp not null,
@@ -68,13 +71,15 @@ create table if not exists user
     username varchar(64),
     password varchar(128) not null,
     telephone varchar(64),
+    photo varchar(1024),
+    status int not null comment '1-disable, 2-enable',
     address_status int not null, -- 1-disable, 2-enable
     vault_id varchar(32) comment 'fireblocks vault id',
     create_time timestamp not null,
     update_time timestamp not null
 );
 create unique index index_user_email on user (email);
-create unique index index_user_user_name on user (username);
+create unique index index_user_username on user (username);
 
 create table if not exists `order`
 (
@@ -103,13 +108,3 @@ create table if not exists order_nft
 );
 create index index_order_nft_order_id on order_nft(order_id);
 create index index_order_nft_nft_id on order_nft(nft_id);
-
-alter table collection
-    drop column revenue;
-
-alter table collection
-    drop column address;
-
-alter table collection
-    drop column minted_qty;
-

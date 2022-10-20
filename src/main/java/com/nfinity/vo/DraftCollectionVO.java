@@ -10,6 +10,8 @@ import java.util.List;
 @Getter
 @Setter
 public class DraftCollectionVO {
+    private Long id;
+
     @JsonProperty("collection_name")
     private String collectionName;
 

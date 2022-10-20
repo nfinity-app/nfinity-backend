@@ -8,8 +8,10 @@ import com.nfinity.enums.Status;
 import com.nfinity.repository.*;
 import com.nfinity.service.CollectionService;
 import com.nfinity.util.BeansUtil;
+import com.nfinity.util.BigDecimalUtil;
 import com.nfinity.vo.*;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -49,7 +51,7 @@ public class CollectionServiceImpl implements CollectionService {
             if(Objects.nonNull(chainNftContractEntity)) {
                 collectionVO.setAddress(chainNftContractEntity.getContractAddr());
                 collectionVO.setMintedQty((int) chainNftContractEntity.getMintNum());
-                collectionVO.setRevenue(chainNftContractEntity.getProfit());
+                collectionVO.setRevenue(BigDecimalUtil.stripTrailingZeros(chainNftContractEntity.getProfit()));
             }
 
             collectionVOList.add(collectionVO);
@@ -63,9 +65,16 @@ public class CollectionServiceImpl implements CollectionService {
     @Override
     @Transactional
     public Long createCollection(CollectionInputVO vo) {
+        CollectionEntity collectionEntity;
+        if(Objects.nonNull(vo.getId())){
+            Optional<CollectionEntity> optional = collectionRepository.findById(vo.getId());
+            collectionEntity = optional.orElseGet(CollectionEntity::new);
+        }else{
+            collectionEntity = new CollectionEntity();
+        }
+
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         //1. save data to table collection, and get collection id
-        CollectionEntity collectionEntity = new CollectionEntity();
         BeanUtils.copyProperties(vo, collectionEntity, BeansUtil.getNullFields(vo));
         collectionEntity.setName(vo.getCollectionName());
         collectionEntity.setIcon(vo.getRecords().get(0).getPath());
@@ -112,10 +121,10 @@ public class CollectionServiceImpl implements CollectionService {
     }
 
     @Override
-    public int editCollectionDetail(Long collectionId, CollectionDetailInputVO vo) {
+    public Long editCollectionDetail(Long collectionId, CollectionDetailInputVO vo) {
         Optional<CollectionEntity> optional = collectionRepository.findById(collectionId);
         if(optional.isEmpty()){
-            return 0;
+            return null;
         }
         CollectionEntity entity = optional.get();
 
@@ -132,16 +141,28 @@ public class CollectionServiceImpl implements CollectionService {
         entity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
         CollectionEntity updatedEntity = collectionRepository.save(entity);
 
-        return entity.equals(updatedEntity) ? 0 : 1;
+        return updatedEntity.getId();
     }
 
     @Override
     @Transactional
     public Long saveDraftCollection(DraftCollectionVO vo) {
+        CollectionEntity collectionEntity;
+        if(Objects.nonNull(vo.getId())){
+            Optional<CollectionEntity> optional = collectionRepository.findById(vo.getId());
+            collectionEntity = optional.orElseGet(CollectionEntity::new);
+        }else{
+            collectionEntity = new CollectionEntity();
+        }
+
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        CollectionEntity collectionEntity = new CollectionEntity();
         BeanUtils.copyProperties(vo, collectionEntity, BeansUtil.getNullFields(vo));
-        collectionEntity.setName(vo.getCollectionName());
+        if(StringUtils.isNoneBlank(vo.getCollectionName())) {
+            collectionEntity.setName(vo.getCollectionName());
+        }
+        if(!CollectionUtils.isEmpty(vo.getRecords())) {
+            collectionEntity.setIcon(vo.getRecords().get(0).getPath());
+        }
         collectionEntity.setStatus(DisplayStatus.DRAFTED.getValue());
         collectionEntity.setCreateTime(timestamp);
         collectionEntity.setUpdateTime(timestamp);
@@ -151,7 +172,10 @@ public class CollectionServiceImpl implements CollectionService {
         if(!CollectionUtils.isEmpty(vo.getRecords())){
             List<CollectionFolderNftEntity> entityList = new ArrayList<>();
             for(NftVO nftVO : vo.getRecords()){
-                CollectionFolderNftEntity entity = new CollectionFolderNftEntity();
+                CollectionFolderNftEntity entity = collectionFolderNftRepository.findByCollectionIdAndNftId(collectionId, nftVO.getId());
+                if(Objects.isNull(entity)) {
+                    entity = new CollectionFolderNftEntity();
+                }
                 entity.setCollectionId(collectionId);
                 entity.setFolderId(vo.getFolderId());
                 entity.setNftId(nftVO.getId());
@@ -181,7 +205,7 @@ public class CollectionServiceImpl implements CollectionService {
         //2. get data from chain_nft_contract
         ChainNftContractEntity chainNftContractEntity = chainNftContractRepository.findByCollectionId(collectionId);
         if(Objects.nonNull(chainNftContractEntity)) {
-            collectionVO.setRevenue(chainNftContractEntity.getProfit());
+            collectionVO.setRevenue(BigDecimalUtil.stripTrailingZeros(chainNftContractEntity.getProfit()));
             collectionVO.setAddress(chainNftContractEntity.getContractAddr());
             collectionVO.setMintedQty((int) chainNftContractEntity.getMintNum());
         }
@@ -209,8 +233,9 @@ public class CollectionServiceImpl implements CollectionService {
 
                 Optional<NftEntity> nftEntityOptional = nftRepository.findById(nftId);
                 if(nftEntityOptional.isPresent()) {
-                    String path = nftEntityOptional.get().getPath();
-                    int mintStatus = nftEntityOptional.get().getMintStatus();
+                    NftEntity nftEntity = nftEntityOptional.get();
+                    String path = nftEntity.getPath();
+                    int mintStatus = nftEntity.getMintStatus();
                     vo.setPath(path);
                     vo.setMintStatus(mintStatus);
                 }
