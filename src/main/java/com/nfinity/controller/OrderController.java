@@ -6,6 +6,8 @@ import com.nfinity.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/nft-business/v1")
 @RequiredArgsConstructor
@@ -13,13 +15,13 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("/pre-order")
-    public Result<Long> createPreOrder(@RequestBody PreOrderVO vo){
+    public Result<Long> createPreOrder(@Valid @RequestBody PreOrderVO vo){
         Long orderId = orderService.createPreOrder(vo);
         return Result.succeed(ErrorCode.OK, orderId);
     }
 
     @PostMapping("/order")
-    public Result<Long> createOrder(@RequestBody OrderVO vo){
+    public Result<Long> createOrder(@Valid @RequestBody OrderVO vo){
         Long orderId = orderService.updateOrder(vo);
         return Result.succeed(ErrorCode.OK, orderId);
     }

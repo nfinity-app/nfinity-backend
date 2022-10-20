@@ -8,6 +8,7 @@ import com.nfinity.enums.Status;
 import com.nfinity.exception.BusinessException;
 import com.nfinity.repository.*;
 import com.nfinity.service.OrderService;
+import com.nfinity.util.BeansUtil;
 import com.nfinity.vo.CollectibleVO;
 import com.nfinity.vo.OrderVO;
 import com.nfinity.vo.PageModel;
@@ -38,11 +39,9 @@ public class OrderServiceImpl implements OrderService {
         int mintQty = vo.getMintQty();
 
         int remainingQty = collectionFolderNftRepository.countAllByCollectionIdAndMintStatus(collectionId);
-        if(mintQty < remainingQty){
+        if(mintQty <= remainingQty){
             //place a reservation
-            OrderVO orderVO = new OrderVO();
-            BeanUtils.copyProperties(vo, orderVO);
-            return createOrder(orderVO, OrderStatus.UNPAID.getValue());
+            return createOrder(vo, OrderStatus.UNPAID.getValue());
         }else{
             throw new BusinessException(ErrorCode.NOT_ENOUGH);
         }
@@ -54,7 +53,7 @@ public class OrderServiceImpl implements OrderService {
         Optional<OrderEntity> optional = orderRepository.findById(vo.getId());
         if(optional.isPresent()){
             OrderEntity orderEntity = optional.get();
-            orderEntity.setStatus(vo.getStatus());
+            BeanUtils.copyProperties(vo, orderEntity, BeansUtil.getNullFields(vo));
             orderEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
             return orderRepository.save(orderEntity).getId();
         }else{
@@ -62,12 +61,12 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-    private Long createOrder(OrderVO vo, int orderStatus){
+    private Long createOrder(PreOrderVO vo, int orderStatus){
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
         //1. save data to table order
         OrderEntity orderEntity = new OrderEntity();
-        BeanUtils.copyProperties(vo, orderEntity);
+        BeanUtils.copyProperties(vo, orderEntity, BeansUtil.getNullFields(vo));
         orderEntity.setStatus(orderStatus);
         orderEntity.setCreateTime(timestamp);
         orderEntity.setUpdateTime(timestamp);
@@ -90,7 +89,6 @@ public class OrderServiceImpl implements OrderService {
                         //2. save data to table order_collection_nft
                         OrderNftEntity orderNftEntity = new OrderNftEntity();
                         orderNftEntity.setOrderId(orderId);
-                        orderNftEntity.setUserId(vo.getUserId());
                         orderNftEntity.setNftId(nftEntity.getId());
 
                         //TODO: remove, just for ios test
@@ -129,8 +127,8 @@ public class OrderServiceImpl implements OrderService {
         PageModel<CollectibleVO> pageModel = new PageModel<>();
         List<CollectibleVO> collectibleVOList = new ArrayList<>();
 
-        int total = orderNftRepository.countByUserId(userId);
-        List<OrderNftEntity> orderNftEntityList = orderNftRepository.findAllByUserId(userId, PageRequest.of(page - 1, size));
+        int total = orderRepository.countByUserIdAndStatus(userId);
+        List<OrderNftEntity> orderNftEntityList = orderNftRepository.findAllByUserIdAndStatus(userId, PageRequest.of(page - 1, size));
 
         if(!CollectionUtils.isEmpty(orderNftEntityList)) {
             for(OrderNftEntity orderNftEntity : orderNftEntityList) {

@@ -15,7 +15,6 @@ public class OrderNftEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long orderId;
-    private Long userId;
     private Long nftId;
     private Long tokenId;
     private Timestamp createTime;

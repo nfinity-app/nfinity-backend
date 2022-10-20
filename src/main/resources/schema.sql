@@ -96,7 +96,6 @@ create table if not exists order_nft
 (
     id bigint primary key auto_increment,
     order_id bigint,
-    user_id bigint,
     nft_id bigint,
     token_id bigint,
     create_time timestamp,
@@ -104,7 +103,6 @@ create table if not exists order_nft
 );
 create index index_order_nft_order_id on order_nft(order_id);
 create index index_order_nft_nft_id on order_nft(nft_id);
-create index index_order_nft_user_id on order_nft(user_id);
 
 alter table collection
     drop column revenue;
