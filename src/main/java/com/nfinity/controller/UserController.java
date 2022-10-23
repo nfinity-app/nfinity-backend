@@ -3,6 +3,7 @@ package com.nfinity.controller;
 import com.nfinity.enums.ErrorCode;
 import com.nfinity.enums.LoginType;
 import com.nfinity.service.UserService;
+import com.nfinity.util.JwtUtil;
 import com.nfinity.vo.Result;
 import com.nfinity.vo.UserVO;
 import lombok.RequiredArgsConstructor;
@@ -20,28 +21,47 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/user")
-    public Result<Long> registerOrLogin(@Valid @RequestBody UserVO vo) throws Exception {
-        Long userId;
+    public Result<Object> registerOrLogin(@Valid @RequestBody UserVO vo) throws Exception {
         if(LoginType.REGISTER.getValue() == vo.getType()){
-            if(StringUtils.isBlank(vo.getEmail())){
-                return Result.fail(ErrorCode.ERROR.getCode(), "The email is empty");
-            }
-            userId = userService.register(vo);
+            Long userId = userService.register(vo);
+            return Result.succeed(ErrorCode.OK, userId);
         }else if(LoginType.LOGIN.getValue() == vo.getType()){
-            if(StringUtils.isBlank(vo.getEmail()) || StringUtils.isBlank(vo.getUsername())){
-                return Result.fail(ErrorCode.ERROR.getCode(), "The email or user name is empty");
-            }
-            userId = userService.login(vo);
+            String token = userService.login(vo);
+            return Result.succeed(ErrorCode.OK, token);
         }else{
             return Result.fail(ErrorCode.ERROR.getCode(), "type is incorrect");
         }
+    }
+
+    @GetMapping("/user/emails/{email}/verification-codes/{code}")
+    public Result<Long> verifyCode( @PathVariable String email, @PathVariable String code){
+        Long userId = userService.checkVerificationCode(email, code);
         return Result.succeed(ErrorCode.OK, userId);
     }
 
-    @GetMapping("users/{username}/emails/{email}/verification-codes/{code}")
-    public Result<Long> verifyCode(@PathVariable String username, @PathVariable String email,
-                                   @PathVariable String code){
-        Long userId = userService.checkVerificationCode(username, email, code);
+    @PostMapping("/user/email")
+    public Result<Long> sendEmail(@RequestParam String email){
+        Long userId = userService.sendEmail(email);
+        return Result.succeed(ErrorCode.OK, userId);
+    }
+
+    @PostMapping("/user/password")
+    public Result<Long> resetPassword(@RequestBody UserVO vo){
+        if(StringUtils.isBlank(vo.getEmail())){
+            Result.fail(ErrorCode.ERROR.getCode(), "email must be not blank");
+        }
+        if(StringUtils.isBlank(vo.getPassword())){
+            Result.fail(ErrorCode.ERROR.getCode(), "password must be not blank");
+        }
+        Long userId = userService.resetPassword(vo);
+        return Result.succeed(ErrorCode.OK, userId);
+    }
+
+    @PatchMapping("/user")
+    public Result<Long> editProfile(@RequestHeader("Authentication") String token, @RequestBody UserVO vo) throws Exception {
+        Long id = (Long) JwtUtil.validateToken(token).get("id");
+        vo.setId(id);
+        Long userId = userService.editProfile(vo);
         return Result.succeed(ErrorCode.OK, userId);
     }
 }

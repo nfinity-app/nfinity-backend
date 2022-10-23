@@ -38,10 +38,16 @@ public class GlobalExceptionHandler {
         return Result.fail(e.getErrorCode());
     }
 
+    @ExceptionHandler(value = AuthException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public <T> Result<T> handleAuthException(AuthException e){
+        return Result.fail(ErrorCode.FORBIDDEN.getCode(), e.getMessage());
+    }
+
     @ExceptionHandler(value = Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public <T> Result<T> handleCommonException(Exception e){
-        log.error("common exception", e);
+        log.error("common exception.", e);
         return Result.fail(ErrorCode.SERVER_ERROR.getCode(), e.getMessage());
     }
 }

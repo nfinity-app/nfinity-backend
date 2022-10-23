@@ -1,8 +1,11 @@
 package com.nfinity.vo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -20,10 +23,19 @@ public class UserVO {
     @NotBlank
     private String password;
 
+    @Max(2)
+    @Min(1)
+    @NotNull
+    private Integer type;
+
     private String photo;
 
     private String telephone;
 
-    @NotNull
-    private Integer type;
+    @JsonProperty("old_password")
+    private String oldPassword;
+
+    @JsonProperty("new_password")
+    private String newPassword;
+
 }

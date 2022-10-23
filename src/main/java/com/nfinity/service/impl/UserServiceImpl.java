@@ -9,6 +9,7 @@ import com.nfinity.repository.UserRepository;
 import com.nfinity.service.UserService;
 import com.nfinity.util.AESEncryption;
 import com.nfinity.util.BeansUtil;
+import com.nfinity.util.JwtUtil;
 import com.nfinity.vo.UserVO;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -21,9 +22,7 @@ import org.springframework.util.DigestUtils;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.Duration;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 
 @Service
@@ -35,17 +34,26 @@ public class UserServiceImpl implements UserService {
     private String aesIv;
     @Value("${md5.salt}")
     private String md5Salt;
+
     private final UserRepository userRepository;
+
     private final RedisTemplate<String, String> redisTemplate;
 
     @Override
     public Long register(UserVO vo) throws Exception {
-        UserEntity userEntity = userRepository.findByEmail(vo.getEmail());
+        UserEntity userEntity = userRepository.findByEmailAndStatus(vo.getEmail(), Status.ENABLE.getValue());
 
         if(Objects.isNull(userEntity)){
+            UserEntity entity;
+            UserEntity disableUser = userRepository.findByEmailAndStatus(vo.getEmail(), Status.DISABLE.getValue());
+            if(Objects.nonNull(disableUser)){
+                entity = disableUser;
+            }else{
+                entity = new UserEntity();
+            }
+
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             //save a pending status user to db
-            UserEntity entity = new UserEntity();
             BeanUtils.copyProperties(vo, entity, BeansUtil.getNullFields(vo));
             entity.setPassword(getMd5Password(vo.getPassword()));
             entity.setStatus(Status.DISABLE.getValue());
@@ -59,7 +67,7 @@ public class UserServiceImpl implements UserService {
             redisTemplate.opsForValue().set(vo.getEmail(), verificationCode, Duration.ofMinutes(30));
 
             //send email to user
-            PinPointUtil.sendEmail(vo.getUsername(), vo.getEmail(), verificationCode);
+            PinPointUtil.sendEmail(vo.getEmail(), verificationCode);
 
             return id;
         }else{
@@ -67,8 +75,8 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    public Long checkVerificationCode(String username, String email, String verificationCode){
-        UserEntity entity = userRepository.findByEmailOrUsername(email, username);
+    public Long checkVerificationCode(String email, String verificationCode){
+        UserEntity entity = userRepository.findByEmail(email);
         if(Objects.nonNull(entity)){
             String redisVerificationCode = redisTemplate.opsForValue().get(email);
             if(verificationCode.equals(redisVerificationCode)){
@@ -84,7 +92,36 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Long login(UserVO vo) throws Exception {
+    public Long sendEmail(String email) {
+        UserEntity entity = userRepository.findByEmailAndStatus(email, Status.ENABLE.getValue());
+        if(Objects.nonNull(entity)) {
+            //save verification code to redis
+            String verificationCode = generateVerificationCode();
+            redisTemplate.opsForValue().set(email, verificationCode, Duration.ofMinutes(30));
+
+            //send email to user
+            PinPointUtil.sendEmail(email, verificationCode);
+
+            return entity.getId();
+        }else{
+            throw new BusinessException(ErrorCode.NOT_FOUND);
+        }
+    }
+
+    @Override
+    public Long resetPassword(UserVO vo) {
+        UserEntity entity = userRepository.findByEmailAndStatus(vo.getEmail(), Status.ENABLE.getValue());
+        if(Objects.nonNull(entity)) {
+            entity.setPassword(vo.getPassword());
+            entity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+            return userRepository.save(entity).getId();
+        }else{
+            throw new BusinessException(ErrorCode.NOT_FOUND);
+        }
+    }
+
+    @Override
+    public String login(UserVO vo) throws Exception {
         UserEntity userEntity = userRepository.findByEmailOrUsername(vo.getEmail(), vo.getUsername());
 
         if(Objects.isNull(userEntity)){
@@ -92,32 +129,40 @@ public class UserServiceImpl implements UserService {
         }else{
             String md5Password = getMd5Password(vo.getPassword());
             if(md5Password.equals(userEntity.getPassword())){
-                return userEntity.getId();
+                Map<String, Object> map = new HashMap<>();
+                map.put("id", userEntity.getId());
+                return JwtUtil.generateToken(map);
             }else{
                 throw new BusinessException(ErrorCode.UNAUTHORIZED);
             }
         }
     }
 
-    public Long EditProfile(UserVO vo) throws Exception {
+    @Override
+    public Long editProfile(UserVO vo) throws Exception {
         UserEntity entity;
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
         if(Objects.nonNull(vo.getId())){
             Optional<UserEntity> optional = userRepository.findById(vo.getId());
             entity = optional.orElseGet(UserEntity::new);
-            entity.setCreateTime(timestamp);
-            entity.setUpdateTime(timestamp);
         }else {
-            entity = new UserEntity();
-            entity.setUpdateTime(timestamp);
+            throw new BusinessException(ErrorCode.NOT_FOUND);
         }
 
         BeanUtils.copyProperties(vo, entity, BeansUtil.getNullFields(vo));
-        if(StringUtils.isNoneBlank(vo.getPassword())){
-            entity.setPassword(getMd5Password(vo.getPassword()));
+        if(StringUtils.isNoneBlank(vo.getOldPassword()) && StringUtils.isNoneBlank(vo.getNewPassword())){
+            if(entity.getPassword().equals(vo.getOldPassword())) {
+                entity.setPassword(getMd5Password(vo.getNewPassword()));
+            }else{
+                throw new BusinessException(ErrorCode.UNAUTHORIZED);
+            }
         }
 
+        //TODO: add telephone
+
+        entity.setCreateTime(timestamp);
+        entity.setUpdateTime(timestamp);
         return userRepository.save(entity).getId();
     }
 
@@ -126,7 +171,7 @@ public class UserServiceImpl implements UserService {
         return DigestUtils.md5DigestAsHex((decodedPassword + md5Salt).getBytes(StandardCharsets.UTF_8));
     }
 
-    private static String generateVerificationCode(){
+    private String generateVerificationCode(){
         Random random = new Random();
         int number = random.nextInt(99999999);
         return String.format("%08d", number);

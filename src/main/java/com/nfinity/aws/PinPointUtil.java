@@ -22,8 +22,8 @@ public class PinPointUtil {
     private static String createContent(String link){
         return textBody + link;
     }
-    public static boolean sendEmail(String username, String toAddress, String verificationCode) {
-        String link = "http://localhost:80/nft-business/v1/users/" + username + "/emails/" + toAddress + "/verification-codes/" + verificationCode;
+    public static boolean sendEmail(String toAddress, String verificationCode) {
+        String link = "http://localhost:80/nft-business/v1/user/" + "/emails/" + toAddress + "/verification-codes/" + verificationCode;
 
 //        try {
             Map<String, AddressConfiguration> addressMap = new HashMap<String, AddressConfiguration>();

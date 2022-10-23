@@ -4,14 +4,14 @@ use nft_business;
 create table IF NOT EXISTS collection(
     id bigint PRIMARY KEY AUTO_INCREMENT,
     name varchar(64),
-    icon varchar(1024),
+    icon varchar(256),
     category int,
     domain_name varchar(128),
     contract_chain varchar(128),
     symbol varchar(32),
     total_supply int,
     mint_price decimal(40, 18),
-    description varchar(1024),
+    description varchar(256),
     airdrop_retention int,
     retained_qty int,
     revenue decimal(40, 18),
@@ -26,7 +26,7 @@ create table IF NOT EXISTS collection(
 create table if not exists folder(
     id bigint PRIMARY KEY AUTO_INCREMENT,
     name varchar(64) not null,
-    icon varchar(1024) not null,
+    icon varchar(256) not null,
     mint_status int not null comment '1-init, 2-deployed',
     create_time timestamp not null,
     update_time timestamp not null
@@ -34,7 +34,7 @@ create table if not exists folder(
 
 create table if not exists nft(
     id bigint PRIMARY KEY AUTO_INCREMENT,
-    path varchar(1024) not null,
+    path varchar(256) not null,
     mint_status int not null comment '1-init, 2-deployed, 3-minting, 4-minted',
     create_time timestamp not null,
     update_time timestamp not null
@@ -71,7 +71,7 @@ create table if not exists user
     username varchar(64),
     password varchar(128) not null,
     telephone varchar(64),
-    photo varchar(1024),
+    photo varchar(256),
     status int not null comment '1-disable, 2-enable',
     address_status int not null comment '1-disable, 2-enable',
     vault_id varchar(32) comment 'fireblocks vault id',
@@ -80,6 +80,21 @@ create table if not exists user
 );
 create unique index index_user_email on user (email);
 create unique index index_user_username on user (username);
+
+create table if not exists business_info
+(
+    id bigint primary key auto_increment,
+    name varchar(64) not null,
+    type int not null comment '1-business, 2-personal',
+    category int not null comment '1-Apparel, 2-Beauty, 3-Fashion, 4-Influencer',
+    birth_date datetime not null,
+    logo varchar(256),
+    bio varchar(1024),
+    user_id bigint not null,
+    create_time timestamp,
+    update_time timestamp
+);
+create unique index index_business_info_user_id on business_info (user_id);
 
 create table if not exists `order`
 (
