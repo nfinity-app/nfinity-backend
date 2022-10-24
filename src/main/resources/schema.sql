@@ -91,6 +91,15 @@ create table if not exists business_info
     logo varchar(256),
     bio varchar(1024),
     user_id bigint not null,
+    website varchar(128),
+    email varchar(64),
+    phone_number varchar(20),
+    address varchar(1024),
+    facebook varchar(128),
+    twitter varchar(128),
+    instagram varchar(128),
+    youtube varchar(128),
+    medium varchar(128),
     create_time timestamp,
     update_time timestamp
 );

@@ -30,5 +30,24 @@ public class BusinessInfoVO {
 
     private String bio;
 
+    private String website;
+
+    private String email;
+
+    @JsonProperty("phone_number")
+    private String phoneNumber;
+
+    private String address;
+
+    private String facebook;
+
+    private String twitter;
+
+    private String instagram;
+
+    private String youtube;
+
+    private String medium;
+
     private Long userId;
 }

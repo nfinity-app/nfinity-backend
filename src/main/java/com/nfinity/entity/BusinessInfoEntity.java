@@ -29,6 +29,24 @@ public class BusinessInfoEntity {
 
     private Long userId;
 
+    private String website;
+
+    private String email;
+
+    private String phoneNumber;
+
+    private String address;
+
+    private String facebook;
+
+    private String twitter;
+
+    private String instagram;
+
+    private String youtube;
+
+    private String medium;
+
     private Timestamp createTime;
 
     private Timestamp updateTime;
