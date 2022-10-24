@@ -8,4 +8,6 @@ public interface UserService {
     Long login(UserVO vo) throws Exception;
 
     Long checkVerificationCode(String username, String email, String code);
+
+    Long deleteAccount(Long id);
 }

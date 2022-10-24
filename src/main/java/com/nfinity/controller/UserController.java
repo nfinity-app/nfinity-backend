@@ -38,10 +38,9 @@ public class UserController {
         return Result.succeed(ErrorCode.OK, userId);
     }
 
-    @GetMapping("users/{username}/emails/{email}/verification-codes/{code}")
-    public Result<Long> verifyCode(@PathVariable String username, @PathVariable String email,
-                                   @PathVariable String code){
-        Long userId = userService.checkVerificationCode(username, email, code);
+    @DeleteMapping("/users/{id}")
+    public Result<Long> deleteAccount(@PathVariable Long id){
+        Long userId = userService.deleteAccount(id);
         return Result.succeed(ErrorCode.OK, userId);
     }
 }

@@ -96,6 +96,18 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public Long deleteAccount(Long id) {
+        Optional<UserEntity> entityOptional = userRepository.findById(id);
+        if(entityOptional.isPresent()){
+            UserEntity entity = entityOptional.get();
+            userRepository.delete(entity);
+            return id;
+        }else{
+            throw new BusinessException(ErrorCode.NOT_FOUND);
+        }
+    }
+
     public Long EditProfile(UserVO vo) throws Exception {
         UserEntity entity;
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
