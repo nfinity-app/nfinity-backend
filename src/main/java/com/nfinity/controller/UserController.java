@@ -39,8 +39,8 @@ public class UserController {
         return Result.succeed(ErrorCode.OK, userId);
     }
 
-    @PostMapping("/user/email")
-    public Result<Long> sendEmail(@RequestParam String email){
+    @PostMapping("/user/emails/{email}")
+    public Result<Long> sendEmail(@PathVariable String email){
         Long userId = userService.sendEmail(email);
         return Result.succeed(ErrorCode.OK, userId);
     }
