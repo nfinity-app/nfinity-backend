@@ -12,7 +12,7 @@ spring:
       ddl-auto: update
     show-sql: true
   redis:
-    host: nfinity-redis-dev.5kl95l.ng.0001.use1.cache.amazonaws.com
+    host: localhost
     port: 6379
 
 aws:
