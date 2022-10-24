@@ -26,3 +26,7 @@ aes:
     iv: f6cf862bc0bdeeca
 md5:
   salt: NfinityMint
+
+jwt:
+  secret:
+    key: snmhH32qahOkXHrTSBySlA==
