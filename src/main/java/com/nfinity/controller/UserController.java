@@ -20,6 +20,8 @@ import javax.validation.Valid;
 public class UserController {
     private final UserService userService;
 
+    private final JwtUtil jwtUtil;
+
     @PostMapping("/user")
     public Result<Object> registerOrLogin(@Valid @RequestBody UserVO vo) throws Exception {
         if(LoginType.REGISTER.getValue() == vo.getType()){
@@ -59,7 +61,7 @@ public class UserController {
 
     @PatchMapping("/user")
     public Result<Long> editProfile(@RequestHeader("Authentication") String token, @RequestBody UserVO vo) throws Exception {
-        Long id = (Long) JwtUtil.validateToken(token).get("id");
+        Long id = (Long) jwtUtil.validateToken(token).get("id");
         vo.setId(id);
         Long userId = userService.editProfile(vo);
         return Result.succeed(ErrorCode.OK, userId);

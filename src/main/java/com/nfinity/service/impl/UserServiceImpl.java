@@ -39,6 +39,8 @@ public class UserServiceImpl implements UserService {
 
     private final RedisTemplate<String, String> redisTemplate;
 
+    private final JwtUtil jwtUtil;
+
     @Override
     public Long register(UserVO vo) throws Exception {
         UserEntity userEntity = userRepository.findByEmailAndStatus(vo.getEmail(), Status.ENABLE.getValue());
@@ -131,7 +133,7 @@ public class UserServiceImpl implements UserService {
             if(md5Password.equals(userEntity.getPassword())){
                 Map<String, Object> map = new HashMap<>();
                 map.put("id", userEntity.getId());
-                return JwtUtil.generateToken(map);
+                return jwtUtil.generateToken(map);
             }else{
                 throw new BusinessException(ErrorCode.UNAUTHORIZED);
             }

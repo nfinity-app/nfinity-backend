@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.*;
 public class BusinessInfoController {
     private final BusinessInfoService businessInfoService;
 
+    private final JwtUtil jwtUtil;
+
     @PostMapping("/business-info")
     public Result<Long> createBusinessInfo(@RequestHeader("Authentication") String token, @RequestBody BusinessInfoVO vo){
-        Long id = (Long) JwtUtil.validateToken(token).get("id");
+        Long id = (Long) jwtUtil.validateToken(token).get("id");
         vo.setUserId(id);
         Long businessId = businessInfoService.createBusinessInfo(vo);
         return Result.succeed(ErrorCode.OK, businessId);
