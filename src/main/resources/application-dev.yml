@@ -11,6 +11,9 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  redis:
+    host: nfinity-redis-dev.5kl95l.ng.0001.use1.cache.amazonaws.com
+    port: 6379
 
 aws:
   s3:
