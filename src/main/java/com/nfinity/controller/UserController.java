@@ -33,7 +33,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/user/emails/{email}/verification-codes/{code}")
+    @PostMapping("/user/emails/{email}/verification-codes/{code}")
     public Result<Long> verifyCode( @PathVariable String email, @PathVariable String code){
         Long userId = userService.checkVerificationCode(email, code);
         return Result.succeed(ErrorCode.OK, userId);

@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
             redisTemplate.opsForValue().set(vo.getEmail(), verificationCode, Duration.ofMinutes(30));
 
             //send email to user
-            PinPointUtil.sendEmail(vo.getEmail(), verificationCode);
+            PinPointUtil.sendEmail(vo.getEmail(), verificationCode, "register");
 
             return id;
         }else{
@@ -100,7 +100,7 @@ public class UserServiceImpl implements UserService {
             redisTemplate.opsForValue().set(email, verificationCode, Duration.ofMinutes(30));
 
             //send email to user
-            PinPointUtil.sendEmail(email, verificationCode);
+            PinPointUtil.sendEmail(email, verificationCode, "reset");
 
             return entity.getId();
         }else{
