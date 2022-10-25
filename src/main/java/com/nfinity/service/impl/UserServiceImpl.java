@@ -3,6 +3,7 @@ package com.nfinity.service.impl;
 import com.nfinity.aws.PinPointUtil;
 import com.nfinity.entity.UserEntity;
 import com.nfinity.enums.ErrorCode;
+import com.nfinity.enums.LoginType;
 import com.nfinity.enums.Status;
 import com.nfinity.exception.BusinessException;
 import com.nfinity.repository.UserRepository;
@@ -47,7 +48,7 @@ public class UserServiceImpl implements UserService {
 
         if(Objects.isNull(userEntity)){
             UserEntity entity;
-            UserEntity disableUser = userRepository.findByEmailAndStatus(vo.getEmail(), Status.DISABLE.getValue());
+            UserEntity disableUser = userRepository.findByEmailOrUsernameAndStatus(Status.DISABLE.getValue(), vo.getEmail(), vo.getUsername());
             if(Objects.nonNull(disableUser)){
                 entity = disableUser;
             }else{
@@ -77,14 +78,17 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    public Long checkVerificationCode(String email, String verificationCode){
+    public Long checkVerificationCode(String email, String verificationCode, int type){
         UserEntity entity = userRepository.findByEmail(email);
         if(Objects.nonNull(entity)){
             String redisVerificationCode = redisTemplate.opsForValue().get(email);
             if(verificationCode.equals(redisVerificationCode)){
-                entity.setStatus(Status.ENABLE.getValue());
-                entity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
-                return userRepository.save(entity).getId();
+                if(LoginType.REGISTER.getValue() == type) {
+                    entity.setStatus(Status.ENABLE.getValue());
+                    entity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+                    return userRepository.save(entity).getId();
+                }
+                return entity.getId();
             }else{
                 throw new BusinessException(ErrorCode.UNAUTHORIZED);
             }
@@ -111,10 +115,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Long resetPassword(UserVO vo) {
+    public Long resetPassword(UserVO vo) throws Exception {
         UserEntity entity = userRepository.findByEmailAndStatus(vo.getEmail(), Status.ENABLE.getValue());
         if(Objects.nonNull(entity)) {
-            entity.setPassword(vo.getPassword());
+            entity.setPassword(getMd5Password(vo.getPassword()));
             entity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
             return userRepository.save(entity).getId();
         }else{
@@ -124,7 +128,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String login(UserVO vo) throws Exception {
-        UserEntity userEntity = userRepository.findByEmailOrUsername(vo.getEmail(), vo.getUsername());
+        UserEntity userEntity = userRepository.findByEmailOrUsernameAndStatus(Status.ENABLE.getValue(), vo.getEmail(), vo.getUsername());
 
         if(Objects.isNull(userEntity)){
             throw new BusinessException(ErrorCode.NOT_FOUND);

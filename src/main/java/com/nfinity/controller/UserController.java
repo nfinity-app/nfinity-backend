@@ -35,9 +35,9 @@ public class UserController {
         }
     }
 
-    @PostMapping("/user/emails/{email}/verification-codes/{code}")
-    public Result<Long> verifyCode( @PathVariable String email, @PathVariable String code){
-        Long userId = userService.checkVerificationCode(email, code);
+    @PostMapping("/user/emails/{email}/verification-codes/{code}/types/{type}")
+    public Result<Long> verifyCode( @PathVariable String email, @PathVariable String code, @PathVariable int type){
+        Long userId = userService.checkVerificationCode(email, code, type);
         return Result.succeed(ErrorCode.OK, userId);
     }
 
@@ -48,7 +48,7 @@ public class UserController {
     }
 
     @PostMapping("/user/password")
-    public Result<Long> resetPassword(@RequestBody UserVO vo){
+    public Result<Long> resetPassword(@RequestBody UserVO vo) throws Exception {
         if(StringUtils.isBlank(vo.getEmail())){
             Result.fail(ErrorCode.ERROR.getCode(), "email must be not blank");
         }

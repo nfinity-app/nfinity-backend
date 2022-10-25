@@ -18,7 +18,6 @@ public class JwtUtil {
     private String secretKey;
 
     public String generateToken(Map<String, Object> claims){
-        System.out.println("jwt key = " + secretKey);
         return Jwts.builder()
                 .setClaims(claims)
                 .setExpiration(new Date(Instant.now().toEpochMilli() + Duration.ofMinutes(30).toMillis()))//expire time is 30min
