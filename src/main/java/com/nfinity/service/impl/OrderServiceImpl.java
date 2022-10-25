@@ -59,7 +59,7 @@ public class OrderServiceImpl implements OrderService {
             orderEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
             return orderRepository.save(orderEntity).getId();
         }else{
-            throw new BusinessException(ErrorCode.NOT_FOUND);
+            throw new BusinessException(ErrorCode.NONEXISTENT_ORDER);
         }
     }
 

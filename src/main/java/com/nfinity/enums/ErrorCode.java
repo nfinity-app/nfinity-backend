@@ -13,6 +13,8 @@ public enum ErrorCode {
     INCORRECT_INPUT(100003, "Incorrect email or user name or password"),
     INVALID_TOKEN(100004, "Invalid token"),
     NOT_ENOUGH(100010, "nft is not enough"),
+
+    NONEXISTENT_ORDER(100011, "This order does not exist"),
     ;
 
     private final int code;
