@@ -20,7 +20,8 @@ repositories {
 
 dependencies {
 	implementation 'com.auth0:java-jwt:4.2.0'
-	implementation 'io.jsonwebtoken:jjwt:0.9.1'
+//	implementation 'io.jsonwebtoken:jjwt:0.9.1'
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
 	implementation 'org.netbeans.external:org-apache-commons-io:RELEASE113'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
@@ -28,6 +29,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.320'
 	implementation 'com.amazonaws:aws-java-sdk-pinpoint:1.12.322'
+//	testImplementation 'software.amazon.awssdk:s3:2.18.1'
+	implementation 'software.amazon.awssdk:pinpoint:2.18.1'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'mysql:mysql-connector-java'
 	implementation 'org.springframework.boot:spring-boot-starter-web'

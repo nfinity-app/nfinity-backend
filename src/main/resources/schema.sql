@@ -18,7 +18,7 @@ create table IF NOT EXISTS collection(
     address varchar(128),
     minted_qty int,
     status int NOT NULL comment '1-drafted, 2-pending, 3-published, 4-suspended, 5-failed',
-    contract_status int comment '1-init, 2-pending, 3-published, 4-failed',
+    tx_status int comment '1-init, 2-pending, 3-published, 4-failed',
     create_time timestamp not null,
     update_time timestamp not null
 );
@@ -114,6 +114,7 @@ create table if not exists `order`
     mint_qty int,
     amount decimal(40, 18),
     status int comment '1-unpaid, 2-succeed, 3-failed, 4-cancelled',
+    tx_status int comment '1-init, 2-pending, 3-published, 4-failed',
     create_time timestamp,
     update_time timestamp
 );

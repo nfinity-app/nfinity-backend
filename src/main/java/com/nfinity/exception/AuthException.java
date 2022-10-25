@@ -1,12 +1,13 @@
 package com.nfinity.exception;
 
+import com.nfinity.enums.ErrorCode;
 import lombok.Getter;
 
 @Getter
 public class AuthException extends RuntimeException{
-    private final String message;
+    private final ErrorCode errorCode;
 
-    public AuthException(String message){
-        this.message = message;
+    public AuthException(ErrorCode errorCode){
+        this.errorCode = errorCode;
     }
 }

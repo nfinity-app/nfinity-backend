@@ -1,6 +1,6 @@
 package com.nfinity.service.impl;
 
-import com.nfinity.aws.PinPointUtil;
+import com.nfinity.aws.PinPointV1Util;
 import com.nfinity.entity.UserEntity;
 import com.nfinity.enums.ErrorCode;
 import com.nfinity.enums.LoginType;
@@ -70,15 +70,15 @@ public class UserServiceImpl implements UserService {
             redisTemplate.opsForValue().set(vo.getEmail(), verificationCode, Duration.ofMinutes(30));
 
             //send email to user
-            PinPointUtil.sendEmail(vo.getEmail(), verificationCode, "register");
+            PinPointV1Util.sendEmail(vo.getEmail(), verificationCode, "register");
 
             return id;
         }else{
-            throw new BusinessException(ErrorCode.CONFLICT);
+            throw new BusinessException(ErrorCode.REGISTERED);
         }
     }
 
-    public Long checkVerificationCode(String email, String verificationCode, int type){
+    public Object checkVerificationCode(String email, String verificationCode, int type){
         UserEntity entity = userRepository.findByEmail(email);
         if(Objects.nonNull(entity)){
             String redisVerificationCode = redisTemplate.opsForValue().get(email);
@@ -86,14 +86,20 @@ public class UserServiceImpl implements UserService {
                 if(LoginType.REGISTER.getValue() == type) {
                     entity.setStatus(Status.ENABLE.getValue());
                     entity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
-                    return userRepository.save(entity).getId();
+                    Long userId = userRepository.save(entity).getId();
+
+                    //register returns token, user will go the home page.
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("id", userId);
+                    return jwtUtil.generateToken(map);
+                }else {
+                    return entity.getId();
                 }
-                return entity.getId();
             }else{
-                throw new BusinessException(ErrorCode.UNAUTHORIZED);
+                throw new BusinessException(ErrorCode.INCORRECT_INPUT);
             }
         }else{
-            throw new BusinessException(ErrorCode.NOT_FOUND);
+            throw new BusinessException(ErrorCode.NOT_REGISTERED);
         }
     }
 
@@ -106,11 +112,11 @@ public class UserServiceImpl implements UserService {
             redisTemplate.opsForValue().set(email, verificationCode, Duration.ofMinutes(30));
 
             //send email to user
-            PinPointUtil.sendEmail(email, verificationCode, "reset");
+            PinPointV1Util.sendEmail(email, verificationCode, "reset");
 
             return entity.getId();
         }else{
-            throw new BusinessException(ErrorCode.NOT_FOUND);
+            throw new BusinessException(ErrorCode.NOT_REGISTERED);
         }
     }
 
@@ -122,7 +128,7 @@ public class UserServiceImpl implements UserService {
             entity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
             return userRepository.save(entity).getId();
         }else{
-            throw new BusinessException(ErrorCode.NOT_FOUND);
+            throw new BusinessException(ErrorCode.NOT_REGISTERED);
         }
     }
 
@@ -131,7 +137,7 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = userRepository.findByEmailOrUsernameAndStatus(Status.ENABLE.getValue(), vo.getEmail(), vo.getUsername());
 
         if(Objects.isNull(userEntity)){
-            throw new BusinessException(ErrorCode.NOT_FOUND);
+            throw new BusinessException(ErrorCode.NOT_REGISTERED);
         }else{
             String md5Password = getMd5Password(vo.getPassword());
             if(md5Password.equals(userEntity.getPassword())){
@@ -139,7 +145,7 @@ public class UserServiceImpl implements UserService {
                 map.put("id", userEntity.getId());
                 return jwtUtil.generateToken(map);
             }else{
-                throw new BusinessException(ErrorCode.UNAUTHORIZED);
+                throw new BusinessException(ErrorCode.INCORRECT_INPUT);
             }
         }
     }
@@ -153,7 +159,7 @@ public class UserServiceImpl implements UserService {
             Optional<UserEntity> optional = userRepository.findById(vo.getId());
             entity = optional.orElseGet(UserEntity::new);
         }else {
-            throw new BusinessException(ErrorCode.NOT_FOUND);
+            throw new BusinessException(ErrorCode.NOT_REGISTERED);
         }
 
         BeanUtils.copyProperties(vo, entity, BeansUtil.getNullFields(vo));
@@ -161,7 +167,7 @@ public class UserServiceImpl implements UserService {
             if(entity.getPassword().equals(vo.getOldPassword())) {
                 entity.setPassword(getMd5Password(vo.getNewPassword()));
             }else{
-                throw new BusinessException(ErrorCode.UNAUTHORIZED);
+                throw new BusinessException(ErrorCode.INCORRECT_INPUT);
             }
         }
 

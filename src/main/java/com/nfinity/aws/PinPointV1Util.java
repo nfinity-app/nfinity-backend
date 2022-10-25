@@ -4,10 +4,19 @@ import com.amazonaws.services.pinpoint.AmazonPinpoint;
 import com.amazonaws.services.pinpoint.AmazonPinpointClientBuilder;
 import com.amazonaws.services.pinpoint.model.*;
 
+import com.amazonaws.services.pinpoint.model.AddressConfiguration;
+import com.amazonaws.services.pinpoint.model.ChannelType;
+import com.amazonaws.services.pinpoint.model.DirectMessageConfiguration;
+import com.amazonaws.services.pinpoint.model.EmailMessage;
+import com.amazonaws.services.pinpoint.model.MessageRequest;
+import com.amazonaws.services.pinpoint.model.SendMessagesRequest;
+import com.amazonaws.services.pinpoint.model.SimpleEmail;
+import com.amazonaws.services.pinpoint.model.SimpleEmailPart;
+
 import java.util.HashMap;
 import java.util.Map;
 
-public class PinPointUtil {
+public class PinPointV1Util {
     public static String region = "us-east-1";
     public static String appId = "1074861e193240e6bfc2ab5c80d69ce8";
 
@@ -27,7 +36,7 @@ public class PinPointUtil {
     public static boolean sendEmail(String toAddress, String verificationCode, String type) {
         String link = websiteUrl + type + "?email=" + toAddress + "&verification_code=" + verificationCode;
 
-//        try {
+        try {
             Map<String, AddressConfiguration> addressMap = new HashMap<>();
 
             addressMap.put(toAddress, new AddressConfiguration().withChannelType(ChannelType.EMAIL));
@@ -70,8 +79,9 @@ public class PinPointUtil {
             System.out.println("send email result: " + result);
             System.out.println("Message sent!");
             return result.getMessageResponse().getResult().get(toAddress).getStatusCode() == 200;
-//        } catch (Exception ex) {
-//            System.out.println("The message wasn't sent. Error message: " + ex.getMessage());
-//        }
+        } catch (Exception ex) {
+            System.out.println("The message wasn't sent. Error message: " + ex.getMessage());
+        }
+        return false;
     }
 }

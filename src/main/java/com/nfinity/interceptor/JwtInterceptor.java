@@ -1,9 +1,11 @@
 package com.nfinity.interceptor;
 
+import com.nfinity.enums.ErrorCode;
 import com.nfinity.exception.AuthException;
 import com.nfinity.util.JwtUtil;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -11,6 +13,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+@Slf4j
 @Component
 @CrossOrigin
 @RequiredArgsConstructor
@@ -29,16 +32,18 @@ public class JwtInterceptor implements HandlerInterceptor {
         try{
             jwtUtil.validateToken(token);
             return true;
-        }catch (SignatureException e){
-            throw new AuthException("Invalid JWT signature");
         }catch (MalformedJwtException e){
-            throw new AuthException("Invalid JWT token");
+            log.error("Invalid JWT token.", e);
+            throw new AuthException(ErrorCode.INVALID_TOKEN);
         }catch (ExpiredJwtException e){
-            throw new AuthException("Expire JWT token");
+            log.error("Expired JWT token.", e);
+            throw new AuthException(ErrorCode.INVALID_TOKEN);
         }catch (UnsupportedJwtException e){
-            throw new AuthException("Unsupported JWT token");
+            log.error("Unsupported JWT token.", e);
+            throw new AuthException(ErrorCode.INVALID_TOKEN);
         }catch (IllegalArgumentException e){
-            throw new AuthException("JWT token compact of handler are invalid");
+            log.error("JWT token compact of handler are invalid.", e);
+            throw new AuthException(ErrorCode.INVALID_TOKEN);
         }
     }
 }
