@@ -1,5 +1,7 @@
 package com.nfinity.aws;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.pinpoint.PinpointClient;
@@ -7,47 +9,37 @@ import software.amazon.awssdk.services.pinpoint.model.*;
 
 import java.util.*;
 
+@Slf4j
 public class PinPointV2Util {
     static String appId = "1074861e193240e6bfc2ab5c80d69ce8";
-    static final String charset = "utf-8";
-    static final String subject = "Verify Your E-mail Address";
-    static final String toAddress = "1597406469@qq.com";
-    static final String htmlBody = "registration is successful";
     static final String senderAddress = "nwang@nfinitymint.com";
     static final String templateName = "nfinity-register-template";
     static final String templateVersion = "1";
-    public static void sendEmail() {
+
+    @Value("${website.url}")
+    private String websiteUrl;
+
+    public void sendEmail(String email, String verificationCode, String type) {
+        String url = websiteUrl + type + "?email=" + email + "&verification_code=" + verificationCode;
+
         Map<String, AddressConfiguration> addressMap = new HashMap<>();
         AddressConfiguration configuration = AddressConfiguration.builder()
                 .channelType(ChannelType.EMAIL)
                 .build();
 
-        addressMap.put(toAddress, configuration);
-//        SimpleEmailPart emailPart = SimpleEmailPart.builder()
-//                .data(htmlBody)
-//                .charset(charset)
-//                .build() ;
-//
-//        SimpleEmailPart subjectPart = SimpleEmailPart.builder()
-//                .data(subject)
-//                .charset(charset)
-//                .build() ;
-//
-//        SimpleEmail simpleEmail = SimpleEmail.builder()
-//                .htmlPart(emailPart)
-//                .subject(subjectPart)
-//                .build();
-//
-//        EmailMessage emailMessage = EmailMessage.builder()
-//                .body(htmlBody)
-//                .fromAddress(senderAddress)
-//                .simpleEmail(simpleEmail)
-//                .build();
-//
-//        DirectMessageConfiguration directMessageConfiguration = DirectMessageConfiguration.builder()
-//                .emailMessage(emailMessage)
-//                .build();
+        addressMap.put(email, configuration);
 
+        Map<String, List<String>> substitutions = new HashMap<>();
+        substitutions.put("url", Collections.singletonList(url));
+
+        EmailMessage emailMessage = EmailMessage.builder()
+                .fromAddress(senderAddress)
+                .substitutions(substitutions)
+                .build();
+
+        DirectMessageConfiguration directMessageConfiguration = DirectMessageConfiguration.builder()
+                .emailMessage(emailMessage)
+                .build();
 
         Template template = Template.builder()
                 .name(templateName)
@@ -60,7 +52,7 @@ public class PinPointV2Util {
 
         MessageRequest messageRequest = MessageRequest.builder()
                 .addresses(addressMap)
-//                .messageConfiguration(directMessageConfiguration)
+                .messageConfiguration(directMessageConfiguration)
                 .templateConfiguration(templateConfiguration)
                 .build();
 
@@ -75,12 +67,9 @@ public class PinPointV2Util {
                 .credentialsProvider(ProfileCredentialsProvider.create())
                 .build();
 
-        pinpoint.sendMessages(messagesRequest);
-        System.out.println("Email was sent");
+        SendMessagesResponse response = pinpoint.sendMessages(messagesRequest);
+        log.info(String.valueOf(response));
+        log.info("Email was sent");
         pinpoint.close();
-    }
-
-    public static void main(String[] args) {
-        sendEmail();
     }
 }

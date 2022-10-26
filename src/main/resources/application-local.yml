@@ -29,3 +29,6 @@ md5:
 jwt:
   secret:
     key: snmhH32qahOkXHrTSBySlA==
+
+website:
+  url: http://localhost:3000/user/
