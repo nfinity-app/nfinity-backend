@@ -12,6 +12,7 @@ public enum ErrorCode {
     NOT_REGISTERED(100002, "This email has not been registered"),
     INCORRECT_INPUT(100003, "Incorrect email or user name or password"),
     INVALID_TOKEN(100004, "Invalid token"),
+    INVALID_VERIFICATION_CODE(100005, "Invalid verification code"),
     NOT_ENOUGH(100010, "nft is not enough"),
 
     NONEXISTENT_ORDER(100011, "This order does not exist"),

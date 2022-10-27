@@ -98,7 +98,7 @@ public class UserServiceImpl implements UserService {
                     return entity.getId();
                 }
             }else{
-                throw new BusinessException(ErrorCode.INCORRECT_INPUT);
+                throw new BusinessException(ErrorCode.INVALID_VERIFICATION_CODE);
             }
         }else{
             throw new BusinessException(ErrorCode.NOT_REGISTERED);
