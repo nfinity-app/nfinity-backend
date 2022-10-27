@@ -53,38 +53,43 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Long register(UserVO vo) throws Exception {
-        UserEntity userEntity = userRepository.findByEmailAndStatus(vo.getEmail(), Status.ENABLE.getValue());
-
-        if(Objects.isNull(userEntity)){
-            UserEntity entity;
-            UserEntity disableUser = userRepository.findByEmailOrUsernameAndStatus(Status.DISABLE.getValue(), vo.getEmail(), vo.getUsername());
-            if(Objects.nonNull(disableUser)){
-                entity = disableUser;
-            }else{
-                entity = new UserEntity();
-            }
-
-            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-            //save a pending status user to db
-            BeanUtils.copyProperties(vo, entity, BeansUtil.getNullFields(vo));
-            entity.setPassword(getMd5Password(vo.getPassword()));
-            entity.setStatus(Status.DISABLE.getValue());
-            entity.setCreateTime(timestamp);
-            entity.setUpdateTime(timestamp);
-
-            Long id = userRepository.save(entity).getId();
-
-            //save verification code to redis
-            String verificationCode = generateVerificationCode();
-            redisTemplate.opsForValue().set(vo.getEmail(), verificationCode, Duration.ofMinutes(30));
-
-            //send email to user
-            pinPointV2Util.sendEmail(vo.getEmail(), verificationCode, "register");
-
-            return id;
-        }else{
-            throw new BusinessException(ErrorCode.REGISTERED);
+        UserEntity userEntityByEmail = userRepository.findByEmailAndStatus(vo.getEmail(), Status.ENABLE.getValue());
+        UserEntity userEntityByUsername = userRepository.findByUsernameAndStatus(vo.getUsername(), Status.ENABLE.getValue());
+        if(Objects.nonNull(userEntityByEmail)){
+            throw new BusinessException(ErrorCode.EMAIL_REGISTERED);
         }
+        if(Objects.nonNull((userEntityByUsername))){
+            throw new BusinessException(ErrorCode.USERNAME_REGISTERED);
+        }
+
+
+        UserEntity entity;
+        UserEntity disableUser = userRepository.findByEmailOrUsernameAndStatus(Status.DISABLE.getValue(), vo.getEmail(), vo.getUsername());
+        if(Objects.nonNull(disableUser)){
+            entity = disableUser;
+        }else{
+            entity = new UserEntity();
+        }
+
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        //save a pending status user to db
+        BeanUtils.copyProperties(vo, entity, BeansUtil.getNullFields(vo));
+        entity.setPassword(getMd5Password(vo.getPassword()));
+        entity.setStatus(Status.DISABLE.getValue());
+        entity.setCreateTime(timestamp);
+        entity.setUpdateTime(timestamp);
+
+        Long id = userRepository.save(entity).getId();
+
+        //save verification code to redis
+        String verificationCode = generateVerificationCode();
+        redisTemplate.opsForValue().set(vo.getEmail(), verificationCode, Duration.ofMinutes(30));
+
+        //send email to user
+        pinPointV2Util.sendEmail(vo.getEmail(), verificationCode, "register");
+
+        return id;
+
     }
 
     public Object checkVerificationCode(String email, String verificationCode, int type){
