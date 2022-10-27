@@ -215,7 +215,7 @@ public class UserServiceImpl implements UserService {
 
     private String generateVerificationCode(){
         Random random = new Random();
-        int number = random.nextInt(99999999);
-        return String.format("%08d", number);
+        int number = random.nextInt(999999);
+        return String.format("%06d", number);
     }
 }

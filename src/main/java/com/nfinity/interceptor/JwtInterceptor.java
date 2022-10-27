@@ -21,13 +21,19 @@ public class JwtInterceptor implements HandlerInterceptor {
 
     private final JwtUtil jwtUtil;
 
+    private static final String userUri = "/nft-business/v1/user";
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         if("OPTIONS".equals(request.getMethod())){
             return true;
         }
-        String token = request.getHeader("token");
-        System.out.println("token = " + token);
+
+        if(userUri.equals(request.getRequestURI()) && "POST".equals(request.getMethod())){
+            return true;
+        }
+
+        String token = request.getHeader("Authentication");
 
         try{
             jwtUtil.validateToken(token);
