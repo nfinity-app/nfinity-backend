@@ -16,7 +16,7 @@ import java.util.Map;
 public class JwtUtil {
 
     @Value("${jwt.secret.key}")
-    private static String secretKey;
+    private String secretKey;
 
     public String generateToken(Map<String, Object> claims){
         return Jwts.builder()
