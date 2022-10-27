@@ -1,11 +1,15 @@
 package com.nfinity.service.impl;
 
 import com.nfinity.aws.PinPointV1Util;
+import com.nfinity.entity.CeFinanceEntity;
+import com.nfinity.entity.ChainCoinEntity;
 import com.nfinity.entity.UserEntity;
 import com.nfinity.enums.ErrorCode;
 import com.nfinity.enums.LoginType;
 import com.nfinity.enums.Status;
 import com.nfinity.exception.BusinessException;
+import com.nfinity.repository.CeFinanceRepository;
+import com.nfinity.repository.ChainCoinRepository;
 import com.nfinity.repository.UserRepository;
 import com.nfinity.service.UserService;
 import com.nfinity.util.AESEncryption;
@@ -20,6 +24,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -37,6 +42,8 @@ public class UserServiceImpl implements UserService {
     private String md5Salt;
 
     private final UserRepository userRepository;
+    private final CeFinanceRepository ceFinanceRepository;
+    private final ChainCoinRepository chainCoinRepository;
 
     private final RedisTemplate<String, String> redisTemplate;
 
@@ -84,14 +91,7 @@ public class UserServiceImpl implements UserService {
             String redisVerificationCode = redisTemplate.opsForValue().get(email);
             if(verificationCode.equals(redisVerificationCode)){
                 if(LoginType.REGISTER.getValue() == type) {
-                    entity.setStatus(Status.ENABLE.getValue());
-                    entity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
-                    Long userId = userRepository.save(entity).getId();
-
-                    //register returns token, user will go the home page.
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("id", userId);
-                    return jwtUtil.generateToken(map);
+                    return doAfterRegister(entity);
                 }else {
                     return entity.getId();
                 }
@@ -101,6 +101,34 @@ public class UserServiceImpl implements UserService {
         }else{
             throw new BusinessException(ErrorCode.NOT_REGISTERED);
         }
+    }
+
+    private String doAfterRegister(UserEntity userEntity){
+        userEntity.setStatus(Status.ENABLE.getValue());
+        userEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+        Long userId = userRepository.save(userEntity).getId();
+
+        //add empty data to table ce_finance
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        List<ChainCoinEntity> chainCoinEntityList = chainCoinRepository.findAll();
+        List<CeFinanceEntity> ceFinanceEntityList = new ArrayList<>(chainCoinEntityList.size());
+        for(ChainCoinEntity entity : chainCoinEntityList){
+            CeFinanceEntity ceFinanceEntity = new CeFinanceEntity();
+            ceFinanceEntity.setCoinId(entity.getId());
+            ceFinanceEntity.setUserId(userId);
+            ceFinanceEntity.setUseAmount(BigDecimal.ZERO);
+            ceFinanceEntity.setChainFrozen(BigDecimal.ZERO);
+            ceFinanceEntity.setOtcFrozen(BigDecimal.ZERO);
+            ceFinanceEntity.setCreateTime(timestamp);
+            ceFinanceEntity.setUpdateTime(timestamp);
+            ceFinanceEntityList.add(ceFinanceEntity);
+        }
+        ceFinanceRepository.saveAll(ceFinanceEntityList);
+
+        //register returns token, user will go the home page.
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", userId);
+        return jwtUtil.generateToken(map);
     }
 
     @Override
