@@ -2,6 +2,7 @@ package com.nfinity.aws;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.pinpoint.PinpointClient;
@@ -10,6 +11,7 @@ import software.amazon.awssdk.services.pinpoint.model.*;
 import java.util.*;
 
 @Slf4j
+@Component
 public class PinPointV2Util {
     static String appId = "1074861e193240e6bfc2ab5c80d69ce8";
     static final String senderAddress = "nwang@nfinitymint.com";
