@@ -153,9 +153,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public Long resetPassword(UserVO vo) throws Exception {
         String redisVerificationCode = redisTemplate.opsForValue().get(vo.getEmail());
-        if(vo.getVerificationCode().equals(redisVerificationCode)) {
+        if(!vo.getVerificationCode().equals(redisVerificationCode)) {
             throw new BusinessException(ErrorCode.INVALID_VERIFICATION_CODE);
         }
+
         UserEntity entity = userRepository.findByEmailAndStatus(vo.getEmail(), Status.ENABLE.getValue());
         if(Objects.nonNull(entity)) {
             entity.setPassword(getMd5Password(vo.getPassword()));
