@@ -38,4 +38,7 @@ public class UserVO {
     @JsonProperty("new_password")
     private String newPassword;
 
+    @JsonProperty("verification_code")
+    private String verificationCode;
+
 }

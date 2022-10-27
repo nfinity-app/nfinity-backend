@@ -60,6 +60,9 @@ public class UserController {
         if(StringUtils.isBlank(vo.getPassword())){
             Result.fail(ErrorCode.ERROR.getCode(), "password must be not blank");
         }
+        if(StringUtils.isBlank(vo.getVerificationCode())){
+            Result.fail(ErrorCode.ERROR.getCode(), "verification code must be not blank");
+        }
         Long userId = userService.resetPassword(vo);
         return Result.succeed(ErrorCode.OK, userId);
     }
