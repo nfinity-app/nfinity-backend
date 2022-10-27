@@ -13,10 +13,12 @@ import java.util.*;
 @Slf4j
 @Component
 public class PinPointV2Util {
-    static String appId = "1074861e193240e6bfc2ab5c80d69ce8";
-    static final String senderAddress = "nwang@nfinitymint.com";
-    static final String templateName = "nfinity-register-template";
-    static final String templateVersion = "1";
+    @Value("${pinpoint.email.appId}")
+    private String appId = "1074861e193240e6bfc2ab5c80d69ce8";
+    @Value("${pinpoint.email.template.name}")
+    private String templateName = "nfinity-register-template";
+    @Value("${pinpoint.email.template.version}")
+    private String templateVersion = "1";
 
     @Value("${website.url}")
     private String websiteUrl;
@@ -35,7 +37,6 @@ public class PinPointV2Util {
         substitutions.put("url", Collections.singletonList(url));
 
         EmailMessage emailMessage = EmailMessage.builder()
-                .fromAddress(senderAddress)
                 .substitutions(substitutions)
                 .build();
 

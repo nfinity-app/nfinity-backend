@@ -32,3 +32,10 @@ jwt:
 
 website:
   url: http://localhost:3000/user/
+
+pinpoint:
+  email:
+    appId: 1074861e193240e6bfc2ab5c80d69ce8
+    template:
+      name: nfinity-register-template
+      version: 1
