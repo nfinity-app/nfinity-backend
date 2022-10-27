@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum ContractStatus {
+public enum TxStatus {
     INIT(1),
     PENDING(2),
     PUBLISHED(3),

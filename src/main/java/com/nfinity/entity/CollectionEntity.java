@@ -27,7 +27,7 @@ public class CollectionEntity {
     private int airdropRetention;
     private int retainedQty;
     private int status;
-    private int contractStatus;
+    private int txStatus;
     private Timestamp createTime;
     private Timestamp updateTime;
 }

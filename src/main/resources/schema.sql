@@ -23,6 +23,17 @@ create table IF NOT EXISTS collection(
     update_time timestamp not null
 );
 
+create table IF NOT EXISTS collection_action
+(
+    id            bigint PRIMARY KEY AUTO_INCREMENT,
+    collection_id bigint,
+    tx_type       int,
+    tx_status     int comment '1-init, 2-pending, 3-published, 4-failed',
+    create_time   timestamp,
+    update_time   timestamp
+);
+create index collection_action_collection_id on collection_action(collection_id);
+
 create table if not exists folder(
     id bigint PRIMARY KEY AUTO_INCREMENT,
     name varchar(64) not null,
@@ -115,6 +126,7 @@ create table if not exists `order`
     amount decimal(40, 18),
     status int comment '1-unpaid, 2-succeed, 3-failed, 4-cancelled',
     tx_status int comment '1-init, 2-pending, 3-published, 4-failed',
+    type int, -- 1- , 2-
     create_time timestamp,
     update_time timestamp
 );
@@ -128,6 +140,7 @@ create table if not exists order_nft
     order_id bigint,
     nft_id bigint,
     token_id bigint,
+    user_address varchar(64),
     create_time timestamp,
     update_time timestamp
 );

@@ -1,7 +1,7 @@
 package com.nfinity.service.impl;
 
 import com.nfinity.entity.*;
-import com.nfinity.enums.ContractStatus;
+import com.nfinity.enums.TxStatus;
 import com.nfinity.enums.DisplayStatus;
 import com.nfinity.enums.MintStatus;
 import com.nfinity.enums.Status;
@@ -79,7 +79,7 @@ public class CollectionServiceImpl implements CollectionService {
         collectionEntity.setName(vo.getCollectionName());
         collectionEntity.setIcon(vo.getRecords().get(0).getPath());
         collectionEntity.setStatus(DisplayStatus.PENDING.getValue());
-        collectionEntity.setContractStatus(ContractStatus.INIT.getValue());
+        collectionEntity.setTxStatus(TxStatus.INIT.getValue());
         collectionEntity.setCreateTime(timestamp);
         collectionEntity.setUpdateTime(timestamp);
 
