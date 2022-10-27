@@ -3,9 +3,7 @@ package com.nfinity.controller;
 import com.nfinity.enums.ErrorCode;
 import com.nfinity.service.WalletService;
 import com.nfinity.util.JwtUtil;
-import com.nfinity.vo.CeWithdrawVO;
-import com.nfinity.vo.WalletVO;
-import com.nfinity.vo.Result;
+import com.nfinity.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,6 +33,17 @@ public class WalletController {
     @PostMapping("/withdrawal")
     public Result<Long> withdraw(@RequestHeader("Authentication") String token, @Valid @RequestBody CeWithdrawVO vo){
         Long userId = (Long) jwtUtil.validateToken(token).get("id");
-        return Result.succeed(ErrorCode.OK, userId);
+        vo.setUserId(userId);
+        Long id = walletService.withdraw(vo);
+        return Result.succeed(ErrorCode.OK, id);
+    }
+
+    @GetMapping("/transaction-history")
+    public Result<PageModel<ChainBillVO>> getTransactionHistory(@RequestHeader("Authentication") String token,
+                                                                @RequestParam(required = false, defaultValue = "1") int page,
+                                                                @RequestParam(required = false, defaultValue = "5") int size){
+        Long userId = (Long) jwtUtil.validateToken(token).get("id");
+        PageModel<ChainBillVO> pageModel = walletService.getTransactionHistory(userId, page, size);
+        return Result.succeed(ErrorCode.OK, pageModel);
     }
 }

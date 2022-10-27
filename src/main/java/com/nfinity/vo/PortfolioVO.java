@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 public class PortfolioVO {
     private long coinId;
     private String symbol;
-    private String icon;
+    private String img;
     private BigDecimal useAmount;
     private String address;
 }

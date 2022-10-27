@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 @Setter
 @Getter
@@ -20,11 +21,14 @@ public class ChainBillVO {
     private String assetId;
     private long userId;
     private long coinId;
+    private String symbol;
+    private String img;
     private String chainType;
     private String txId;
     private BigDecimal qty;
     private int status;
     private long blockNum;
     private long blockTime;
+    private Timestamp createTime;
     private String comment;
 }

@@ -1,15 +1,13 @@
 package com.nfinity.service.impl;
 
-import com.nfinity.entity.CeFinanceEntity;
-import com.nfinity.entity.ChainAddressEntity;
-import com.nfinity.entity.ChainCoinEntity;
-import com.nfinity.repository.CeFinanceRepository;
-import com.nfinity.repository.ChainAddressRepository;
-import com.nfinity.repository.ChainCoinRepository;
+import com.nfinity.entity.*;
+import com.nfinity.repository.*;
 import com.nfinity.service.WalletService;
-import com.nfinity.vo.PortfolioVO;
-import com.nfinity.vo.WalletVO;
+import com.nfinity.util.BeansUtil;
+import com.nfinity.vo.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -24,6 +22,8 @@ public class WalletServiceImpl implements WalletService {
     private final CeFinanceRepository ceFinanceRepository;
     private final ChainCoinRepository chainCoinRepository;
     private final ChainAddressRepository chainAddressRepository;
+    private final CeWithdrawRepository ceWithdrawRepository;
+    private final ChainBillRepository chainBillRepository;
 
     @Override
     public WalletVO getWalletFinance(Long userId) {
@@ -40,7 +40,7 @@ public class WalletServiceImpl implements WalletService {
                     ChainCoinEntity chainCoinEntity = chainCoinEntityOptional.get();
                     portfolioVO.setCoinId(chainCoinEntity.getId());
                     portfolioVO.setSymbol(chainCoinEntity.getSymbol());
-                    portfolioVO.setIcon(chainCoinEntity.getImg());
+                    portfolioVO.setImg(chainCoinEntity.getImg());
                     portfolioVO.setUseAmount(ceFinanceEntity.getUseAmount());
                 }
 
@@ -68,5 +68,47 @@ public class WalletServiceImpl implements WalletService {
             return entity.getAddress();
         }
         return null;
+    }
+
+    @Override
+    public Long withdraw(CeWithdrawVO vo) {
+        CeWithdrawEntity ceWithdrawEntity = new CeWithdrawEntity();
+        BeanUtils.copyProperties(vo, ceWithdrawEntity, BeansUtil.getNullFields(vo));
+
+        Optional<ChainCoinEntity> chainCoinEntityOptional = chainCoinRepository.findBySymbol(vo.getSymbol());
+        if(chainCoinEntityOptional.isPresent()){
+            Long coinId = chainCoinEntityOptional.get().getId();
+            ceWithdrawEntity.setCoinId(coinId);
+        }
+
+        return ceWithdrawRepository.save(ceWithdrawEntity).getId();
+    }
+
+    @Override
+    public PageModel<ChainBillVO> getTransactionHistory(Long userId, int page, int size) {
+        PageModel<ChainBillVO> pageModel = new PageModel<>();
+        List<ChainBillVO> chainBillVOS = new ArrayList<>();
+
+        int total = chainBillRepository.countByUserId(userId);
+        List<ChainBillEntity> chainBillEntityList = chainBillRepository.findAllByUserId(userId, PageRequest.of(page - 1, size));
+        if(!CollectionUtils.isEmpty(chainBillEntityList)){
+            for(ChainBillEntity entity : chainBillEntityList){
+                  ChainBillVO vo = new ChainBillVO();
+                  BeanUtils.copyProperties(entity, vo, BeansUtil.getNullFields(entity));
+
+                  Long coinId = entity.getCoinId();
+                  Optional<ChainCoinEntity> chainCoinEntityOptional = chainCoinRepository.findById(coinId);
+                  if(chainCoinEntityOptional.isPresent()){
+                      ChainCoinEntity chainCoinEntity = chainCoinEntityOptional.get();
+                      vo.setSymbol(chainCoinEntity.getSymbol());
+                      vo.setImg(chainCoinEntity.getImg());
+                  }
+                  chainBillVOS.add(vo);
+            }
+        }
+
+        pageModel.setTotal(total);
+        pageModel.setRecords(chainBillVOS);
+        return pageModel;
     }
 }
