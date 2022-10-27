@@ -1,6 +1,8 @@
 package com.nfinity.service.impl;
 
 import com.nfinity.aws.PinPointV2Util;
+import com.nfinity.entity.CeFinanceEntity;
+import com.nfinity.entity.ChainCoinEntity;
 import com.nfinity.entity.UserEntity;
 import com.nfinity.enums.ErrorCode;
 import com.nfinity.enums.LoginType;
