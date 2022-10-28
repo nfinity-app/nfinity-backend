@@ -20,7 +20,7 @@ public class BusinessInfoController {
 
     @PostMapping("/business-info")
     public Result<Long> createBusinessInfo(@RequestHeader("Authentication") String token, @Valid @RequestBody BusinessInfoVO vo){
-        Long id = (Long) jwtUtil.validateToken(token).get("id");
+        Long id = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
         vo.setUserId(id);
         Long businessId = businessInfoService.createBusinessInfo(vo);
         return Result.succeed(ErrorCode.OK, businessId);
@@ -28,7 +28,7 @@ public class BusinessInfoController {
 
     @GetMapping("/business-infos/{id}")
     public Result<BusinessInfoVO> getBusinessInfo(@RequestHeader("Authentication") String token, @PathVariable("id") Long businessId){
-        Long userId = (Long) jwtUtil.validateToken(token).get("id");
+        Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
         BusinessInfoVO vo = businessInfoService.getBusinessInfo(userId, businessId);
         return Result.succeed(ErrorCode.OK, vo);
     }
@@ -36,7 +36,7 @@ public class BusinessInfoController {
     @PatchMapping("/business-infos/{id}")
     public Result<Long> editBusinessInfo(@RequestHeader("Authentication") String token, @PathVariable("id") Long businessId,
                                          @RequestBody BusinessInfoVO vo){
-        Long userId = (Long) jwtUtil.validateToken(token).get("id");
+        Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
         vo.setId(businessId);
         vo.setUserId(userId);
         businessId = businessInfoService.editBusinessInfo(vo);

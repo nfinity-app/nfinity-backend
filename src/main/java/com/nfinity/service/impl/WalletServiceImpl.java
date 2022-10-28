@@ -4,6 +4,7 @@ import com.nfinity.entity.*;
 import com.nfinity.repository.*;
 import com.nfinity.service.WalletService;
 import com.nfinity.util.BeansUtil;
+import com.nfinity.util.BigDecimalUtil;
 import com.nfinity.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -42,7 +43,7 @@ public class WalletServiceImpl implements WalletService {
                     portfolioVO.setCoinId(chainCoinEntity.getId());
                     portfolioVO.setSymbol(chainCoinEntity.getSymbol());
                     portfolioVO.setImg(chainCoinEntity.getImg());
-                    portfolioVO.setUseAmount(ceFinanceEntity.getUseAmount());
+                    portfolioVO.setUseAmount(BigDecimalUtil.stripTrailingZeros(ceFinanceEntity.getUseAmount()));
                 }
 
                 Optional<ChainAddressEntity> chainAddressEntityOptional = chainAddressRepository.findByCoinIdAndUserId(ceFinanceEntity.getCoinId(), userId);

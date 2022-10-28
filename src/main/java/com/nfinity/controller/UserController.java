@@ -69,7 +69,7 @@ public class UserController {
 
     @PatchMapping("/user")
     public Result<Long> editProfile(@RequestHeader("Authentication") String token, @RequestBody UserVO vo) throws Exception {
-        Long id = (Long) jwtUtil.validateToken(token).get("id");
+        Long id = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
         vo.setId(id);
         Long userId = userService.editProfile(vo);
         return Result.succeed(ErrorCode.OK, userId);

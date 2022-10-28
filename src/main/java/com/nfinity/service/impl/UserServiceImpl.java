@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
 
 
         UserEntity entity;
-        UserEntity disableUser = userRepository.findByEmailOrUsernameAndStatus(Status.DISABLE.getValue(), vo.getEmail(), vo.getUsername());
+        UserEntity disableUser = userRepository.findByEmailAndStatus(vo.getEmail(), Status.DISABLE.getValue());
         if(Objects.nonNull(disableUser)){
             entity = disableUser;
         }else{

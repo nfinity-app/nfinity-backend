@@ -18,7 +18,7 @@ public class WalletController {
 
     @GetMapping
     public Result<WalletVO> getWalletFinance(@RequestHeader("Authentication") String token){
-        Long userId = (Long) jwtUtil.validateToken(token).get("id");
+        Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
         WalletVO vo = walletService.getWalletFinance(userId);
         return Result.succeed(ErrorCode.OK, vo);
     }
@@ -26,14 +26,14 @@ public class WalletController {
     @GetMapping("/address/chain-types/{type}/coins/{coin}")
     public Result<String> getChainAddress(@RequestHeader("Authentication") String token, @PathVariable String type,
                                           @PathVariable String coin){
-        Long userId = (Long) jwtUtil.validateToken(token).get("id");
+        Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
         String address = walletService.getChainAddress(userId, type, coin);
         return Result.succeed(ErrorCode.OK, address);
     }
 
     @PostMapping("/withdrawal")
     public Result<Long> withdraw(@RequestHeader("Authentication") String token, @Valid @RequestBody CeWithdrawVO vo){
-        Long userId = (Long) jwtUtil.validateToken(token).get("id");
+        Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
         vo.setUserId(userId);
         Long id = walletService.withdraw(vo);
         return Result.succeed(ErrorCode.OK, id);
@@ -43,7 +43,7 @@ public class WalletController {
     public Result<PageModel<ChainBillVO>> getTransactionHistory(@RequestHeader("Authentication") String token,
                                                                 @RequestParam(required = false, defaultValue = "1") int page,
                                                                 @RequestParam(required = false, defaultValue = "6") int size){
-        Long userId = (Long) jwtUtil.validateToken(token).get("id");
+        Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
         PageModel<ChainBillVO> pageModel = walletService.getTransactionHistory(userId, page, size);
         return Result.succeed(ErrorCode.OK, pageModel);
     }

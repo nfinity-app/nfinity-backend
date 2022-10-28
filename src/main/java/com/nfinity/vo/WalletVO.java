@@ -10,6 +10,6 @@ import java.util.List;
 @Getter
 public class WalletVO {
     private BigDecimal balance;
-    private List<PortfolioVO> records;
     private String address;
+    private List<PortfolioVO> records;
 }
