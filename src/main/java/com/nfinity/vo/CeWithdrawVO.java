@@ -22,7 +22,9 @@ public class CeWithdrawVO {
     private String from;
 
     @NotBlank
+    @JsonProperty("to_address")
     private String to;
+
     private String username;
 
     @NotNull
@@ -36,5 +38,6 @@ public class CeWithdrawVO {
     @NotBlank
     @JsonProperty("chain_type")
     private String chainType;
+
     private String comment;
 }

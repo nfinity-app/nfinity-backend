@@ -8,7 +8,7 @@ import com.nfinity.vo.WalletVO;
 public interface WalletService {
     WalletVO getWalletFinance(Long userId);
 
-    String getChainAddress(Long userId, String type);
+    String getChainAddress(Long userId, String type, String coin);
 
     Long withdraw(CeWithdrawVO vo);
 

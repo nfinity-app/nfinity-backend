@@ -9,6 +9,5 @@ import java.util.Optional;
 @Repository
 public interface ChainAddressRepository extends JpaRepository<ChainAddressEntity, Long> {
     Optional<ChainAddressEntity> findByCoinIdAndUserId(Long coinId, Long userId);
-
-    Optional<ChainAddressEntity> findByUserIdAndChainType(Long userId, String type);
+    Optional<ChainAddressEntity> findByUserIdAndCoinIdAndChainType(Long userId, Long coinId, String type);
 }

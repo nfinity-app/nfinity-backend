@@ -19,6 +19,8 @@ create table IF NOT EXISTS collection(
     minted_qty int,
     status int NOT NULL comment '1-drafted, 2-pending, 3-published, 4-suspended, 5-failed',
     tx_status int comment '1-init, 2-pending, 3-published, 4-failed',
+    contract_type int comment '1-721, 2-1155',
+    user_id bigint,
     create_time timestamp not null,
     update_time timestamp not null
 );
@@ -27,7 +29,8 @@ create table IF NOT EXISTS collection_action
 (
     id            bigint PRIMARY KEY AUTO_INCREMENT,
     collection_id bigint,
-    tx_type       int,
+    param_key       varchar(32),
+    param_value     varchar(64),
     tx_status     int comment '1-init, 2-pending, 3-published, 4-failed',
     create_time   timestamp,
     update_time   timestamp
@@ -126,7 +129,7 @@ create table if not exists `order`
     amount decimal(40, 18),
     status int comment '1-unpaid, 2-succeed, 3-failed, 4-cancelled',
     tx_status int comment '1-init, 2-pending, 3-published, 4-failed',
-    type int, -- 1- , 2-
+    type int comment '1-public sale, 2-airdrop, 3-pre-sale',
     create_time timestamp,
     update_time timestamp
 );

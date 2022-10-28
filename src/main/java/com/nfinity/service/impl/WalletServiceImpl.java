@@ -6,6 +6,7 @@ import com.nfinity.service.WalletService;
 import com.nfinity.util.BeansUtil;
 import com.nfinity.vo.*;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -45,9 +46,9 @@ public class WalletServiceImpl implements WalletService {
                 }
 
                 Optional<ChainAddressEntity> chainAddressEntityOptional = chainAddressRepository.findByCoinIdAndUserId(ceFinanceEntity.getCoinId(), userId);
-                if(chainAddressEntityOptional.isPresent()){
+                if(chainAddressEntityOptional.isPresent() && StringUtils.isBlank(walletVO.getAddress())){
                     ChainAddressEntity chainAddressEntity = chainAddressEntityOptional.get();
-                    portfolioVO.setAddress(chainAddressEntity.getAddress());
+                    walletVO.setAddress(chainAddressEntity.getAddress());
                 }
 
                 portfolioVOList.add(portfolioVO);
@@ -61,11 +62,17 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public String getChainAddress(Long userId, String type) {
-        Optional<ChainAddressEntity> optional = chainAddressRepository.findByUserIdAndChainType(userId, type);
-        if(optional.isPresent()){
-            ChainAddressEntity entity = optional.get();
-            return entity.getAddress();
+    public String getChainAddress(Long userId, String type, String coin) {
+        Optional<ChainCoinEntity> chainCoinEntityOptional = chainCoinRepository.findBySymbol(coin);
+        if(chainCoinEntityOptional.isPresent()){
+            Long coinId = chainCoinEntityOptional.get().getId();
+
+            Optional<ChainAddressEntity> chainAddressEntityOptional = chainAddressRepository.findByUserIdAndCoinIdAndChainType(userId, coinId, type);
+            if(chainAddressEntityOptional.isPresent()){
+                ChainAddressEntity entity = chainAddressEntityOptional.get();
+                return entity.getAddress();
+            }
+            return null;
         }
         return null;
     }

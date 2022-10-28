@@ -11,4 +11,5 @@ import java.util.List;
 public class WalletVO {
     private BigDecimal balance;
     private List<PortfolioVO> records;
+    private String address;
 }

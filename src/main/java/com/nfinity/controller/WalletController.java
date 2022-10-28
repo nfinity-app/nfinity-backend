@@ -23,10 +23,11 @@ public class WalletController {
         return Result.succeed(ErrorCode.OK, vo);
     }
 
-    @GetMapping("/address/types/{type}")
-    public Result<String> getChainAddress(@RequestHeader("Authentication") String token, @PathVariable String type){
+    @GetMapping("/address/chain-types/{type}/coins/{coin}")
+    public Result<String> getChainAddress(@RequestHeader("Authentication") String token, @PathVariable String type,
+                                          @PathVariable String coin){
         Long userId = (Long) jwtUtil.validateToken(token).get("id");
-        String address = walletService.getChainAddress(userId, type);
+        String address = walletService.getChainAddress(userId, type, coin);
         return Result.succeed(ErrorCode.OK, address);
     }
 
@@ -41,7 +42,7 @@ public class WalletController {
     @GetMapping("/transaction-history")
     public Result<PageModel<ChainBillVO>> getTransactionHistory(@RequestHeader("Authentication") String token,
                                                                 @RequestParam(required = false, defaultValue = "1") int page,
-                                                                @RequestParam(required = false, defaultValue = "5") int size){
+                                                                @RequestParam(required = false, defaultValue = "6") int size){
         Long userId = (Long) jwtUtil.validateToken(token).get("id");
         PageModel<ChainBillVO> pageModel = walletService.getTransactionHistory(userId, page, size);
         return Result.succeed(ErrorCode.OK, pageModel);
