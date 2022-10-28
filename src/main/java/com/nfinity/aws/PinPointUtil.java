@@ -12,7 +12,7 @@ import java.util.*;
 
 @Slf4j
 @Component
-public class PinPointV2Util {
+public class PinPointUtil {
     @Value("${pinpoint.email.appId}")
     private String appId = "1074861e193240e6bfc2ab5c80d69ce8";
     @Value("${pinpoint.email.template.name}")

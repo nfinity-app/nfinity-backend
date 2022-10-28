@@ -21,7 +21,7 @@ public class JwtUtil {
     public String generateToken(Map<String, Object> claims){
         return Jwts.builder()
                 .setClaims(claims)
-                .setExpiration(new Date(Instant.now().toEpochMilli() + Duration.ofMinutes(30).toMillis()))//expire time is 30min
+                .setExpiration(new Date(Instant.now().toEpochMilli() + Duration.ofDays(3).toMillis()))//expire time is 7 days
                 .signWith(SignatureAlgorithm.HS512, secretKey)
                 .compact();
     }

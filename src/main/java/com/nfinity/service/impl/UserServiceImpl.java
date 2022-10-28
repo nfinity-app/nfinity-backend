@@ -1,6 +1,6 @@
 package com.nfinity.service.impl;
 
-import com.nfinity.aws.PinPointV2Util;
+import com.nfinity.aws.PinPointUtil;
 import com.nfinity.entity.CeFinanceEntity;
 import com.nfinity.entity.ChainCoinEntity;
 import com.nfinity.entity.UserEntity;
@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
 
     private final JwtUtil jwtUtil;
 
-    private final PinPointV2Util pinPointV2Util;
+    private final PinPointUtil pinPointUtil;
 
     @Override
     public Long register(UserVO vo) throws Exception {
@@ -86,7 +86,7 @@ public class UserServiceImpl implements UserService {
         redisTemplate.opsForValue().set(vo.getEmail(), verificationCode, Duration.ofMinutes(30));
 
         //send email to user
-        pinPointV2Util.sendEmail(vo.getEmail(), verificationCode, "register");
+        pinPointUtil.sendEmail(vo.getEmail(), verificationCode, "register");
 
         return id;
 
@@ -147,7 +147,7 @@ public class UserServiceImpl implements UserService {
             redisTemplate.opsForValue().set(email, verificationCode, Duration.ofMinutes(30));
 
             //send email to user
-            pinPointV2Util.sendEmail(email, verificationCode, "reset");
+            pinPointUtil.sendEmail(email, verificationCode, "reset");
 
             return entity.getId();
         }else{
