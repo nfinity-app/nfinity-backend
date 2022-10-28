@@ -31,8 +31,8 @@ public class ChainBillEntity {
     private String txId;
     private BigDecimal qty;
     private int status;
-    private long blockNum;
-    private long blockTime;
+    private Long blockNum;
+    private Long blockTime;
     private Timestamp createTime;
     private Timestamp updateTime;
     private String comment;

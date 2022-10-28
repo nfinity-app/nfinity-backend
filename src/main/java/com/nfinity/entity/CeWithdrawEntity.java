@@ -19,7 +19,9 @@ public class CeWithdrawEntity {
 
     private long coinId;
     private long userId;
+    @Column(name = "`from`")
     private String from;
+    @Column(name = "`to`")
     private String to;
     private String username;
     private BigDecimal amount;

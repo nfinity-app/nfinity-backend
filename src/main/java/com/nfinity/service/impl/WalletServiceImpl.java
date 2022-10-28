@@ -1,6 +1,7 @@
 package com.nfinity.service.impl;
 
 import com.nfinity.entity.*;
+import com.nfinity.enums.TxStatus;
 import com.nfinity.repository.*;
 import com.nfinity.service.WalletService;
 import com.nfinity.util.BeansUtil;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -80,8 +82,14 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public Long withdraw(CeWithdrawVO vo) {
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         CeWithdrawEntity ceWithdrawEntity = new CeWithdrawEntity();
         BeanUtils.copyProperties(vo, ceWithdrawEntity, BeansUtil.getNullFields(vo));
+        ceWithdrawEntity.setChainAmount(vo.getAmount());
+        ceWithdrawEntity.setFee(BigDecimal.ZERO);
+        ceWithdrawEntity.setStatus(TxStatus.INIT.getValue());
+        ceWithdrawEntity.setCreateTime(timestamp);
+        ceWithdrawEntity.setUpdateTime(timestamp);
 
         Optional<ChainCoinEntity> chainCoinEntityOptional = chainCoinRepository.findBySymbol(vo.getSymbol());
         if(chainCoinEntityOptional.isPresent()){
@@ -103,6 +111,7 @@ public class WalletServiceImpl implements WalletService {
             for(ChainBillEntity entity : chainBillEntityList){
                   ChainBillVO vo = new ChainBillVO();
                   BeanUtils.copyProperties(entity, vo, BeansUtil.getNullFields(entity));
+                  vo.setQty(BigDecimalUtil.stripTrailingZeros(entity.getQty()));
 
                   Long coinId = entity.getCoinId();
                   Optional<ChainCoinEntity> chainCoinEntityOptional = chainCoinRepository.findById(coinId);
