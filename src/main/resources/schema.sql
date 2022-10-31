@@ -86,6 +86,7 @@ create table if not exists user
     password varchar(128) not null,
     telephone varchar(64),
     photo varchar(256),
+    google_auth varchar(64),
     status int not null comment '1-disable, 2-enable',
     address_status int not null comment '1-disable, 2-enable',
     vault_id varchar(32) comment 'fireblocks vault id',

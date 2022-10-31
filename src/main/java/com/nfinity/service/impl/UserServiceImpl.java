@@ -14,6 +14,7 @@ import com.nfinity.repository.UserRepository;
 import com.nfinity.service.UserService;
 import com.nfinity.util.AESEncryption;
 import com.nfinity.util.BeansUtil;
+import com.nfinity.util.GoogleAuthenticator;
 import com.nfinity.util.JwtUtil;
 import com.nfinity.vo.UserVO;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,8 @@ public class UserServiceImpl implements UserService {
     private String aesIv;
     @Value("${md5.salt}")
     private String md5Salt;
+    @Value("${website.host}")
+    private String websiteHost;
 
     private final UserRepository userRepository;
     private final CeFinanceRepository ceFinanceRepository;
@@ -229,6 +232,35 @@ public class UserServiceImpl implements UserService {
             UserEntity userEntity = optional.get();
             BeanUtils.copyProperties(userEntity, vo, BeansUtil.getNullFields(userEntity));
             return vo;
+        }else{
+            throw new BusinessException(ErrorCode.NOT_REGISTERED);
+        }
+    }
+
+    @Override
+    public String getQRCode(Long userId) {
+        Optional<UserEntity> optional = userRepository.findById(userId);
+        if(optional.isPresent()){
+            UserEntity userEntity = optional.get();
+
+            String key = GoogleAuthenticator.generateSecretKey();
+            userEntity.setGoogleAuth(key);
+            userEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+            userRepository.save(userEntity);
+
+            return GoogleAuthenticator.getQRBarcodeURL(userEntity.getUsername(), websiteHost, key);
+        }else{
+            throw new BusinessException(ErrorCode.NOT_REGISTERED);
+        }
+    }
+
+    @Override
+    public boolean verifyAuthenticatorCode(Long userId, long code) {
+        Optional<UserEntity> optional = userRepository.findById(userId);
+        if(optional.isPresent()) {
+            UserEntity userEntity = optional.get();
+            String key = userEntity.getGoogleAuth();
+            return GoogleAuthenticator.checkCode(key, code, System.currentTimeMillis());
         }else{
             throw new BusinessException(ErrorCode.NOT_REGISTERED);
         }

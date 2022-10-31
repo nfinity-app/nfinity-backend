@@ -18,6 +18,7 @@ public class UserEntity {
     private String username;
     private String password;
     private String photo;
+    private String googleAuth;
     private String telephone;
     private int status;
     private int addressStatus;

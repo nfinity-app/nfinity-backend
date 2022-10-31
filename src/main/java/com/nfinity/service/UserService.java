@@ -16,4 +16,8 @@ public interface UserService {
     Long editProfile(UserVO vo) throws Exception;
 
     UserVO getProfile(Long userId);
+
+    String getQRCode(Long userId);
+
+    boolean verifyAuthenticatorCode(Long userId, long code);
 }
