@@ -7,8 +7,12 @@ import com.nfinity.vo.BusinessInfoVO;
 import com.nfinity.vo.Result;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/nft-business/v1")
@@ -48,5 +52,17 @@ public class BusinessInfoController {
         vo.setUserId(userId);
         businessId = businessInfoService.editBusinessInfo(vo);
         return Result.succeed(ErrorCode.OK, businessId);
+    }
+
+    @PatchMapping("/business-infos/{id}/logo")
+    public Result<String> uploadLogo(@RequestHeader("Authentication") String token, @PathVariable("id") Long businessId,
+                                    HttpServletRequest request) throws Exception {
+        Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
+
+        MultipartHttpServletRequest multipartHttpServletRequest = (MultipartHttpServletRequest) request;
+        List<MultipartFile> multipartFile = multipartHttpServletRequest.getFiles("file");
+        String logo = businessInfoService.uploadLogo(multipartFile, userId, businessId);
+
+        return Result.succeed(ErrorCode.OK, logo);
     }
 }

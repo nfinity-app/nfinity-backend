@@ -18,5 +18,5 @@ public interface UserService {
 
     Long editProfile(UserVO vo) throws Exception;
 
-    Long uploadPhoto(List<MultipartFile> multipartFile, Long id) throws Exception;
+    String uploadPhoto(List<MultipartFile> multipartFile, Long id) throws Exception;
 }

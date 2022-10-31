@@ -231,7 +231,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Long uploadPhoto(List<MultipartFile> multipartFile, Long userId) throws Exception {
+    public String uploadPhoto(List<MultipartFile> multipartFile, Long userId) throws Exception {
         UserEntity entity;
         Optional<UserEntity> optional = userRepository.findById(userId);
         if(optional.isPresent()) {
@@ -242,12 +242,12 @@ public class UserServiceImpl implements UserService {
 
         String s3Dir = s3Util.preUploadFiles(multipartFile, entity.getEmail(), UploadType.PROFILE_PHOTO.getValue());
 
-        String photo = S3_FILE_PATH + bucketName + File.separator + s3Dir + File.separator + multipartFile.get(0).getName();
+        String photo = S3_FILE_PATH + bucketName + File.separator + s3Dir + File.separator + multipartFile.get(0).getOriginalFilename();
         entity.setPhoto(photo);
         entity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
         userRepository.save(entity);
 
-        return entity.getId();
+        return photo;
     }
 
     private String getMd5Password(String password) throws Exception {
