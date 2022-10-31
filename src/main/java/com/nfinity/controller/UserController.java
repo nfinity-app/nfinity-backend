@@ -79,12 +79,12 @@ public class UserController {
         return Result.succeed(ErrorCode.OK, userId);
     }
 
-    @PostMapping("/user/photo")
+    @PatchMapping("/user/photo")
     public Result<Long> uploadPhoto(@RequestHeader("Authentication") String token, HttpServletRequest request) throws Exception {
         Long id = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
 
         MultipartHttpServletRequest multipartHttpServletRequest = (MultipartHttpServletRequest) request;
-        List<MultipartFile> multipartFile = multipartHttpServletRequest.getFiles("files");
+        List<MultipartFile> multipartFile = multipartHttpServletRequest.getFiles("file");
         Long userId = userService.uploadPhoto(multipartFile, id);
         return Result.succeed(ErrorCode.OK, userId);
     }
