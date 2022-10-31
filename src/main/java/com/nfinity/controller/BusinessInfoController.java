@@ -15,21 +15,21 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/nft-business/v1")
+@RequestMapping("/nft-business/v1/business-info")
 @RequiredArgsConstructor
 public class BusinessInfoController {
     private final BusinessInfoService businessInfoService;
 
     private final JwtUtil jwtUtil;
 
-    @PutMapping("/business-info")
+    @PutMapping
     public Result<Boolean> existsBusinessInfo(@RequestHeader("Authentication") String token){
         Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
         boolean flag = businessInfoService.existsBusinessInfo(userId);
         return Result.succeed(ErrorCode.OK, flag);
     }
 
-    @PostMapping("/business-info")
+    @PostMapping
     public Result<Long> createBusinessInfo(@RequestHeader("Authentication") String token, @Valid @RequestBody BusinessInfoVO vo){
         Long id = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
         vo.setUserId(id);
@@ -37,31 +37,28 @@ public class BusinessInfoController {
         return Result.succeed(ErrorCode.OK, businessId);
     }
 
-    @GetMapping("/business-infos/{id}")
-    public Result<BusinessInfoVO> getBusinessInfo(@RequestHeader("Authentication") String token, @PathVariable("id") Long businessId){
+    @GetMapping
+    public Result<BusinessInfoVO> getBusinessInfo(@RequestHeader("Authentication") String token){
         Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
-        BusinessInfoVO vo = businessInfoService.getBusinessInfo(userId, businessId);
+        BusinessInfoVO vo = businessInfoService.getBusinessInfo(userId);
         return Result.succeed(ErrorCode.OK, vo);
     }
 
-    @PatchMapping("/business-infos/{id}")
-    public Result<Long> editBusinessInfo(@RequestHeader("Authentication") String token, @PathVariable("id") Long businessId,
-                                         @RequestBody BusinessInfoVO vo){
+    @PatchMapping
+    public Result<Long> editBusinessInfo(@RequestHeader("Authentication") String token, @RequestBody BusinessInfoVO vo){
         Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
-        vo.setId(businessId);
         vo.setUserId(userId);
-        businessId = businessInfoService.editBusinessInfo(vo);
+        Long businessId = businessInfoService.editBusinessInfo(vo);
         return Result.succeed(ErrorCode.OK, businessId);
     }
 
-    @PatchMapping("/business-infos/{id}/logo")
-    public Result<String> uploadLogo(@RequestHeader("Authentication") String token, @PathVariable("id") Long businessId,
-                                    HttpServletRequest request) throws Exception {
+    @PatchMapping("/logo")
+    public Result<String> uploadLogo(@RequestHeader("Authentication") String token, HttpServletRequest request) throws Exception {
         Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
 
         MultipartHttpServletRequest multipartHttpServletRequest = (MultipartHttpServletRequest) request;
         List<MultipartFile> multipartFile = multipartHttpServletRequest.getFiles("file");
-        String logo = businessInfoService.uploadLogo(multipartFile, userId, businessId);
+        String logo = businessInfoService.uploadLogo(multipartFile, userId);
 
         return Result.succeed(ErrorCode.OK, logo);
     }

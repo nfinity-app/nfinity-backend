@@ -8,7 +8,7 @@ import java.util.Optional;
 
 @Repository
 public interface BusinessInfoRepository extends JpaRepository<BusinessInfoEntity, Long> {
-    Optional<BusinessInfoEntity> findByIdAndUserId(Long businessId, Long userId);
+    Optional<BusinessInfoEntity> findByUserId(Long userId);
 
     boolean existsByUserId(Long userId);
 }

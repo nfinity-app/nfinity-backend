@@ -9,9 +9,9 @@ public interface BusinessInfoService {
     boolean existsBusinessInfo(Long userId);
     Long createBusinessInfo(BusinessInfoVO vo);
 
-    BusinessInfoVO getBusinessInfo(Long userId, Long businessId);
+    BusinessInfoVO getBusinessInfo(Long userId);
 
     Long editBusinessInfo(BusinessInfoVO vo);
 
-    String uploadLogo(List<MultipartFile> multipartFile, Long userId, Long businessId) throws Exception;
+    String uploadLogo(List<MultipartFile> multipartFile, Long userId) throws Exception;
 }
