@@ -10,23 +10,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/nft-business/v1")
+@RequestMapping("/nft-business/v1/user")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
 
     private final JwtUtil jwtUtil;
 
-    @PostMapping("/user")
+    @PostMapping
     public Result<Object> registerOrLogin(@Valid @RequestBody UserVO vo) throws Exception {
         if(LoginType.REGISTER.getValue() == vo.getType()){
             Long userId = userService.register(vo);
@@ -39,7 +35,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("/user/emails/{email}/verification-codes/{code}/types/{type}")
+    @PostMapping("/emails/{email}/verification-codes/{code}/types/{type}")
     public Result<Object> verifyCode( @PathVariable String email, @PathVariable String code, @PathVariable int type){
         if(LoginType.REGISTER.getValue() == type) {
             String token = (String) userService.checkVerificationCode(email, code, type);
@@ -50,13 +46,13 @@ public class UserController {
         }
     }
 
-    @PostMapping("/user/emails/{email}")
+    @PostMapping("/emails/{email}")
     public Result<Long> sendEmail(@PathVariable String email){
         Long userId = userService.sendEmail(email);
         return Result.succeed(ErrorCode.OK, userId);
     }
 
-    @PostMapping("/user/password")
+    @PostMapping("/password")
     public Result<Long> resetPassword(@RequestBody UserVO vo) throws Exception {
         if(StringUtils.isBlank(vo.getEmail())){
             Result.fail(ErrorCode.ERROR.getCode(), "email must be not blank");
@@ -71,21 +67,18 @@ public class UserController {
         return Result.succeed(ErrorCode.OK, userId);
     }
 
-    @PatchMapping("/user")
+    @GetMapping
+    public Result<UserVO> getProfile(@RequestHeader("Authentication") String token){
+        Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
+        UserVO vo = userService.getProfile(userId);
+        return Result.succeed(ErrorCode.OK, vo);
+    }
+
+    @PatchMapping
     public Result<Long> editProfile(@RequestHeader("Authentication") String token, @RequestBody UserVO vo) throws Exception {
         Long id = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
         vo.setId(id);
         Long userId = userService.editProfile(vo);
         return Result.succeed(ErrorCode.OK, userId);
-    }
-
-    @PatchMapping("/user/photo")
-    public Result<String> uploadPhoto(@RequestHeader("Authentication") String token, HttpServletRequest request) throws Exception {
-        Long id = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
-
-        MultipartHttpServletRequest multipartHttpServletRequest = (MultipartHttpServletRequest) request;
-        List<MultipartFile> multipartFile = multipartHttpServletRequest.getFiles("file");
-        String photo = userService.uploadPhoto(multipartFile, id);
-        return Result.succeed(ErrorCode.OK, photo);
     }
 }

@@ -52,8 +52,25 @@ public class NftServiceImpl implements NftService {
         return saveNftsToDB(s3ObjectSummaries, s3Dir);
     }
 
+    @Override
+    public List<String> uploadFiles(List<MultipartFile> multipartFiles, Long userId, int type) throws Exception {
+        List<String> urls = new ArrayList<>();
+
+        Optional<UserEntity> optional = userRepository.findById(userId);
+        String email = null;
+        if(optional.isPresent()){
+            email = optional.get().getEmail();
+        }
+
+        String s3Dir = s3Util.preUploadFiles(multipartFiles, email, type);
+        for(MultipartFile file : multipartFiles){
+            urls.add(S3_FILE_PATH + bucketName + File.separator + s3Dir + File.separator + file.getOriginalFilename());
+        }
+        return urls;
+    }
+
     @Transactional
-    PageModel<NftVO> saveNftsToDB(List<S3ObjectSummary> s3ObjectSummaries, String s3Dir){
+    public PageModel<NftVO> saveNftsToDB(List<S3ObjectSummary> s3ObjectSummaries, String s3Dir){
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Map<Long, String> folderNftMap = new HashMap<>();
         List<NftEntity> nftEntityList = new ArrayList<>();

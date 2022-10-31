@@ -9,6 +9,7 @@ import com.nfinity.vo.Result;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,5 +37,17 @@ public class NftController {
         log.info("[upload nfts] multipartFile size: " + multipartFile.size());
 
         return Result.succeed(ErrorCode.OK, nftService.uploadNftFiles(multipartFile, userId));
+    }
+
+    @PostMapping("/files")
+    public Result<List<String>> uploadFiles(@RequestHeader("Authentication") String token, HttpServletRequest request) throws Exception {
+        Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
+
+        MultipartHttpServletRequest multipartHttpServletRequest = (MultipartHttpServletRequest) request;
+        int type = Integer.parseInt(multipartHttpServletRequest.getParameter("type"));
+        List<MultipartFile> multipartFiles = multipartHttpServletRequest.getFiles("files");
+
+        List<String> urls = nftService.uploadFiles(multipartFiles, userId, type);
+        return Result.succeed(ErrorCode.OK, urls);
     }
 }
