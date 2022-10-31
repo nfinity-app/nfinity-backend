@@ -10,8 +10,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -72,6 +76,16 @@ public class UserController {
         Long id = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
         vo.setId(id);
         Long userId = userService.editProfile(vo);
+        return Result.succeed(ErrorCode.OK, userId);
+    }
+
+    @PostMapping("/user/photo")
+    public Result<Long> uploadPhoto(@RequestHeader("Authentication") String token, HttpServletRequest request) throws Exception {
+        Long id = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
+
+        MultipartHttpServletRequest multipartHttpServletRequest = (MultipartHttpServletRequest) request;
+        List<MultipartFile> multipartFile = multipartHttpServletRequest.getFiles("files");
+        Long userId = userService.uploadPhoto(multipartFile, id);
         return Result.succeed(ErrorCode.OK, userId);
     }
 }

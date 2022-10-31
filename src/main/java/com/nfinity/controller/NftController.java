@@ -2,6 +2,7 @@ package com.nfinity.controller;
 
 import com.nfinity.enums.ErrorCode;
 import com.nfinity.service.NftService;
+import com.nfinity.util.JwtUtil;
 import com.nfinity.vo.NftVO;
 import com.nfinity.vo.PageModel;
 import com.nfinity.vo.Result;
@@ -22,18 +23,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NftController {
     private final NftService nftService;
-    @PostMapping("/nfts")
-    public Result<PageModel<NftVO>> uploadNfts(HttpServletRequest request) {
-        try {
-            //get files from http request
-            MultipartHttpServletRequest multipartHttpServletRequest = (MultipartHttpServletRequest) request;
-            List<MultipartFile> multipartFile = multipartHttpServletRequest.getFiles("files");
-            log.info("[upload nfts] multipartFile size: " + multipartFile.size());
+    private final JwtUtil jwtUtil;
 
-            return Result.succeed(ErrorCode.OK, nftService.uploadNftFiles(multipartFile));
-        }catch (Exception e){
-            log.error("upload nfts failed.", e);
-            return Result.fail(ErrorCode.ERROR);
-        }
+    @PostMapping("/nfts")
+    public Result<PageModel<NftVO>> uploadNfts(HttpServletRequest request) throws Exception {
+        String token = request.getHeader("Authentication");
+        Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
+
+        //get files from http request
+        MultipartHttpServletRequest multipartHttpServletRequest = (MultipartHttpServletRequest) request;
+        List<MultipartFile> multipartFile = multipartHttpServletRequest.getFiles("files");
+        log.info("[upload nfts] multipartFile size: " + multipartFile.size());
+
+        return Result.succeed(ErrorCode.OK, nftService.uploadNftFiles(multipartFile, userId));
     }
 }

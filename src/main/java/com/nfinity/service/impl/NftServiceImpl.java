@@ -1,23 +1,20 @@
 package com.nfinity.service.impl;
 
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.nfinity.aws.S3Util;
 import com.nfinity.entity.FolderNftEntity;
 import com.nfinity.entity.NftEntity;
+import com.nfinity.entity.UserEntity;
 import com.nfinity.enums.MintStatus;
+import com.nfinity.enums.UploadType;
 import com.nfinity.repository.FolderNftRepository;
 import com.nfinity.repository.NftRepository;
+import com.nfinity.repository.UserRepository;
 import com.nfinity.service.NftService;
-import com.nfinity.util.FileConverter;
 import com.nfinity.vo.NftVO;
 import com.nfinity.vo.PageModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -39,46 +36,20 @@ public class NftServiceImpl implements NftService {
 
     private final NftRepository nftRepository;
     private final FolderNftRepository folderNftRepository;
+    private final UserRepository userRepository;
     private final S3Util s3Util;
 
     @Override
-    public PageModel<NftVO> uploadNftFiles(List<MultipartFile> multipartFileList) throws Exception {
-        String s3Dir = uploadNftFilesToS3(multipartFileList);
-        List<S3ObjectSummary> s3ObjectSummaries = listS3Objects();
+    public PageModel<NftVO> uploadNftFiles(List<MultipartFile> multipartFileList, Long userId) throws Exception {
+        Optional<UserEntity> optional = userRepository.findById(userId);
+        String email = null;
+        if(optional.isPresent()){
+            email = optional.get().getEmail();
+        }
+
+        String s3Dir = s3Util.preUploadFiles(multipartFileList, email, UploadType.NFT.getValue());
+        List<S3ObjectSummary> s3ObjectSummaries = s3Util.listS3Objects();
         return saveNftsToDB(s3ObjectSummaries, s3Dir);
-    }
-
-    private String uploadNftFilesToS3(List<MultipartFile> multipartFileList) throws Exception {
-        //1. get src files, create src directory
-        String srcDir = "s3" + File.separator;
-        List<File> files = new ArrayList<>();
-        for (MultipartFile multipartFile : multipartFileList) {
-            files.add(FileConverter.multipartFileToFile(multipartFile, srcDir));
-        }
-        for (File file : files) {
-            log.debug("[upload nfts] src file name: " + file.getName());
-        }
-
-        //2. create s3 directory
-        Random random = new Random();
-        //todo: To update a real account username until account creation
-        String s3Dir = "username/" + random.nextInt(10000);
-        log.info("[upload nfts] dest(s3) folder name: " + s3Dir);
-
-        //3. upload files to s3
-        s3Util.uploadFileListToS3(bucketName, s3Dir, srcDir, files);
-
-        //4. clear files in the srcDir
-        FileUtils.cleanDirectory(new File(srcDir));
-
-        return s3Dir;
-    }
-
-    private List<S3ObjectSummary> listS3Objects(){
-        log.debug("[upload nfts] Objects in S3 bucket: " + bucketName);
-        final AmazonS3 s3 = AmazonS3ClientBuilder.standard().withRegion(Regions.US_EAST_1).build();
-        ListObjectsV2Result result = s3.listObjectsV2(bucketName);
-        return result.getObjectSummaries();
     }
 
     @Transactional

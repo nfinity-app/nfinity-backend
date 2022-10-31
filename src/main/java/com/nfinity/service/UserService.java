@@ -1,6 +1,9 @@
 package com.nfinity.service;
 
 import com.nfinity.vo.UserVO;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 public interface UserService {
     Long register(UserVO vo) throws Exception;
@@ -14,4 +17,6 @@ public interface UserService {
     Long sendEmail(String email);
 
     Long editProfile(UserVO vo) throws Exception;
+
+    Long uploadPhoto(List<MultipartFile> multipartFile, Long id) throws Exception;
 }

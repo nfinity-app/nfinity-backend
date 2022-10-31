@@ -1,12 +1,14 @@
 package com.nfinity.service.impl;
 
 import com.nfinity.aws.PinPointUtil;
+import com.nfinity.aws.S3Util;
 import com.nfinity.entity.CeFinanceEntity;
 import com.nfinity.entity.ChainCoinEntity;
 import com.nfinity.entity.UserEntity;
 import com.nfinity.enums.ErrorCode;
 import com.nfinity.enums.LoginType;
 import com.nfinity.enums.Status;
+import com.nfinity.enums.UploadType;
 import com.nfinity.exception.BusinessException;
 import com.nfinity.repository.CeFinanceRepository;
 import com.nfinity.repository.ChainCoinRepository;
@@ -17,6 +19,7 @@ import com.nfinity.util.BeansUtil;
 import com.nfinity.util.JwtUtil;
 import com.nfinity.vo.UserVO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,14 +27,18 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.util.*;
 
+import static com.nfinity.constant.Constant.S3_FILE_PATH;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -41,6 +48,8 @@ public class UserServiceImpl implements UserService {
     private String aesIv;
     @Value("${md5.salt}")
     private String md5Salt;
+    @Value("${aws.s3.bucket.name}")
+    private String bucketName;
 
     private final UserRepository userRepository;
     private final CeFinanceRepository ceFinanceRepository;
@@ -51,6 +60,8 @@ public class UserServiceImpl implements UserService {
     private final JwtUtil jwtUtil;
 
     private final PinPointUtil pinPointUtil;
+
+    private final S3Util s3Util;
 
     @Override
     public Long register(UserVO vo) throws Exception {
@@ -215,9 +226,28 @@ public class UserServiceImpl implements UserService {
 
         //TODO: add telephone
 
-        entity.setCreateTime(timestamp);
         entity.setUpdateTime(timestamp);
         return userRepository.save(entity).getId();
+    }
+
+    @Override
+    public Long uploadPhoto(List<MultipartFile> multipartFile, Long userId) throws Exception {
+        UserEntity entity;
+        Optional<UserEntity> optional = userRepository.findById(userId);
+        if(optional.isPresent()) {
+            entity = optional.get();
+        }else{
+            throw new BusinessException(ErrorCode.NOT_REGISTERED);
+        }
+
+        String s3Dir = s3Util.preUploadFiles(multipartFile, entity.getEmail(), UploadType.PROFILE_PHOTO.getValue());
+
+        String photo = S3_FILE_PATH + bucketName + File.separator + s3Dir + File.separator + multipartFile.get(0).getName();
+        entity.setPhoto(photo);
+        entity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+        userRepository.save(entity);
+
+        return entity.getId();
     }
 
     private String getMd5Password(String password) throws Exception {

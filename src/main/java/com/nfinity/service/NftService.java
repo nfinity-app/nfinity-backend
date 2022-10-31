@@ -7,5 +7,5 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface NftService {
-    PageModel<NftVO> uploadNftFiles(List<MultipartFile> multipartFileList) throws Exception;
+    PageModel<NftVO> uploadNftFiles(List<MultipartFile> multipartFileList, Long userId) throws Exception;
 }
