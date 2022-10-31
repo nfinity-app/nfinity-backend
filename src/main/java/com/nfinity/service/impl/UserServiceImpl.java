@@ -217,10 +217,11 @@ public class UserServiceImpl implements UserService {
 
         BeanUtils.copyProperties(vo, entity, BeansUtil.getNullFields(vo));
         if(StringUtils.isNoneBlank(vo.getOldPassword()) && StringUtils.isNoneBlank(vo.getNewPassword())){
-            if(entity.getPassword().equals(vo.getOldPassword())) {
+            String oldPassword = getMd5Password(vo.getOldPassword());
+            if(entity.getPassword().equals(oldPassword)) {
                 entity.setPassword(getMd5Password(vo.getNewPassword()));
             }else{
-                throw new BusinessException(ErrorCode.INCORRECT_INPUT);
+                throw new BusinessException(ErrorCode.INCORRECT_PASSWORD);
             }
         }
 

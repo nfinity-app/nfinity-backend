@@ -15,10 +15,12 @@ public enum ErrorCode {
     INVALID_TOKEN(100004, "Invalid token"),
     INVALID_VERIFICATION_CODE(100005, "Invalid verification code"),
     USERNAME_REGISTERED(100006, "This username has already been registered"),
-    BUSINESS_INFO_NOT_FOUND(100007, "This user's business info could not be found"),
-    NOT_ENOUGH(100010, "nft is not enough"),
+    INCORRECT_PASSWORD(100007, "Incorrect old password"),
 
-    NONEXISTENT_ORDER(100011, "This order does not exist"),
+    BUSINESS_INFO_NOT_FOUND(100010, "This user's business info could not be found"),
+
+    NONEXISTENT_ORDER(100020, "This order does not exist"),
+    NOT_ENOUGH(100021, "nft is not enough"),
     ;
 
     private final int code;
