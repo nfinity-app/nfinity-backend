@@ -10,19 +10,27 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class BusinessInfoServiceImpl implements BusinessInfoService {
+    static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     private final BusinessInfoRepository businessInfoRepository;
+
+    @Override
+    public boolean existsBusinessInfo(Long userId) {
+        return businessInfoRepository.existsByUserId(userId);
+    }
 
     @Override
     public Long createBusinessInfo(BusinessInfoVO vo) {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         BusinessInfoEntity entity = new BusinessInfoEntity();
         BeanUtils.copyProperties(vo, entity, BeansUtil.getNullFields(vo));
+        entity.setBirthDate(Timestamp.valueOf(vo.getBirthDate()));
         entity.setCreateTime(timestamp);
         entity.setUpdateTime(timestamp);
         return businessInfoRepository.save(entity).getId();
@@ -31,10 +39,12 @@ public class BusinessInfoServiceImpl implements BusinessInfoService {
     @Override
     public BusinessInfoVO getBusinessInfo(Long userId, Long businessId) {
         BusinessInfoVO vo = new BusinessInfoVO();
+
         Optional<BusinessInfoEntity> optional = businessInfoRepository.findByIdAndUserId(businessId, userId);
         if(optional.isPresent()){
             BusinessInfoEntity entity = optional.get();
             BeanUtils.copyProperties(entity, vo, BeansUtil.getNullFields(entity));
+            vo.setBirthDate(sdf.format(entity.getBirthDate()));
         }
         return vo;
     }

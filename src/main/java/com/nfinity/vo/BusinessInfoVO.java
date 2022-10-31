@@ -6,7 +6,6 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.sql.Timestamp;
 
 @Getter
 @Setter
@@ -24,7 +23,7 @@ public class BusinessInfoVO {
 
     @NotNull
     @JsonProperty("birth_date")
-    private Timestamp birthDate;
+    private String birthDate;
 
     private String logo;
 

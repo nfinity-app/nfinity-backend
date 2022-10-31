@@ -22,6 +22,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 
 import java.math.BigDecimal;
@@ -110,7 +111,8 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private String doAfterRegister(UserEntity userEntity){
+    @Transactional
+    String doAfterRegister(UserEntity userEntity){
         userEntity.setStatus(Status.ENABLE.getValue());
         userEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
         Long userId = userRepository.save(userEntity).getId();

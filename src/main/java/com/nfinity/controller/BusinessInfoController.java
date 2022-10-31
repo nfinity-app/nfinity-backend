@@ -18,6 +18,13 @@ public class BusinessInfoController {
 
     private final JwtUtil jwtUtil;
 
+    @PutMapping("/business-info")
+    public Result<Boolean> existsBusinessInfo(@RequestHeader("Authentication") String token){
+        Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
+        boolean flag = businessInfoService.existsBusinessInfo(userId);
+        return Result.succeed(ErrorCode.OK, flag);
+    }
+
     @PostMapping("/business-info")
     public Result<Long> createBusinessInfo(@RequestHeader("Authentication") String token, @Valid @RequestBody BusinessInfoVO vo){
         Long id = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
