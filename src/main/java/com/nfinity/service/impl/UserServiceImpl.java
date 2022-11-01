@@ -99,13 +99,13 @@ public class UserServiceImpl implements UserService {
         pinPointUtil.sendEmail(email, verificationCode, type);
     }
 
-    public String checkVerificationCode(String email, String verificationCode, int type){
+    public String checkVerificationCode(Long userId, String email, String verificationCode, int type){
         String redisVerificationCode = redisTemplate.opsForValue().get(email);
         if(verificationCode.equals(redisVerificationCode)){
             if(EmailType.REGISTER.getKey() == type) {
                 return doAfterRegister(email);
             }else if(EmailType.BUSINESS.getKey() == type) {
-                doAfterAddBusinessEmail(email);
+                doAfterAddBusinessEmail(userId, email);
                 return null;
             }else {
                 return null;
@@ -115,11 +115,16 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private void doAfterAddBusinessEmail(String email) {
-        BusinessInfoEntity entity = new BusinessInfoEntity();
-        entity.setEmail(email);
-        entity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
-        businessInfoRepository.save(entity);
+    private void doAfterAddBusinessEmail(Long userId, String email) {
+        Optional<BusinessInfoEntity> optional = businessInfoRepository.findByUserId(userId);
+        if(optional.isPresent()){
+            BusinessInfoEntity entity = optional.get();
+            entity.setEmail(email);
+            entity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+            businessInfoRepository.save(entity);
+        }else{
+            throw new BusinessException(ErrorCode.BUSINESS_INFO_NOT_FOUND);
+        }
     }
 
     @Transactional
@@ -218,6 +223,7 @@ public class UserServiceImpl implements UserService {
         if(optional.isPresent()){
             UserEntity userEntity = optional.get();
             BeanUtils.copyProperties(userEntity, vo, BeansUtil.getNullFields(userEntity));
+            vo.setGoogle2FactorAuth(StringUtils.isNoneBlank(userEntity.getGoogleAuth()));
             return vo;
         }else{
             throw new BusinessException(ErrorCode.NOT_REGISTERED);

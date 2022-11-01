@@ -1,7 +1,9 @@
 package com.nfinity.controller;
 
+import com.nfinity.enums.EmailType;
 import com.nfinity.enums.ErrorCode;
 import com.nfinity.enums.LoginType;
+import com.nfinity.exception.AuthException;
 import com.nfinity.service.UserService;
 import com.nfinity.util.JwtUtil;
 import com.nfinity.vo.Result;
@@ -11,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Slf4j
@@ -42,9 +45,20 @@ public class UserController {
     }
 
     @PutMapping("/emails/{email}/{code}/{type}")
-    public Result<String> verifyCode( @PathVariable String email, @PathVariable String code, @PathVariable int type){
-        String token = userService.checkVerificationCode(email, code, type);
-        return Result.succeed(ErrorCode.OK, token);
+    public Result<String> verifyCode(HttpServletRequest request, @PathVariable String email, @PathVariable String code, @PathVariable int type){
+        Long userId;
+        if(EmailType.BUSINESS.getKey() == type){
+            String token = request.getHeader("Authentication");
+            try {
+                userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
+            }catch (Exception e){
+                throw new AuthException(ErrorCode.INVALID_TOKEN);
+            }
+        }else{
+            userId = null;
+        }
+        String registerToken = userService.checkVerificationCode(userId, email, code, type);
+        return Result.succeed(ErrorCode.OK, registerToken);
     }
 
     @PostMapping("/password")

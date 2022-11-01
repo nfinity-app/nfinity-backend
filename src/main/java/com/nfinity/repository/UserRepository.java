@@ -7,8 +7,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
-    UserEntity findByEmail(String email);
-
     @Query(value = "select * from user where status = ?1 and (email = ?2 or username = ?3)", nativeQuery = true)
     UserEntity findByEmailOrUsernameAndStatus(int status, String email, String username);
 

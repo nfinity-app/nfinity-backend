@@ -9,7 +9,7 @@ public interface UserService {
 
     void sendEmail(String email, int type);
 
-    String checkVerificationCode(String email, String code, int type);
+    String checkVerificationCode(Long userId, String email, String code, int type);
 
     Long resetPassword(UserVO vo) throws Exception;
 
