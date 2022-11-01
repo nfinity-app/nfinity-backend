@@ -40,7 +40,7 @@ public class BusinessInfoEntity {
 
     private BigDecimal lat;
 
-    private BigDecimal ing;
+    private BigDecimal lng;
 
     private String facebook;
 

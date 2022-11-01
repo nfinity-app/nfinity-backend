@@ -49,7 +49,7 @@ public class BusinessInfoServiceImpl implements BusinessInfoService {
             AddressVO addressVO = new AddressVO();
             addressVO.setAddress(entity.getAddress());
             addressVO.setLat(BigDecimalUtil.stripTrailingZeros(entity.getLat()));
-            addressVO.setIng(BigDecimalUtil.stripTrailingZeros(entity.getIng()));
+            addressVO.setLng(BigDecimalUtil.stripTrailingZeros(entity.getLng()));
             vo.setAddress(addressVO);
             return vo;
         }else{
@@ -67,7 +67,7 @@ public class BusinessInfoServiceImpl implements BusinessInfoService {
             if(Objects.nonNull(vo.getAddress())) {
                 entity.setAddress(vo.getAddress().getAddress());
                 entity.setLat(vo.getAddress().getLat());
-                entity.setIng(vo.getAddress().getIng());
+                entity.setLng(vo.getAddress().getLng());
             }
             entity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
             return businessInfoRepository.save(entity).getId();

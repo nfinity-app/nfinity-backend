@@ -14,5 +14,5 @@ public class AddressVO {
 
     private BigDecimal lat;
 
-    private BigDecimal ing;
+    private BigDecimal lng;
 }
