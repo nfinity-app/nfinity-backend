@@ -33,6 +33,8 @@ import java.sql.Timestamp;
 import java.time.Duration;
 import java.util.*;
 
+import static com.nfinity.enums.EmailType.EMAIL_TYPE_MAP;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -67,7 +69,6 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException(ErrorCode.USERNAME_REGISTERED);
         }
 
-
         UserEntity entity;
         UserEntity disableUser = userRepository.findByEmailAndStatus(vo.getEmail(), Status.DISABLE.getValue());
         if(Objects.nonNull(disableUser)){
@@ -84,39 +85,35 @@ public class UserServiceImpl implements UserService {
         entity.setCreateTime(timestamp);
         entity.setUpdateTime(timestamp);
 
-        Long id = userRepository.save(entity).getId();
-
-        //save verification code to redis
-        String verificationCode = generateVerificationCode();
-        redisTemplate.opsForValue().set(vo.getEmail(), verificationCode, Duration.ofMinutes(30));
-
-        //send email to user
-        pinPointUtil.sendEmail(vo.getEmail(), verificationCode, "register");
-
-        return id;
-
+        return userRepository.save(entity).getId();
     }
 
-    public Object checkVerificationCode(String email, String verificationCode, int type){
-        UserEntity entity = userRepository.findByEmail(email);
-        if(Objects.nonNull(entity)){
-            String redisVerificationCode = redisTemplate.opsForValue().get(email);
-            if(verificationCode.equals(redisVerificationCode)){
-                if(LoginType.REGISTER.getValue() == type) {
-                    return doAfterRegister(entity);
-                }else {
-                    return entity.getId();
-                }
-            }else{
-                throw new BusinessException(ErrorCode.INVALID_VERIFICATION_CODE);
+    @Override
+    public void sendEmail(String email, int type) {
+        //save verification code to redis
+        String verificationCode = generateVerificationCode();
+        redisTemplate.opsForValue().set(email, verificationCode, Duration.ofMinutes(30));
+
+        //send email to user
+        pinPointUtil.sendEmail(email, verificationCode, EMAIL_TYPE_MAP.get(type));
+    }
+
+    public String checkVerificationCode(String email, String verificationCode, int type){
+        String redisVerificationCode = redisTemplate.opsForValue().get(email);
+        if(verificationCode.equals(redisVerificationCode)){
+            if(LoginType.REGISTER.getValue() == type) {
+                return doAfterRegister(email);
+            }else {
+                return null;
             }
         }else{
-            throw new BusinessException(ErrorCode.NOT_REGISTERED);
+            throw new BusinessException(ErrorCode.INVALID_VERIFICATION_CODE);
         }
     }
 
     @Transactional
-    String doAfterRegister(UserEntity userEntity){
+    String doAfterRegister(String email){
+        UserEntity userEntity = userRepository.findByEmailAndStatus(email, Status.DISABLE.getValue());
         userEntity.setStatus(Status.ENABLE.getValue());
         userEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
         Long userId = userRepository.save(userEntity).getId();
@@ -139,26 +136,7 @@ public class UserServiceImpl implements UserService {
         ceFinanceRepository.saveAll(ceFinanceEntityList);
 
         //register returns token, user will go the home page.
-        Map<String, Object> map = new HashMap<>();
-        map.put("id", userId);
-        return jwtUtil.generateToken(map);
-    }
-
-    @Override
-    public Long sendEmail(String email) {
-        UserEntity entity = userRepository.findByEmailAndStatus(email, Status.ENABLE.getValue());
-        if(Objects.nonNull(entity)) {
-            //save verification code to redis
-            String verificationCode = generateVerificationCode();
-            redisTemplate.opsForValue().set(email, verificationCode, Duration.ofMinutes(30));
-
-            //send email to user
-            pinPointUtil.sendEmail(email, verificationCode, "reset");
-
-            return entity.getId();
-        }else{
-            throw new BusinessException(ErrorCode.NOT_REGISTERED);
-        }
+        return generateToken(userId);
     }
 
     @Override
@@ -187,9 +165,7 @@ public class UserServiceImpl implements UserService {
         }else{
             String md5Password = getMd5Password(vo.getPassword());
             if(md5Password.equals(userEntity.getPassword())){
-                Map<String, Object> map = new HashMap<>();
-                map.put("id", userEntity.getId());
-                return jwtUtil.generateToken(map);
+                return generateToken(userEntity.getId());
             }else{
                 throw new BusinessException(ErrorCode.INCORRECT_INPUT);
             }
@@ -275,5 +251,12 @@ public class UserServiceImpl implements UserService {
         Random random = new Random();
         int number = random.nextInt(999999);
         return String.format("%06d", number);
+    }
+
+    private String generateToken(Long userId){
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", userId);
+        //TODO: limit token generation
+        return jwtUtil.generateToken(map);
     }
 }

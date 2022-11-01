@@ -19,8 +19,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
         List<String> pathPatterns = new ArrayList<>();
         pathPatterns.add("/**");
         List<String> excludePathPatterns = new ArrayList<>();
-        excludePathPatterns.add("/nft-business/v1/user/emails/*/verification-codes/*/types/*");
-        excludePathPatterns.add("/nft-business/v1/user/emails/*");
+        excludePathPatterns.add("/nft-business/v1/user/emails/**");
         excludePathPatterns.add("/nft-business/v1/user/password");
         excludePathPatterns.add("/nft-business/v1/collection*");
         excludePathPatterns.add("/nft-business/v1/collection*/*");

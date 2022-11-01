@@ -7,11 +7,11 @@ public interface UserService {
 
     String login(UserVO vo) throws Exception;
 
-    Object checkVerificationCode(String email, String code, int type);
+    void sendEmail(String email, int type);
+
+    String checkVerificationCode(String email, String code, int type);
 
     Long resetPassword(UserVO vo) throws Exception;
-
-    Long sendEmail(String email);
 
     Long editProfile(UserVO vo) throws Exception;
 

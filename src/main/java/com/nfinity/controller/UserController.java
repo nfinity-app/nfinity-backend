@@ -35,21 +35,16 @@ public class UserController {
         }
     }
 
-    @PostMapping("/emails/{email}/verification-codes/{code}/types/{type}")
-    public Result<Object> verifyCode( @PathVariable String email, @PathVariable String code, @PathVariable int type){
-        if(LoginType.REGISTER.getValue() == type) {
-            String token = (String) userService.checkVerificationCode(email, code, type);
-            return Result.succeed(ErrorCode.OK, token);
-        }else {
-            Long userId = (Long) userService.checkVerificationCode(email, code, type);
-            return Result.succeed(ErrorCode.OK, userId);
-        }
+    @PostMapping("/emails/{email}/{type}")
+    public Result<Void> sendEmail(@PathVariable String email, @PathVariable int type){
+        userService.sendEmail(email, type);
+        return Result.succeed(ErrorCode.OK, null);
     }
 
-    @PostMapping("/emails/{email}")
-    public Result<Long> sendEmail(@PathVariable String email){
-        Long userId = userService.sendEmail(email);
-        return Result.succeed(ErrorCode.OK, userId);
+    @PutMapping("/emails/{email}/{code}/{type}")
+    public Result<String> verifyCode( @PathVariable String email, @PathVariable String code, @PathVariable int type){
+        String token = userService.checkVerificationCode(email, code, type);
+        return Result.succeed(ErrorCode.OK, token);
     }
 
     @PostMapping("/password")
