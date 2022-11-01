@@ -33,8 +33,6 @@ import java.sql.Timestamp;
 import java.time.Duration;
 import java.util.*;
 
-import static com.nfinity.enums.EmailType.EMAIL_TYPE_MAP;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -95,7 +93,7 @@ public class UserServiceImpl implements UserService {
         redisTemplate.opsForValue().set(email, verificationCode, Duration.ofMinutes(30));
 
         //send email to user
-        pinPointUtil.sendEmail(email, verificationCode, EMAIL_TYPE_MAP.get(type));
+        pinPointUtil.sendEmail(email, verificationCode, type);
     }
 
     public String checkVerificationCode(String email, String verificationCode, int type){

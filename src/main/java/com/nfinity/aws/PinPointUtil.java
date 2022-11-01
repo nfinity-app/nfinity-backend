@@ -1,5 +1,6 @@
 package com.nfinity.aws;
 
+import com.nfinity.enums.EmailType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -9,6 +10,8 @@ import software.amazon.awssdk.services.pinpoint.PinpointClient;
 import software.amazon.awssdk.services.pinpoint.model.*;
 
 import java.util.*;
+
+import static com.nfinity.enums.EmailType.EMAIL_TYPE_MAP;
 
 @Slf4j
 @Component
@@ -23,8 +26,23 @@ public class PinPointUtil {
     @Value("${website.url}")
     private String websiteUrl;
 
-    public void sendEmail(String email, String verificationCode, String type) {
-        String url = websiteUrl + type + "?email=" + email + "&verification_code=" + verificationCode;
+    private String createUrl(String email, String verificationCode, int type){
+        if(EmailType.REGISTER.getKey() == type || EmailType.RESET_PASSWORD.getKey() == type){
+            return websiteUrl +
+                    EMAIL_TYPE_MAP.get(type) +
+                    "?email=" + email +
+                    "&verification_code=" + verificationCode +
+                    "&type=" + type;
+        }else{
+            return websiteUrl +
+                    "verifyCode?email=" + email +
+                    "&verification_code=" + verificationCode +
+                    "&type=" + type;
+        }
+    }
+
+    public void sendEmail(String email, String verificationCode, int type) {
+        String url = createUrl(email, verificationCode, type);
 
         Map<String, AddressConfiguration> addressMap = new HashMap<>();
         AddressConfiguration configuration = AddressConfiguration.builder()
