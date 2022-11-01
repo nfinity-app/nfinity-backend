@@ -1,13 +1,15 @@
 package com.nfinity.service.impl;
 
 import com.nfinity.aws.PinPointUtil;
+import com.nfinity.entity.BusinessInfoEntity;
 import com.nfinity.entity.CeFinanceEntity;
 import com.nfinity.entity.ChainCoinEntity;
 import com.nfinity.entity.UserEntity;
+import com.nfinity.enums.EmailType;
 import com.nfinity.enums.ErrorCode;
-import com.nfinity.enums.LoginType;
 import com.nfinity.enums.Status;
 import com.nfinity.exception.BusinessException;
+import com.nfinity.repository.BusinessInfoRepository;
 import com.nfinity.repository.CeFinanceRepository;
 import com.nfinity.repository.ChainCoinRepository;
 import com.nfinity.repository.UserRepository;
@@ -49,6 +51,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final CeFinanceRepository ceFinanceRepository;
     private final ChainCoinRepository chainCoinRepository;
+    private final BusinessInfoRepository businessInfoRepository;
 
     private final RedisTemplate<String, String> redisTemplate;
 
@@ -99,14 +102,24 @@ public class UserServiceImpl implements UserService {
     public String checkVerificationCode(String email, String verificationCode, int type){
         String redisVerificationCode = redisTemplate.opsForValue().get(email);
         if(verificationCode.equals(redisVerificationCode)){
-            if(LoginType.REGISTER.getValue() == type) {
+            if(EmailType.REGISTER.getKey() == type) {
                 return doAfterRegister(email);
+            }else if(EmailType.BUSINESS.getKey() == type) {
+                doAfterAddBusinessEmail(email);
+                return null;
             }else {
                 return null;
             }
         }else{
             throw new BusinessException(ErrorCode.INVALID_VERIFICATION_CODE);
         }
+    }
+
+    private void doAfterAddBusinessEmail(String email) {
+        BusinessInfoEntity entity = new BusinessInfoEntity();
+        entity.setEmail(email);
+        entity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+        businessInfoRepository.save(entity);
     }
 
     @Transactional

@@ -11,7 +11,7 @@ import java.util.Map;
 public enum EmailType {
     REGISTER(1, "register"),
     RESET_PASSWORD(2, "reset"),
-    ADD_BUSINESS_EMAIL(3, "business"),
+    BUSINESS(3, "business"),
     ;
 
     private final int key;
