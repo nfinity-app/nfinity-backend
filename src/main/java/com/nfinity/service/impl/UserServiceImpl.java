@@ -236,7 +236,11 @@ public class UserServiceImpl implements UserService {
         if(optional.isPresent()) {
             UserEntity userEntity = optional.get();
             String key = userEntity.getGoogleAuth();
-            return GoogleAuthenticator.checkCode(key, code, System.currentTimeMillis());
+            boolean flag = GoogleAuthenticator.checkCode(key, code, System.currentTimeMillis());
+            if(!flag){
+                throw new BusinessException(ErrorCode.INVALID_VERIFICATION_CODE);
+            }
+            return true;
         }else{
             throw new BusinessException(ErrorCode.NOT_REGISTERED);
         }
