@@ -110,6 +110,8 @@ create table if not exists business_info
     email varchar(64),
     phone_number varchar(20),
     address varchar(1024),
+    lat decimal(40, 18),
+    ing decimal(40, 18),
     facebook varchar(128),
     twitter varchar(128),
     instagram varchar(128),

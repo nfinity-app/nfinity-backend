@@ -26,7 +26,7 @@ public class BusinessInfoController {
     }
 
     @PostMapping
-    public Result<Long> createBusinessInfo(@RequestHeader("Authentication") String token, @Valid @RequestBody BusinessInfoVO vo){
+    public Result<Long> createBusinessInfo(@RequestHeader("Authentication") String token, @Valid @RequestBody BusinessInfoVO vo) {
         Long id = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
         vo.setUserId(id);
         Long businessId = businessInfoService.createBusinessInfo(vo);
@@ -41,7 +41,7 @@ public class BusinessInfoController {
     }
 
     @PatchMapping
-    public Result<Long> editBusinessInfo(@RequestHeader("Authentication") String token, @RequestBody BusinessInfoVO vo){
+    public Result<Long> editBusinessInfo(@RequestHeader("Authentication") String token, @RequestBody BusinessInfoVO vo) {
         Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
         vo.setUserId(userId);
         Long businessId = businessInfoService.editBusinessInfo(vo);

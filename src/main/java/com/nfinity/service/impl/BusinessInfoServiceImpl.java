@@ -6,20 +6,20 @@ import com.nfinity.exception.BusinessException;
 import com.nfinity.repository.BusinessInfoRepository;
 import com.nfinity.service.BusinessInfoService;
 import com.nfinity.util.BeansUtil;
+import com.nfinity.util.BigDecimalUtil;
+import com.nfinity.vo.AddressVO;
 import com.nfinity.vo.BusinessInfoVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class BusinessInfoServiceImpl implements BusinessInfoService {
-    static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
     private final BusinessInfoRepository businessInfoRepository;
 
     @Override
@@ -32,7 +32,6 @@ public class BusinessInfoServiceImpl implements BusinessInfoService {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         BusinessInfoEntity entity = new BusinessInfoEntity();
         BeanUtils.copyProperties(vo, entity, BeansUtil.getNullFields(vo));
-        entity.setBirthDate(Timestamp.valueOf(vo.getBirthDate()));
         entity.setCreateTime(timestamp);
         entity.setUpdateTime(timestamp);
         return businessInfoRepository.save(entity).getId();
@@ -46,7 +45,12 @@ public class BusinessInfoServiceImpl implements BusinessInfoService {
         if(optional.isPresent()){
             BusinessInfoEntity entity = optional.get();
             BeanUtils.copyProperties(entity, vo, BeansUtil.getNullFields(entity));
-            vo.setBirthDate(sdf.format(entity.getBirthDate()));
+
+            AddressVO addressVO = new AddressVO();
+            addressVO.setAddress(entity.getAddress());
+            addressVO.setLat(BigDecimalUtil.stripTrailingZeros(entity.getLat()));
+            addressVO.setIng(BigDecimalUtil.stripTrailingZeros(entity.getIng()));
+            vo.setAddress(addressVO);
             return vo;
         }else{
             throw new BusinessException(ErrorCode.BUSINESS_INFO_NOT_FOUND);
@@ -59,6 +63,12 @@ public class BusinessInfoServiceImpl implements BusinessInfoService {
         if(optional.isPresent()){
             BusinessInfoEntity entity = optional.get();
             BeanUtils.copyProperties(vo, entity, BeansUtil.getNullFields(vo));
+
+            if(Objects.nonNull(vo.getAddress())) {
+                entity.setAddress(vo.getAddress().getAddress());
+                entity.setLat(vo.getAddress().getLat());
+                entity.setIng(vo.getAddress().getIng());
+            }
             entity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
             return businessInfoRepository.save(entity).getId();
         }else {

@@ -36,7 +36,7 @@ public class BusinessInfoVO {
     @JsonProperty("phone_number")
     private String phoneNumber;
 
-    private String address;
+    private AddressVO address;
 
     private String facebook;
 

@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Getter
@@ -21,7 +22,7 @@ public class BusinessInfoEntity {
 
     private Integer category;
 
-    private Timestamp birthDate;
+    private String birthDate;
 
     private String logo;
 
@@ -36,6 +37,10 @@ public class BusinessInfoEntity {
     private String phoneNumber;
 
     private String address;
+
+    private BigDecimal lat;
+
+    private BigDecimal ing;
 
     private String facebook;
 
