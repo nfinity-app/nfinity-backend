@@ -210,6 +210,10 @@ public class UserServiceImpl implements UserService {
             }
         }
 
+        if (Status.DISABLE.getValue() == vo.getGoogleAuthStatus()){
+            entity.setGoogleAuth(null);
+        }
+
         //TODO: add telephone
 
         entity.setUpdateTime(timestamp);
@@ -223,7 +227,12 @@ public class UserServiceImpl implements UserService {
         if(optional.isPresent()){
             UserEntity userEntity = optional.get();
             BeanUtils.copyProperties(userEntity, vo, BeansUtil.getNullFields(userEntity));
-            vo.setGoogle2FactorAuth(StringUtils.isNoneBlank(userEntity.getGoogleAuth()));
+
+            if(StringUtils.isNoneBlank(userEntity.getGoogleAuth())){
+                vo.setGoogleAuthStatus(Status.ENABLE.getValue());
+            }else{
+                vo.setGoogleAuthStatus(Status.DISABLE.getValue());
+            }
             return vo;
         }else{
             throw new BusinessException(ErrorCode.NOT_REGISTERED);
