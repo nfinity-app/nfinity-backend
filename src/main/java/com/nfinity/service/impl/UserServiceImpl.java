@@ -28,9 +28,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Base64Utils;
 import org.springframework.util.DigestUtils;
-import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -61,8 +59,6 @@ public class UserServiceImpl implements UserService {
     private final JwtUtil jwtUtil;
 
     private final PinPointUtil pinPointUtil;
-
-    private final RestTemplate restTemplate = new RestTemplate();
 
     @Override
     public Long register(UserVO vo) throws Exception {
@@ -256,12 +252,7 @@ public class UserServiceImpl implements UserService {
             userEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
             userRepository.save(userEntity);
 
-            String url = GoogleAuthenticator.getQRBarcodeURL(userEntity.getUsername(), websiteHost, key);
-
-            byte[] bytes = restTemplate.getForObject(url, byte[].class);
-
-            assert bytes != null;
-            return Base64Utils.encodeToString(bytes);
+            return GoogleAuthenticator.getQRBarcodeURL(userEntity.getUsername(), websiteHost, key);
         }else{
             throw new BusinessException(ErrorCode.NOT_REGISTERED);
         }
