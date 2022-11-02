@@ -77,10 +77,10 @@ public class GoogleAuthenticator {
     }
 
     @SneakyThrows
-    public static String createGoogleAuthQRCodeData(String user, String host, String secret) {
+    public static String createGoogleAuthQRCodeData(String secret, String account, String issuer) {
         String qrCodeData = "otpauth://totp/%s?secret=%s&issuer=%s";
-        return String.format(qrCodeData, URLEncoder.encode(user + "@" + host, StandardCharsets.UTF_8).replace("+", "%20"), URLEncoder.encode(secret, StandardCharsets.UTF_8)
-                .replace("+", "%20"), URLEncoder.encode(user, StandardCharsets.UTF_8).replace("+", "%20"));
+        return String.format(qrCodeData, URLEncoder.encode(issuer + ":" + account, StandardCharsets.UTF_8).replace("+", "%20"), URLEncoder.encode(secret, StandardCharsets.UTF_8)
+                .replace("+", "%20"), URLEncoder.encode(issuer, StandardCharsets.UTF_8).replace("+", "%20"));
     }
 
     @SneakyThrows
