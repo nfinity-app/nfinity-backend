@@ -32,7 +32,7 @@ public class UserVO {
 
     private String telephone;
 
-    @JsonProperty("google_auth")
+    @JsonProperty("google_auth_status")
     private int googleAuthStatus;
 
     @JsonProperty("old_password")
