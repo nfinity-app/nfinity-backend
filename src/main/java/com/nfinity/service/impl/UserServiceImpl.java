@@ -20,6 +20,7 @@ import com.nfinity.util.GoogleAuthenticator;
 import com.nfinity.util.JwtUtil;
 import com.nfinity.vo.UserVO;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -27,7 +28,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Base64Utils;
 import org.springframework.util.DigestUtils;
+import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -58,6 +61,8 @@ public class UserServiceImpl implements UserService {
     private final JwtUtil jwtUtil;
 
     private final PinPointUtil pinPointUtil;
+
+    private final RestTemplate restTemplate = new RestTemplate();
 
     @Override
     public Long register(UserVO vo) throws Exception {
@@ -239,6 +244,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @SneakyThrows
     @Override
     public String getQRCode(Long userId) {
         Optional<UserEntity> optional = userRepository.findById(userId);
@@ -250,7 +256,12 @@ public class UserServiceImpl implements UserService {
             userEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
             userRepository.save(userEntity);
 
-            return GoogleAuthenticator.getQRBarcodeURL(userEntity.getUsername(), websiteHost, key);
+            String url = GoogleAuthenticator.getQRBarcodeURL(userEntity.getUsername(), websiteHost, key);
+
+            byte[] bytes = restTemplate.getForObject(url, byte[].class);
+
+            assert bytes != null;
+            return Base64Utils.encodeToString(bytes);
         }else{
             throw new BusinessException(ErrorCode.NOT_REGISTERED);
         }
