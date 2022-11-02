@@ -1,12 +1,22 @@
 package com.nfinity.util;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import lombok.SneakyThrows;
+import org.apache.commons.codec.binary.Base32;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.springframework.util.Base64Utils;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import org.apache.commons.codec.binary.Base32;
-import org.apache.commons.codec.binary.Base64;
 
 public class GoogleAuthenticator {
 
@@ -64,6 +74,22 @@ public class GoogleAuthenticator {
     public static String getQRBarcodeURL(String user, String host, String secret) {
         String format = "https://www.google.com/chart?chs=200x200&chld=M%%7C0&cht=qr&chl=otpauth://totp/%s@%s%%3Fsecret%%3D%s";
         return String.format(format, user, host, secret);
+    }
+
+    @SneakyThrows
+    public static String createGoogleAuthQRCodeData(String user, String host, String secret) {
+        String qrCodeData = "otpauth://totp/%s?secret=%s&issuer=%s";
+        return String.format(qrCodeData, URLEncoder.encode(user + "@" + host, StandardCharsets.UTF_8).replace("+", "%20"), URLEncoder.encode(secret, StandardCharsets.UTF_8)
+                .replace("+", "%20"), URLEncoder.encode(user, StandardCharsets.UTF_8).replace("+", "%20"));
+    }
+
+    @SneakyThrows
+    public static String writeToStream(String content, int width, int height) {
+        BitMatrix bitMatrix = new MultiFormatWriter().encode(content, BarcodeFormat.QR_CODE, width, height);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        MatrixToImageWriter.writeToStream(bitMatrix, "png", stream);
+        byte[] bytes = stream.toByteArray();
+        return Base64Utils.encodeToString(bytes);
     }
 
     /**

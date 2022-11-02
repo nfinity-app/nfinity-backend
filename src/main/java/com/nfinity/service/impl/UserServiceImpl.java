@@ -252,7 +252,10 @@ public class UserServiceImpl implements UserService {
             userEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
             userRepository.save(userEntity);
 
-            return GoogleAuthenticator.getQRBarcodeURL(userEntity.getUsername(), websiteHost, key);
+            String authData = GoogleAuthenticator.createGoogleAuthQRCodeData(key, websiteHost, userEntity.getUsername());
+
+            return GoogleAuthenticator.writeToStream(authData, 200, 200);
+
         }else{
             throw new BusinessException(ErrorCode.NOT_REGISTERED);
         }
