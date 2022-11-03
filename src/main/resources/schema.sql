@@ -152,3 +152,78 @@ create table if not exists order_nft
 );
 create index index_order_nft_order_id on order_nft(order_id);
 create index index_order_nft_nft_id on order_nft(nft_id);
+
+create table if not exists loyalty_program
+(
+    id bigint primary key auto_increment,
+    user_id bigint not null,
+    banner varchar(128),
+    title varchar(64),
+    description varchar(500),
+    unlockable_points int comment '1-disable, 2-enable',
+    unlockable_per_claim_points int,
+    unlockable_per_video_watch_points int,
+    youtube_video int comment '1-disable, 2-enable',
+    youtube_per_video_watch_points int,
+    youtube_per_event_check_points int,
+    max_unlockable_claim_per_month_points int,
+    max_video_watch_per_month_points int,
+    max_youtube_video_per_month_points int,
+    max_event_check_per_month_points int,
+    tiers_creation int comment '1-disable, 2-enable',
+    total_tier int,
+    points_redeem_required_for_tier_upgrade int,
+    redeem_ticket_points int,
+    redeem_coupon_points int,
+    points_expiration int comment '1-disable, 2-enable',
+    expiration_months int,
+    create_time timestamp,
+    update_time timestamp
+);
+create index loyalty_program_user_id on loyalty_program (user_id);
+
+create table if not exists loyalty_program_collection
+(
+    id bigint primary key auto_increment,
+    program_id bigint not null,
+    collection_id bigint not null,
+    nft_rewards int comment '1-disable, 2-enable',
+    nft_rewards_points int,
+    allow_repetitive_counting int comment '1-disable, 2-enable',
+    max_repetitive_counting int,
+    twitter_engagement int comment '1-disable, 2-enable',
+    twitter_photo varchar(128),
+    twitter_username varchar(64),
+    twitter_follow_points int,
+    twitter_per_post_like_points int,
+    instagram_engagement int comment '1-disable, 2-enable',
+    instagram_photo varchar(128),
+    instagram_username varchar(64),
+    instagram_follow_points int,
+    create_time timestamp,
+    update_time timestamp
+);
+create index loyalty_program_collection_program_id on loyalty_program_collection (program_id);
+create index loyalty_program_collection_collection_id on loyalty_program_collection (collection_id);
+
+create table if not exists tier
+(
+    id bigint primary key auto_increment,
+    program_id bigint not null,
+    name varchar(64),
+    required_points int,
+    create_time timestamp,
+    update_time timestamp
+);
+create index tier_program_id on tier (program_id);
+
+create table if not exists instagram_hashtag
+(
+    id bigint primary key auto_increment,
+    username varchar(64),
+    name varchar(64),
+    per_like_points int,
+    create_time timestamp,
+    update_time timestamp
+);
+create index instagram_hashtag_username on instagram_hashtag (username);
