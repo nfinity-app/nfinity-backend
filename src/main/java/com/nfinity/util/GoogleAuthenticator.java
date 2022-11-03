@@ -89,6 +89,7 @@ public class GoogleAuthenticator {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         MatrixToImageWriter.writeToStream(bitMatrix, "png", stream);
         byte[] bytes = stream.toByteArray();
+
         return Base64Utils.encodeToString(bytes);
     }
 
