@@ -1,13 +1,14 @@
 package com.nfinity.service;
 
+import com.nfinity.vo.LoyaltyProgramCollectionsVO;
 import com.nfinity.vo.LoyaltyProgramVO;
 
 public interface LoyaltyProgramService {
-    Long saveLoyaltyProgram(LoyaltyProgramVO vo, Long userId);
+    Long saveLoyaltyProgram(LoyaltyProgramVO vo);
 
-    Long createLoyaltyProgram(LoyaltyProgramVO vo, Long userId);
+    Long createLoyaltyProgram(LoyaltyProgramVO vo);
 
-    Long editLoyaltyProgram(LoyaltyProgramVO vo, Long userId);
+    Long editLoyaltyProgram(LoyaltyProgramVO vo);
 
-    LoyaltyProgramVO getLoyaltyProgram(Long userId);
+    LoyaltyProgramCollectionsVO getLoyaltyProgram(Long userId);
 }

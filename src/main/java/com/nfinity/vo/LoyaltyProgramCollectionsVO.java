@@ -11,12 +11,14 @@ import java.util.List;
 
 @Getter
 @Setter
-public class LoyaltyProgramVO {
+public class LoyaltyProgramCollectionsVO {
 
   private Long id;
 
   @JsonProperty("user_id")
   private Long userId;
+
+  private Integer status;
 
   @NotBlank
   private String banner;
@@ -25,60 +27,8 @@ public class LoyaltyProgramVO {
   @NotBlank
   private String description;
 
-  @NotNull
-  @JsonProperty("collection_id")
-  private Long collectionId;
-
-  @NotBlank
-  @JsonProperty("collection_name")
-  private String collectionName;
-
-  @NotNull
-  @JsonProperty("nft_rewards")
-  private Integer nftRewards;
-
-  @JsonProperty("nft_rewards_points")
-  private Long nftRewardsPoints;
-
-  @NotNull
-  @JsonProperty("allow_repetitive_counting")
-  private Integer allowRepetitiveCounting;
-
-  @JsonProperty("max_repetitive_counting")
-  private Integer maxRepetitiveCounting;
-
-  @NotNull
-  @JsonProperty("twitter_engagement")
-  private Integer twitterEngagement;
-
-  @JsonProperty("twitter_photo")
-  private String twitterPhoto;
-
-  @JsonProperty("twitter_username")
-  private String twitterUsername;
-
-  @JsonProperty("twitter_follow_points")
-  private Long twitterFollowPoints;
-
-  @JsonProperty("twitter_per_post_like_points")
-  private Long twitterPerPostLikePoints;
-
-  @NotNull
-  @JsonProperty("instagram_engagement")
-  private Integer instagramEngagement;
-
-  @JsonProperty("instagram_photo")
-  private String instagramPhoto;
-
-  @JsonProperty("instagram_username")
-  private String instagramUsername;
-
-  @JsonProperty("instagram_follow_points")
-  private Long instagramFollowPoints;
-
-  @JsonProperty("instagram_hashtags")
-  private List<InstagramHashtagVO> instagramHashtags;
-
+  @JsonProperty("collection_rewards")
+  private List<CollectionRewardVO> collectionRewards;
 
   @NotNull
   @JsonProperty("unlockable_points")

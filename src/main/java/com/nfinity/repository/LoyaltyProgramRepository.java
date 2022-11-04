@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface LoyaltyProgramRepository extends JpaRepository<LoyaltyProgramEntity, Long> {
     Optional<LoyaltyProgramEntity> findByUserId(Long userId);
+
+    Optional<LoyaltyProgramEntity> findByUserIdAndStatus(Long userId, int status);
 }

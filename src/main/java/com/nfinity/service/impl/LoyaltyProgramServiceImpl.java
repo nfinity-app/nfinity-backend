@@ -1,19 +1,13 @@
 package com.nfinity.service.impl;
 
-import com.nfinity.entity.InstagramHashtagEntity;
-import com.nfinity.entity.LoyaltyProgramCollectionEntity;
-import com.nfinity.entity.LoyaltyProgramEntity;
-import com.nfinity.entity.TierEntity;
+import com.nfinity.entity.*;
+import com.nfinity.enums.ErrorCode;
 import com.nfinity.enums.Status;
-import com.nfinity.repository.InstagramHashtagRepository;
-import com.nfinity.repository.LoyaltyProgramCollectionRepository;
-import com.nfinity.repository.LoyaltyProgramRepository;
-import com.nfinity.repository.TierRepository;
+import com.nfinity.exception.BusinessException;
+import com.nfinity.repository.*;
 import com.nfinity.service.LoyaltyProgramService;
 import com.nfinity.util.BeansUtil;
-import com.nfinity.vo.InstagramHashtagVO;
-import com.nfinity.vo.LoyaltyProgramVO;
-import com.nfinity.vo.TierVO;
+import com.nfinity.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -21,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -31,23 +27,120 @@ public class LoyaltyProgramServiceImpl implements LoyaltyProgramService {
     private final LoyaltyProgramCollectionRepository loyaltyProgramCollectionRepository;
     private final InstagramHashtagRepository instagramHashtagRepository;
     private final TierRepository tierRepository;
+    private final CollectionRepository collectionRepository;
 
     @Override
     @Transactional
-    public Long saveLoyaltyProgram(LoyaltyProgramVO vo, Long userId) {
+    public Long saveLoyaltyProgram(LoyaltyProgramVO vo) {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        LoyaltyProgramEntity loyaltyProgramEntity;
+
+        Long programId = saveLoyaltyProgramToDb(vo, timestamp, Status.DISABLE.getValue(), Status.DISABLE.getValue());
+        vo.setId(programId);
+        savePartDataToDb(vo, timestamp);
+
+        return programId;
+    }
+
+    @Override
+    public Long createLoyaltyProgram(LoyaltyProgramVO vo) {
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        Long programId = saveLoyaltyProgramToDb(vo, timestamp, Status.DISABLE.getValue(), Status.ENABLE.getValue());
+        vo.setId(programId);
+        savePartDataToDb(vo, timestamp);
+
+        return programId;
+    }
+
+    @Override
+    public LoyaltyProgramCollectionsVO getLoyaltyProgram(Long userId) {
+        //1. get data from table loyalty_program
+        LoyaltyProgramCollectionsVO vo = new LoyaltyProgramCollectionsVO();
         Optional<LoyaltyProgramEntity> loyaltyProgramEntityOptional = loyaltyProgramRepository.findByUserId(userId);
-        loyaltyProgramEntity = loyaltyProgramEntityOptional.orElseGet(LoyaltyProgramEntity::new);
+        if(loyaltyProgramEntityOptional.isEmpty()) {
+            return null;
+        }
+
+        LoyaltyProgramEntity loyaltyProgramEntity = loyaltyProgramEntityOptional.get();
+        BeanUtils.copyProperties(loyaltyProgramEntity, vo, BeansUtil.getNullFields(loyaltyProgramEntity));
+        Long programId = loyaltyProgramEntity.getId();
+
+        //2. get data from table loyalty_program_collection
+        List<LoyaltyProgramCollectionEntity> loyaltyProgramCollectionEntities = loyaltyProgramCollectionRepository.findAllByProgramId(programId);
+        if(!CollectionUtils.isEmpty(loyaltyProgramCollectionEntities)) {
+            List<CollectionRewardVO> collectionRewardVOList = new ArrayList<>(loyaltyProgramCollectionEntities.size());
+            for (LoyaltyProgramCollectionEntity loyaltyProgramCollectionEntity : loyaltyProgramCollectionEntities) {
+                CollectionRewardVO collectionRewardVO = new CollectionRewardVO();
+                BeanUtils.copyProperties(loyaltyProgramCollectionEntity, collectionRewardVO, BeansUtil.getNullFields(loyaltyProgramCollectionEntity));
+
+                Optional<CollectionEntity> collectionEntityOptional = collectionRepository.findById(loyaltyProgramCollectionEntity.getCollectionId());
+                collectionEntityOptional.ifPresent(collectionEntity -> collectionRewardVO.setCollectionName(collectionEntity.getName()));
+
+                //3. get data from table instagram_hashtag
+                List<InstagramHashtagEntity> instagramHashtagEntities = instagramHashtagRepository.findAllByUsername(loyaltyProgramCollectionEntity.getInstagramUsername());
+                if(!CollectionUtils.isEmpty(instagramHashtagEntities)){
+                    List<InstagramHashtagVO> instagramHashtagVOList = new ArrayList<>(instagramHashtagEntities.size());
+                    for(InstagramHashtagEntity instagramHashtagEntity : instagramHashtagEntities){
+                        InstagramHashtagVO instagramHashtagVO = new InstagramHashtagVO();
+                        BeanUtils.copyProperties(instagramHashtagEntity, instagramHashtagVO, BeansUtil.getNullFields(instagramHashtagEntity));
+                        instagramHashtagVOList.add(instagramHashtagVO);
+                    }
+                    collectionRewardVO.setInstagramHashtags(instagramHashtagVOList);
+                }
+                collectionRewardVOList.add(collectionRewardVO);
+            }
+            vo.setCollectionRewards(collectionRewardVOList);
+        }
+
+        //4. get data from table tier
+        List<TierEntity> tierEntities = tierRepository.findAllByProgramId(programId);
+        if(!CollectionUtils.isEmpty(tierEntities)){
+            List<TierVO> tierVOList = new ArrayList<>(tierEntities.size());
+            for(TierEntity tierEntity : tierEntities){
+                TierVO tierVO = new TierVO();
+                BeanUtils.copyProperties(tierEntity, tierVO, BeansUtil.getNullFields(tierEntity));
+            }
+            vo.setTiers(tierVOList);
+        }
+
+        return vo;
+    }
+
+    @Override
+    public Long editLoyaltyProgram(LoyaltyProgramVO vo) {
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        Long programId = saveLoyaltyProgramToDb(vo, timestamp, Status.ENABLE.getValue(), Status.ENABLE.getValue());
+        vo.setId(programId);
+        savePartDataToDb(vo, timestamp);
+
+        return programId;
+    }
+
+    @Transactional
+    Long saveLoyaltyProgramToDb(LoyaltyProgramVO vo, Timestamp timestamp, int queryStatus, int savedStatus){
+        LoyaltyProgramEntity loyaltyProgramEntity;
+        Optional<LoyaltyProgramEntity> loyaltyProgramEntityOptional = loyaltyProgramRepository.findByUserIdAndStatus(vo.getUserId(), queryStatus);
+        if(loyaltyProgramEntityOptional.isPresent()){
+            loyaltyProgramEntity = loyaltyProgramEntityOptional.get();
+        }else if(Status.ENABLE.getValue() == queryStatus){
+            throw new BusinessException(ErrorCode.LOYALTY_PROGRAM_NOT_FOUND);
+        }else{
+            loyaltyProgramEntity = new LoyaltyProgramEntity();
+        }
 
         BeanUtils.copyProperties(vo, loyaltyProgramEntity, BeansUtil.getNullFields(vo));
+        loyaltyProgramEntity.setStatus(savedStatus);
         loyaltyProgramEntity.setCreateTime(timestamp);
         loyaltyProgramEntity.setUpdateTime(timestamp);
-        Long programId = loyaltyProgramRepository.save(loyaltyProgramEntity).getId();
+        return loyaltyProgramRepository.save(loyaltyProgramEntity).getId();
+    }
 
+    @Transactional
+    void savePartDataToDb(LoyaltyProgramVO vo, Timestamp timestamp){
         if(Objects.nonNull(vo.getCollectionId())) {
             LoyaltyProgramCollectionEntity loyaltyProgramCollectionEntity;
-            Optional<LoyaltyProgramCollectionEntity> loyaltyProgramCollectionEntityOptional = loyaltyProgramCollectionRepository.findFirstByProgramId(programId);
+            Optional<LoyaltyProgramCollectionEntity> loyaltyProgramCollectionEntityOptional = loyaltyProgramCollectionRepository.findByProgramIdAndCollectionId(vo.getId(), vo.getCollectionId());
             loyaltyProgramCollectionEntity = loyaltyProgramCollectionEntityOptional.orElseGet(LoyaltyProgramCollectionEntity::new);
 
             BeanUtils.copyProperties(vo, loyaltyProgramCollectionEntity, BeansUtil.getNullFields(vo));
@@ -56,7 +149,7 @@ public class LoyaltyProgramServiceImpl implements LoyaltyProgramService {
             loyaltyProgramCollectionRepository.save(loyaltyProgramCollectionEntity);
         }
 
-        if(Status.ENABLE.getValue() == vo.getInstagramEngagement() && !CollectionUtils.isEmpty(vo.getInstagramHashtags())) {
+        if(Objects.nonNull(vo.getInstagramEngagement()) && Status.ENABLE.getValue() == vo.getInstagramEngagement() && !CollectionUtils.isEmpty(vo.getInstagramHashtags())) {
             String username = vo.getInstagramUsername();
             for(InstagramHashtagVO instagramHashtagVO : vo.getInstagramHashtags()){
                 InstagramHashtagEntity instagramHashtagEntity;
@@ -72,13 +165,13 @@ public class LoyaltyProgramServiceImpl implements LoyaltyProgramService {
             }
         }
 
-        if(!CollectionUtils.isEmpty(vo.getTiers())){
+        if(Objects.nonNull(vo.getTiersCreation()) && Status.ENABLE.getValue() == vo.getTiersCreation() && !CollectionUtils.isEmpty(vo.getTiers())){
             for(TierVO tierVO : vo.getTiers()){
                 TierEntity tierEntity;
-                Optional<TierEntity> tierEntityOptional = tierRepository.findByIdAndProgramId(tierVO.getId(), programId);
+                Optional<TierEntity> tierEntityOptional = tierRepository.findByIdAndProgramId(tierVO.getId(), vo.getId());
                 tierEntity = tierEntityOptional.orElseGet(TierEntity::new);
 
-                tierEntity.setProgramId(programId);
+                tierEntity.setProgramId(vo.getId());
                 tierEntity.setName(tierVO.getName());
                 tierEntity.setRequiredPoints(tierVO.getRequiredPoints());
                 tierEntity.setCreateTime(timestamp);
@@ -86,22 +179,5 @@ public class LoyaltyProgramServiceImpl implements LoyaltyProgramService {
                 tierRepository.save(tierEntity);
             }
         }
-
-        return programId;
-    }
-
-    @Override
-    public Long createLoyaltyProgram(LoyaltyProgramVO vo, Long userId) {
-        return null;
-    }
-
-    @Override
-    public LoyaltyProgramVO getLoyaltyProgram(Long userId) {
-        return null;
-    }
-
-    @Override
-    public Long editLoyaltyProgram(LoyaltyProgramVO vo, Long userId) {
-        return null;
     }
 }

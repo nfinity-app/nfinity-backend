@@ -16,6 +16,7 @@ public class LoyaltyProgramEntity {
   private Long id;
 
   private long userId;
+  private int status;
   private String banner;
   private String title;
   private String description;

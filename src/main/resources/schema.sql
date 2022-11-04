@@ -157,6 +157,7 @@ create table if not exists loyalty_program
 (
     id bigint primary key auto_increment,
     user_id bigint not null,
+    status int comment '1-disable(drafted), 2-enable(done)',
     banner varchar(128),
     title varchar(64),
     description varchar(500),

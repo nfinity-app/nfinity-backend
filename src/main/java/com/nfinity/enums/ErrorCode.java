@@ -17,10 +17,11 @@ public enum ErrorCode {
     USERNAME_REGISTERED(100006, "This username has already been registered"),
     INCORRECT_PASSWORD(100007, "Incorrect old password"),
 
-    BUSINESS_INFO_NOT_FOUND(100010, "This user's business info could not be found"),
+    BUSINESS_INFO_NOT_FOUND(100010, "This user's business info not found"),
 
-    NONEXISTENT_ORDER(100020, "This order does not exist"),
-    NOT_ENOUGH(100021, "nft is not enough"),
+    LOYALTY_PROGRAM_NOT_FOUND(100020, "This user's loyalty program not found"),
+    NONEXISTENT_ORDER(100100, "This order does not exist"),
+    NOT_ENOUGH(100101, "nft is not enough"),
     ;
 
     private final int code;
