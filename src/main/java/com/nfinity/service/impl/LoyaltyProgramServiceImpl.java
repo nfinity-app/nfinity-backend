@@ -99,6 +99,7 @@ public class LoyaltyProgramServiceImpl implements LoyaltyProgramService {
             for(TierEntity tierEntity : tierEntities){
                 TierVO tierVO = new TierVO();
                 BeanUtils.copyProperties(tierEntity, tierVO, BeansUtil.getNullFields(tierEntity));
+                tierVOList.add(tierVO);
             }
             vo.setTiers(tierVOList);
         }
