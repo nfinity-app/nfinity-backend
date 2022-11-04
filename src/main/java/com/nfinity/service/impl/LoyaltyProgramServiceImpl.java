@@ -144,6 +144,7 @@ public class LoyaltyProgramServiceImpl implements LoyaltyProgramService {
             loyaltyProgramCollectionEntity = loyaltyProgramCollectionEntityOptional.orElseGet(LoyaltyProgramCollectionEntity::new);
 
             BeanUtils.copyProperties(vo, loyaltyProgramCollectionEntity, BeansUtil.getNullFields(vo));
+            loyaltyProgramCollectionEntity.setProgramId(vo.getId());
             loyaltyProgramCollectionEntity.setCreateTime(timestamp);
             loyaltyProgramCollectionEntity.setUpdateTime(timestamp);
             loyaltyProgramCollectionRepository.save(loyaltyProgramCollectionEntity);
