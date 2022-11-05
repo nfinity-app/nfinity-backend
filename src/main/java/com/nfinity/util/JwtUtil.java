@@ -19,17 +19,17 @@ public class JwtUtil {
     private String secretKey;
 
     public String generateToken(Map<String, Object> claims){
-        return Jwts.builder()
+        return "Bearer " + Jwts.builder()
                 .setClaims(claims)
-                .setExpiration(new Date(Instant.now().toEpochMilli() + Duration.ofDays(3).toMillis()))//expire time is 7 days
+                .setExpiration(new Date(Instant.now().toEpochMilli() + Duration.ofDays(7).toMillis()))//expire time is 7 days
                 .signWith(SignatureAlgorithm.HS512, secretKey)
                 .compact();
     }
 
-    public Claims validateToken(String token) throws AuthException {
+    public Claims validateToken(String authorization) throws AuthException {
         return Jwts.parser()
                     .setSigningKey(secretKey)
-                    .parseClaimsJws(token)
+                    .parseClaimsJws(authorization.substring(7))
                     .getBody();
     }
 }

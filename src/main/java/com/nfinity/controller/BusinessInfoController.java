@@ -19,14 +19,14 @@ public class BusinessInfoController {
     private final JwtUtil jwtUtil;
 
     @PutMapping
-    public Result<Boolean> existsBusinessInfo(@RequestHeader("Authentication") String token){
+    public Result<Boolean> existsBusinessInfo(@RequestHeader("Authorization") String token){
         Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
         boolean flag = businessInfoService.existsBusinessInfo(userId);
         return Result.succeed(ErrorCode.OK, flag);
     }
 
     @PostMapping
-    public Result<Long> createBusinessInfo(@RequestHeader("Authentication") String token, @Valid @RequestBody BusinessInfoVO vo) {
+    public Result<Long> createBusinessInfo(@RequestHeader("Authorization") String token, @Valid @RequestBody BusinessInfoVO vo) {
         Long id = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
         vo.setUserId(id);
         Long businessId = businessInfoService.createBusinessInfo(vo);
@@ -34,14 +34,14 @@ public class BusinessInfoController {
     }
 
     @GetMapping
-    public Result<BusinessInfoVO> getBusinessInfo(@RequestHeader("Authentication") String token){
+    public Result<BusinessInfoVO> getBusinessInfo(@RequestHeader("Authorization") String token){
         Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
         BusinessInfoVO vo = businessInfoService.getBusinessInfo(userId);
         return Result.succeed(ErrorCode.OK, vo);
     }
 
     @PatchMapping
-    public Result<Long> editBusinessInfo(@RequestHeader("Authentication") String token, @RequestBody BusinessInfoVO vo) {
+    public Result<Long> editBusinessInfo(@RequestHeader("Authorization") String token, @RequestBody BusinessInfoVO vo) {
         Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
         vo.setUserId(userId);
         Long businessId = businessInfoService.editBusinessInfo(vo);

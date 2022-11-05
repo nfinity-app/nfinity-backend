@@ -48,7 +48,7 @@ public class UserController {
     public Result<String> verifyCode(HttpServletRequest request, @PathVariable String email, @PathVariable String code, @PathVariable int type){
         Long userId;
         if(EmailType.BUSINESS.getKey() == type){
-            String token = request.getHeader("Authentication");
+            String token = request.getHeader("Authorization");
             try {
                 userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
             }catch (Exception e){
@@ -77,14 +77,14 @@ public class UserController {
     }
 
     @GetMapping
-    public Result<UserVO> getProfile(@RequestHeader("Authentication") String token){
+    public Result<UserVO> getProfile(@RequestHeader("Authorization") String token){
         Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
         UserVO vo = userService.getProfile(userId);
         return Result.succeed(ErrorCode.OK, vo);
     }
 
     @PatchMapping
-    public Result<Long> editProfile(@RequestHeader("Authentication") String token, @RequestBody UserVO vo) throws Exception {
+    public Result<Long> editProfile(@RequestHeader("Authorization") String token, @RequestBody UserVO vo) throws Exception {
         Long id = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
         vo.setId(id);
         Long userId = userService.editProfile(vo);
@@ -92,16 +92,16 @@ public class UserController {
     }
 
     @GetMapping("/QR-code")
-    public Result<String> getQRCode(@RequestHeader("Authentication") String token){
+    public Result<String> getQRCode(@RequestHeader("Authorization") String token){
         Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
         String url = userService.getQRCode(userId);
         return Result.succeed(ErrorCode.OK, url);
     }
 
     @PutMapping("/auth-codes/{code}")
-    public Result<Boolean> verifyAuthenticatorCode(@RequestHeader("Authentication") String token, @PathVariable long code){
+    public Result<Void> verifyAuthenticatorCode(@RequestHeader("Authorization") String token, @PathVariable long code){
         Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
-        boolean flag = userService.verifyAuthenticatorCode(userId, code);
-        return Result.succeed(ErrorCode.OK, flag);
+        userService.verifyAuthenticatorCode(userId, code);
+        return Result.succeed(ErrorCode.OK, null);
     }
 }

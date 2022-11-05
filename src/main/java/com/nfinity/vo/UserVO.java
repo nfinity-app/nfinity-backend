@@ -12,6 +12,7 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 public class UserVO {
+
     private Long id;
 
     @NotBlank
@@ -34,6 +35,9 @@ public class UserVO {
 
     @JsonProperty("google_auth_status")
     private int googleAuthStatus;
+
+    @JsonProperty("google_auth_code")
+    private Long googleAuthCode;
 
     @JsonProperty("old_password")
     private String oldPassword;

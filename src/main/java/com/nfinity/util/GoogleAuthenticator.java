@@ -12,8 +12,13 @@ import org.springframework.util.Base64Utils;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -72,7 +77,7 @@ public class GoogleAuthenticator {
      * @return the URL for the QR code to scan
      */
     @Deprecated
-    public static String getQRBarcodeURL(String user, String host, String secret) {
+    private static String getQRBarcodeURL(String user, String host, String secret) {
         String format = "https://www.google.com/chart?chs=200x200&chld=M%%7C0&cht=qr&chl=otpauth://totp/%s@%s%%3Fsecret%%3D%s";
         return String.format(format, user, host, secret);
     }
@@ -92,6 +97,15 @@ public class GoogleAuthenticator {
         byte[] bytes = stream.toByteArray();
 
         return Base64Utils.encodeToString(bytes);
+    }
+
+    @SneakyThrows
+    private static void generateImage(String base64Str){
+        byte[] bytes = Base64Utils.decodeFromString(base64Str);
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
+        BufferedImage image = ImageIO.read(inputStream);
+        File file = Path.of("s3/image.png").toFile();
+        ImageIO.write(image, "png", file);
     }
 
     /**

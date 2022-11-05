@@ -15,7 +15,7 @@ public enum ErrorCode {
     INVALID_TOKEN(100004, "Invalid token"),
     INVALID_VERIFICATION_CODE(100005, "Invalid verification code"),
     USERNAME_REGISTERED(100006, "This username has already been registered"),
-    INCORRECT_PASSWORD(100007, "Incorrect old password"),
+    INCORRECT_PASSWORD(100007, "Incorrect password"),
 
     BUSINESS_INFO_NOT_FOUND(100010, "This user's business info not found"),
 

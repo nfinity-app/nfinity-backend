@@ -28,7 +28,7 @@ public class NftController {
 
     @PostMapping("/nfts")
     public Result<PageModel<NftVO>> uploadNfts(HttpServletRequest request) throws Exception {
-        String token = request.getHeader("Authentication");
+        String token = request.getHeader("Authorization");
         Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
 
         //get files from http request
@@ -40,7 +40,7 @@ public class NftController {
     }
 
     @PostMapping("/files")
-    public Result<List<String>> uploadFiles(@RequestHeader("Authentication") String token, HttpServletRequest request) throws Exception {
+    public Result<List<String>> uploadFiles(@RequestHeader("Authorization") String token, HttpServletRequest request) throws Exception {
         Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
 
         MultipartHttpServletRequest multipartHttpServletRequest = (MultipartHttpServletRequest) request;

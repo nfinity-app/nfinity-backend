@@ -1,6 +1,7 @@
 package com.nfinity.service.impl;
 
 import com.nfinity.aws.PinPointUtil;
+import com.nfinity.constant.Constant;
 import com.nfinity.entity.BusinessInfoEntity;
 import com.nfinity.entity.CeFinanceEntity;
 import com.nfinity.entity.ChainCoinEntity;
@@ -84,6 +85,7 @@ public class UserServiceImpl implements UserService {
         BeanUtils.copyProperties(vo, entity, BeansUtil.getNullFields(vo));
         entity.setPassword(getMd5Password(vo.getPassword()));
         entity.setStatus(Status.DISABLE.getValue());
+        entity.setGoogleAuthStatus(Status.DISABLE.getValue());
         entity.setCreateTime(timestamp);
         entity.setUpdateTime(timestamp);
 
@@ -201,7 +203,15 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException(ErrorCode.NOT_REGISTERED);
         }
 
-        BeanUtils.copyProperties(vo, entity, BeansUtil.getNullFields(vo));
+        //update photo, username
+        if(StringUtils.isNoneBlank(vo.getPhoto())) {
+            entity.setPhoto(vo.getPhoto());
+        }
+        if(StringUtils.isNoneBlank(vo.getUsername())) {
+            entity.setUsername(vo.getUsername());
+        }
+
+        //change password
         if(StringUtils.isNoneBlank(vo.getOldPassword()) && StringUtils.isNoneBlank(vo.getNewPassword())){
             String oldPassword = getMd5Password(vo.getOldPassword());
             if(entity.getPassword().equals(oldPassword)) {
@@ -211,8 +221,18 @@ public class UserServiceImpl implements UserService {
             }
         }
 
-        if (Status.DISABLE.getValue() == vo.getGoogleAuthStatus()){
-            entity.setGoogleAuth(null);
+        //remove google authentication
+        if(entity.getGoogleAuthStatus() == Status.ENABLE.getValue() && StringUtils.isNoneBlank(entity.getGoogleAuthKey())) {
+            if (Status.DISABLE.getValue() == vo.getGoogleAuthStatus() && StringUtils.isNoneBlank(vo.getPassword()) && Objects.nonNull(vo.getGoogleAuthCode())) {
+                String password = getMd5Password(vo.getPassword());
+                if (password.equals(entity.getPassword())) {
+                    verifyAuthenticatorCode(vo.getId(), vo.getGoogleAuthCode());
+                    entity.setGoogleAuthStatus(Status.DISABLE.getValue());
+                    entity.setGoogleAuthKey(null);
+                } else {
+                    throw new BusinessException(ErrorCode.INCORRECT_PASSWORD);
+                }
+            }
         }
 
         //TODO: add telephone
@@ -228,12 +248,7 @@ public class UserServiceImpl implements UserService {
         if(optional.isPresent()){
             UserEntity userEntity = optional.get();
             BeanUtils.copyProperties(userEntity, vo, BeansUtil.getNullFields(userEntity));
-
-            if(StringUtils.isNoneBlank(userEntity.getGoogleAuth())){
-                vo.setGoogleAuthStatus(Status.ENABLE.getValue());
-            }else{
-                vo.setGoogleAuthStatus(Status.DISABLE.getValue());
-            }
+            vo.setPassword(Constant.HIDDEN_PASSWORD);
             return vo;
         }else{
             throw new BusinessException(ErrorCode.NOT_REGISTERED);
@@ -248,11 +263,12 @@ public class UserServiceImpl implements UserService {
             UserEntity userEntity = optional.get();
 
             String key = GoogleAuthenticator.generateSecretKey();
-            userEntity.setGoogleAuth(key);
+            userEntity.setGoogleAuthStatus(Status.DISABLE.getValue());
+            userEntity.setGoogleAuthKey(key);
             userEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
             userRepository.save(userEntity);
 
-            String authData = GoogleAuthenticator.createGoogleAuthQRCodeData(key, websiteHost, userEntity.getUsername());
+            String authData = GoogleAuthenticator.createGoogleAuthQRCodeData(key, userEntity.getUsername(), websiteHost);
 
             return GoogleAuthenticator.writeToStream(authData, 200, 200);
 
@@ -262,16 +278,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean verifyAuthenticatorCode(Long userId, long code) {
+    public void verifyAuthenticatorCode(Long userId, long code) {
         Optional<UserEntity> optional = userRepository.findById(userId);
         if(optional.isPresent()) {
             UserEntity userEntity = optional.get();
-            String key = userEntity.getGoogleAuth();
+            String key = userEntity.getGoogleAuthKey();
             boolean flag = GoogleAuthenticator.checkCode(key, code, System.currentTimeMillis());
             if(!flag){
                 throw new BusinessException(ErrorCode.INVALID_VERIFICATION_CODE);
             }
-            return true;
+            userEntity.setGoogleAuthStatus(Status.ENABLE.getValue());
+            userEntity.setUpdateTime(new Timestamp(System.currentTimeMillis()));
+            userRepository.save(userEntity);
         }else{
             throw new BusinessException(ErrorCode.NOT_REGISTERED);
         }

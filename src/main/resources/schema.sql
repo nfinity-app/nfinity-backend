@@ -86,7 +86,8 @@ create table if not exists user
     password varchar(128) not null,
     telephone varchar(64),
     photo varchar(256),
-    google_auth varchar(64),
+    google_auth_status int comment '1-disable, 2-enable',
+    google_auth_key varchar(64),
     status int not null comment '1-disable, 2-enable',
     address_status int not null comment '1-disable, 2-enable',
     vault_id varchar(32) comment 'fireblocks vault id',
@@ -111,7 +112,7 @@ create table if not exists business_info
     phone_number varchar(20),
     address varchar(1024),
     lat decimal(40, 18),
-    ing decimal(40, 18),
+    lng decimal(40, 18),
     facebook varchar(128),
     twitter varchar(128),
     instagram varchar(128),
@@ -221,7 +222,7 @@ create index tier_program_id on tier (program_id);
 create table if not exists instagram_hashtag
 (
     id bigint primary key auto_increment,
-    username varchar(64),
+    username varchar(64) comment 'instagram username',
     name varchar(64),
     per_like_points int,
     create_time timestamp,

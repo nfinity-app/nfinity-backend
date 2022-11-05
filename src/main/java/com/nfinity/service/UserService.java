@@ -19,5 +19,5 @@ public interface UserService {
 
     String getQRCode(Long userId);
 
-    boolean verifyAuthenticatorCode(Long userId, long code);
+    void verifyAuthenticatorCode(Long userId, long code);
 }

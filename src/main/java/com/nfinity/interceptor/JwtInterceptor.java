@@ -33,10 +33,10 @@ public class JwtInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        String token = request.getHeader("Authentication");
+        String authorization = request.getHeader("Authorization");
 
         try{
-            jwtUtil.validateToken(token);
+            jwtUtil.validateToken(authorization);
             return true;
         }catch (MalformedJwtException e){
             log.error("Invalid JWT token.", e);
