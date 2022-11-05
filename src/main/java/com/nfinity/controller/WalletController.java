@@ -23,7 +23,15 @@ public class WalletController {
         return Result.succeed(ErrorCode.OK, vo);
     }
 
-    @GetMapping("/address/chain-types/{type}/coins/{coin}")
+    @GetMapping("/{type}/{coin}")
+    public Result<PortfolioVO> getWalletByTypeAndCoin(@RequestHeader("Authorization") String token,
+                                                   @PathVariable String type, @PathVariable String coin){
+        Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
+        PortfolioVO vo = walletService.getWalletByTypeAndCoin(userId, type, coin);
+        return Result.succeed(ErrorCode.OK, vo);
+    }
+
+    @GetMapping("/address/{type}/{coin}")
     public Result<String> getChainAddress(@RequestHeader("Authorization") String token, @PathVariable String type,
                                           @PathVariable String coin){
         Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
@@ -42,9 +50,12 @@ public class WalletController {
     @GetMapping("/transaction-history")
     public Result<PageModel<ChainBillVO>> getTransactionHistory(@RequestHeader("Authorization") String token,
                                                                 @RequestParam(required = false, defaultValue = "1") int page,
-                                                                @RequestParam(required = false, defaultValue = "6") int size){
+                                                                @RequestParam(required = false, defaultValue = "6") int size,
+                                                                @RequestParam(name = "tx_time", required = false, defaultValue = "5") int txTime,
+                                                                @RequestParam(required = false, defaultValue = "all") String coin,
+                                                                @RequestParam(name = "tx_type", required = false, defaultValue = "6") int txType){
         Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
-        PageModel<ChainBillVO> pageModel = walletService.getTransactionHistory(userId, page, size);
+        PageModel<ChainBillVO> pageModel = walletService.getTransactionHistory(userId, page, size, txTime, coin, txType);
         return Result.succeed(ErrorCode.OK, pageModel);
     }
 }

@@ -64,6 +64,27 @@ public class WalletServiceImpl implements WalletService {
         return walletVO;
     }
 
+
+    @Override
+    public PortfolioVO getWalletByTypeAndCoin(Long userId, String type, String coin) {
+        PortfolioVO vo = new PortfolioVO();
+        Optional<ChainCoinEntity> chainCoinEntityOptional = chainCoinRepository.findBySymbol(coin);
+        if(chainCoinEntityOptional.isPresent()) {
+            ChainCoinEntity chainCoinEntity = chainCoinEntityOptional.get();
+            vo.setCoinId(chainCoinEntity.getId());
+            vo.setSymbol(chainCoinEntity.getSymbol());
+            vo.setImg(chainCoinEntity.getImg());
+
+            Optional<CeFinanceEntity> ceFinanceEntityOptional =  ceFinanceRepository.findByUserIdAndCoinId(userId, chainCoinEntity.getId());
+            if(ceFinanceEntityOptional.isPresent()){
+                CeFinanceEntity ceFinanceEntity = ceFinanceEntityOptional.get();
+                vo.setUseAmount(BigDecimalUtil.stripTrailingZeros(ceFinanceEntity.getUseAmount()));
+            }
+            return vo;
+        }
+        return null;
+    }
+
     @Override
     public String getChainAddress(Long userId, String type, String coin) {
         Optional<ChainCoinEntity> chainCoinEntityOptional = chainCoinRepository.findBySymbol(coin);
@@ -101,7 +122,7 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public PageModel<ChainBillVO> getTransactionHistory(Long userId, int page, int size) {
+    public PageModel<ChainBillVO> getTransactionHistory(Long userId, int page, int size, int txTime, String coin, int txType) {
         PageModel<ChainBillVO> pageModel = new PageModel<>();
         List<ChainBillVO> chainBillVOS = new ArrayList<>();
 

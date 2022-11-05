@@ -1,9 +1,6 @@
 package com.nfinity.service;
 
-import com.nfinity.vo.CeWithdrawVO;
-import com.nfinity.vo.ChainBillVO;
-import com.nfinity.vo.PageModel;
-import com.nfinity.vo.WalletVO;
+import com.nfinity.vo.*;
 
 public interface WalletService {
     WalletVO getWalletFinance(Long userId);
@@ -12,5 +9,7 @@ public interface WalletService {
 
     Long withdraw(CeWithdrawVO vo);
 
-    PageModel<ChainBillVO> getTransactionHistory(Long userId, int page, int size);
+    PageModel<ChainBillVO> getTransactionHistory(Long userId, int page, int size, int txTime, String coin, int txType);
+
+    PortfolioVO getWalletByTypeAndCoin(Long userId, String type, String coin);
 }
