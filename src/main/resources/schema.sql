@@ -184,6 +184,7 @@ create table if not exists loyalty_program
     redeem_coupon_points int,
     points_expiration int comment '1-disable, 2-enable',
     expiration_months int,
+    step int comment '1-create program, 2-collection rewards, 3-unlockable rewards, 4-tiers setting, 5-expiration setting, 6-done',
     create_time timestamp,
     update_time timestamp
 );
@@ -223,6 +224,17 @@ create table if not exists tier
     update_time timestamp
 );
 create index index_tier_program_id on tier (program_id);
+
+create table if not exists tier_user
+(
+    id bigint primary key auto_increment,
+    tier_id bigint,
+    user_id bigint, -- C-end user
+    create_time timestamp,
+    update_time timestamp
+);
+create index index_tier_user_tier_id on tier_user (tier_id);
+create index index_tier_user_user_id on tier_user (user_id);
 
 create table if not exists instagram_hashtag
 (

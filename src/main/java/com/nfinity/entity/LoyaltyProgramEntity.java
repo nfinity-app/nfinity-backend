@@ -37,6 +37,7 @@ public class LoyaltyProgramEntity {
   private long redeemCouponPoints;
   private int pointsExpiration;
   private long expirationMonths;
+  private int step;
   private Timestamp createTime;
   private Timestamp updateTime;
 }

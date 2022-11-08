@@ -108,6 +108,11 @@ public class LoyaltyProgramServiceImpl implements LoyaltyProgramService {
     }
 
     @Override
+    public List<TierUserVO> getTierMembers(Long userId) {
+        return null;
+    }
+
+    @Override
     public Long editLoyaltyProgram(LoyaltyProgramVO vo) {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
