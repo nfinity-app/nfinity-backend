@@ -1,5 +1,6 @@
 package com.nfinity.util;
 
+import com.nfinity.enums.ErrorCode;
 import com.nfinity.exception.AuthException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -27,9 +28,13 @@ public class JwtUtil {
     }
 
     public Claims validateToken(String authorization) throws AuthException {
+        if(!authorization.startsWith("Bearer ")){
+            throw new AuthException(ErrorCode.INVALID_TOKEN);
+        }
+        String token = authorization.substring(7);
         return Jwts.parser()
                     .setSigningKey(secretKey)
-                    .parseClaimsJws(authorization.substring(7))
+                    .parseClaimsJws(token)
                     .getBody();
     }
 }
