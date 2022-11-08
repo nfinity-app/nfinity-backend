@@ -29,7 +29,7 @@ public class JwtUtil {
     }
 
     public Claims validateToken(String authorization) {
-        if(StringUtils.isBlank(authorization) /*|| !authorization.startsWith("Bearer ")*/){
+        if(StringUtils.isBlank(authorization) || !authorization.startsWith("Bearer ")){
             throw new AuthException(ErrorCode.INVALID_TOKEN);
         }
         String token = authorization.substring(7);
