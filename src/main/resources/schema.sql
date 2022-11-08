@@ -3,6 +3,7 @@ use nft_business;
 
 create table IF NOT EXISTS collection(
     id bigint PRIMARY KEY AUTO_INCREMENT,
+    user_id bigint not null,
     name varchar(64),
     icon varchar(256),
     category int,
@@ -20,10 +21,10 @@ create table IF NOT EXISTS collection(
     status int NOT NULL comment '1-drafted, 2-pending, 3-published, 4-suspended, 5-failed',
     tx_status int comment '1-init, 2-pending, 3-published, 4-failed',
     contract_type int comment '1-721, 2-1155',
-    user_id bigint,
     create_time timestamp not null,
     update_time timestamp not null
 );
+create index index_collection_user_id on collection (user_id);
 
 create table IF NOT EXISTS collection_action
 (
@@ -35,24 +36,28 @@ create table IF NOT EXISTS collection_action
     create_time   timestamp,
     update_time   timestamp
 );
-create index collection_action_collection_id on collection_action(collection_id);
+create index index_collection_action_collection_id on collection_action(collection_id);
 
 create table if not exists folder(
     id bigint PRIMARY KEY AUTO_INCREMENT,
+    user_id bigint not null,
     name varchar(64) not null,
     icon varchar(256) not null,
     mint_status int not null comment '1-init, 2-deployed',
     create_time timestamp not null,
     update_time timestamp not null
 );
+create index index_folder_user_id on folder (user_id);
 
 create table if not exists nft(
     id bigint PRIMARY KEY AUTO_INCREMENT,
+    user_id bigint not null,
     path varchar(256) not null,
     mint_status int not null comment '1-init, 2-deployed, 3-minting, 4-minted',
     create_time timestamp not null,
     update_time timestamp not null
 );
+create index index_nft_user_id on nft (user_id);
 
 create table if not exists folder_nft(
     id bigint primary key auto_increment,
@@ -182,7 +187,7 @@ create table if not exists loyalty_program
     create_time timestamp,
     update_time timestamp
 );
-create index loyalty_program_user_id on loyalty_program (user_id);
+create index index_loyalty_program_user_id on loyalty_program (user_id);
 
 create table if not exists loyalty_program_collection
 (
@@ -205,8 +210,8 @@ create table if not exists loyalty_program_collection
     create_time timestamp,
     update_time timestamp
 );
-create index loyalty_program_collection_program_id on loyalty_program_collection (program_id);
-create index loyalty_program_collection_collection_id on loyalty_program_collection (collection_id);
+create index index_loyalty_program_collection_program_id on loyalty_program_collection (program_id);
+create index index_loyalty_program_collection_collection_id on loyalty_program_collection (collection_id);
 
 create table if not exists tier
 (
@@ -217,7 +222,7 @@ create table if not exists tier
     create_time timestamp,
     update_time timestamp
 );
-create index tier_program_id on tier (program_id);
+create index index_tier_program_id on tier (program_id);
 
 create table if not exists instagram_hashtag
 (
@@ -228,4 +233,4 @@ create table if not exists instagram_hashtag
     create_time timestamp,
     update_time timestamp
 );
-create index instagram_hashtag_username on instagram_hashtag (username);
+create index index_instagram_hashtag_username on instagram_hashtag (username);
