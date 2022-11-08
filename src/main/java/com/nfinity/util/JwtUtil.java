@@ -5,6 +5,7 @@ import com.nfinity.exception.AuthException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -27,8 +28,8 @@ public class JwtUtil {
                 .compact();
     }
 
-    public Claims validateToken(String authorization) throws AuthException {
-        if(!authorization.startsWith("Bearer ")){
+    public Claims validateToken(String authorization) {
+        if(StringUtils.isBlank(authorization) /*|| !authorization.startsWith("Bearer ")*/){
             throw new AuthException(ErrorCode.INVALID_TOKEN);
         }
         String token = authorization.substring(7);
