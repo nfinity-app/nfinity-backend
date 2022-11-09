@@ -40,6 +40,9 @@ public class CollectionRewardVO {
     @JsonProperty("twitter_photo")
     private String twitterPhoto;
 
+    @JsonProperty("twitter_user_id")
+    private String twitterUserId;
+
     @JsonProperty("twitter_username")
     private String twitterUsername;
 
@@ -55,6 +58,9 @@ public class CollectionRewardVO {
 
     @JsonProperty("instagram_photo")
     private String instagramPhoto;
+
+    @JsonProperty("instagram_user_id")
+    private String instagramUserId;
 
     @JsonProperty("instagram_username")
     private String instagramUsername;

@@ -23,11 +23,13 @@ public class LoyaltyProgramCollectionEntity {
   private long maxRepetitiveCounting;
   private int twitterEngagement;
   private String twitterPhoto;
+  private String twitterUserId;
   private String twitterUsername;
   private long twitterFollowPoints;
   private long twitterPerPostLikePoints;
   private int instagramEngagement;
   private String instagramPhoto;
+  private String instagramUserId;
   private String instagramUsername;
   private long instagramFollowPoints;
   private Timestamp createTime;
