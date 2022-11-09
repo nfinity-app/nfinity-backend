@@ -109,13 +109,17 @@ public class LoyaltyProgramServiceImpl implements LoyaltyProgramService {
     }
 
     @Override
-    public List<TierUserVO> getTierMembers(Long userId) {
+    public PageModel<TierUserVO> getTierMembers(Long userId) {
+        PageModel<TierUserVO> pageModel = new PageModel<>();
+
         Optional<LoyaltyProgramEntity> loyaltyProgramEntityOptional = loyaltyProgramRepository.findByUserId(userId);
         if(loyaltyProgramEntityOptional.isEmpty()){
             throw new BusinessException(ErrorCode.LOYALTY_PROGRAM_NOT_FOUND);
         }
         Long programId = loyaltyProgramEntityOptional.get().getId();
+        long total = tierRepository.countAllByProgramId(programId);
         List<TierEntity> tierEntities = tierRepository.findAllByProgramId(programId);
+
         List<TierUserVO> tierUserVOList = new ArrayList<>(tierEntities.size());
         if(!CollectionUtils.isEmpty(tierEntities)){
             for(TierEntity tierEntity : tierEntities){
@@ -127,7 +131,9 @@ public class LoyaltyProgramServiceImpl implements LoyaltyProgramService {
                 tierUserVOList.add(tierUserVO);
             }
         }
-        return tierUserVOList;
+        pageModel.setTotal(total);
+        pageModel.setRecords(tierUserVOList);
+        return pageModel;
     }
 
     @Override

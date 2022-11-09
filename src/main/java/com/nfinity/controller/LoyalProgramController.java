@@ -3,15 +3,11 @@ package com.nfinity.controller;
 import com.nfinity.enums.ErrorCode;
 import com.nfinity.service.LoyaltyProgramService;
 import com.nfinity.util.JwtUtil;
-import com.nfinity.vo.LoyaltyProgramCollectionsVO;
-import com.nfinity.vo.LoyaltyProgramVO;
-import com.nfinity.vo.Result;
-import com.nfinity.vo.TierUserVO;
+import com.nfinity.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping("/nft-business/v1/loyalty-program")
@@ -53,9 +49,9 @@ public class LoyalProgramController {
     }
 
     @GetMapping("/tier/members")
-    public Result<List<TierUserVO>> getTierMembers(@RequestHeader("Authorization") String token){
+    public Result<PageModel<TierUserVO>> getTierMembers(@RequestHeader("Authorization") String token){
         Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
-        List<TierUserVO> tierUserVOS = loyaltyProgramService.getTierMembers(userId);
+        PageModel<TierUserVO> tierUserVOS = loyaltyProgramService.getTierMembers(userId);
         return Result.succeed(ErrorCode.OK, tierUserVOS);
     }
 }

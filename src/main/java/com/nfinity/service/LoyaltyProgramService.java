@@ -2,9 +2,8 @@ package com.nfinity.service;
 
 import com.nfinity.vo.LoyaltyProgramCollectionsVO;
 import com.nfinity.vo.LoyaltyProgramVO;
+import com.nfinity.vo.PageModel;
 import com.nfinity.vo.TierUserVO;
-
-import java.util.List;
 
 public interface LoyaltyProgramService {
     Long saveLoyaltyProgram(LoyaltyProgramVO vo);
@@ -15,5 +14,5 @@ public interface LoyaltyProgramService {
 
     LoyaltyProgramCollectionsVO getLoyaltyProgram(Long userId);
 
-    List<TierUserVO> getTierMembers(Long userId);
+    PageModel<TierUserVO> getTierMembers(Long userId);
 }
