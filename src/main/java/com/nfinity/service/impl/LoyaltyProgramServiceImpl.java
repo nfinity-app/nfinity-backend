@@ -27,6 +27,7 @@ public class LoyaltyProgramServiceImpl implements LoyaltyProgramService {
     private final LoyaltyProgramCollectionRepository loyaltyProgramCollectionRepository;
     private final InstagramHashtagRepository instagramHashtagRepository;
     private final TierRepository tierRepository;
+    private final TierUserRepository tierUserRepository;
     private final CollectionRepository collectionRepository;
 
     @Override
@@ -109,7 +110,24 @@ public class LoyaltyProgramServiceImpl implements LoyaltyProgramService {
 
     @Override
     public List<TierUserVO> getTierMembers(Long userId) {
-        return null;
+        Optional<LoyaltyProgramEntity> loyaltyProgramEntityOptional = loyaltyProgramRepository.findByUserId(userId);
+        if(loyaltyProgramEntityOptional.isEmpty()){
+            throw new BusinessException(ErrorCode.LOYALTY_PROGRAM_NOT_FOUND);
+        }
+        Long programId = loyaltyProgramEntityOptional.get().getId();
+        List<TierEntity> tierEntities = tierRepository.findAllByProgramId(programId);
+        List<TierUserVO> tierUserVOList = new ArrayList<>(tierEntities.size());
+        if(!CollectionUtils.isEmpty(tierEntities)){
+            for(TierEntity tierEntity : tierEntities){
+                TierUserVO tierUserVO = new TierUserVO();
+                Long tierId = tierEntity.getId();
+                long members = tierUserRepository.countByTierId(tierId);
+                tierUserVO.setName(tierEntity.getName());
+                tierUserVO.setMembers(members);
+                tierUserVOList.add(tierUserVO);
+            }
+        }
+        return tierUserVOList;
     }
 
     @Override

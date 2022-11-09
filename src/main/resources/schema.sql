@@ -229,7 +229,7 @@ create table if not exists tier_user
 (
     id bigint primary key auto_increment,
     tier_id bigint,
-    user_id bigint, -- C-end user
+    user_id bigint comment 'C-end user',
     create_time timestamp,
     update_time timestamp
 );
