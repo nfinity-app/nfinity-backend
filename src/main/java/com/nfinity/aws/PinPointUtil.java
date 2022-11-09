@@ -53,6 +53,7 @@ public class PinPointUtil {
 
         Map<String, List<String>> substitutions = new HashMap<>();
         substitutions.put("url", Collections.singletonList(url));
+        substitutions.put("code", Collections.singletonList(verificationCode));
 
         EmailMessage emailMessage = EmailMessage.builder()
                 .substitutions(substitutions)
