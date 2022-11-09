@@ -10,5 +10,5 @@ public class InstagramHashtagVO {
     private Long id;
     private String name;
     @JsonProperty("per_like_points")
-    private long perLikePoints;
+    private Integer perLikePoints;
 }

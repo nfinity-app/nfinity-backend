@@ -17,21 +17,21 @@ public class LoyaltyProgramCollectionEntity {
 
   private long programId;
   private long collectionId;
-  private long nftRewards;
-  private long nftRewardsPoints;
-  private long allowRepetitiveCounting;
-  private long maxRepetitiveCounting;
+  private int nftRewards;
+  private int nftRewardsPoints;
+  private int allowRepetitiveCounting;
+  private int maxRepetitiveCounting;
   private int twitterEngagement;
   private String twitterPhoto;
   private String twitterUserId;
   private String twitterUsername;
-  private long twitterFollowPoints;
-  private long twitterPerPostLikePoints;
+  private int twitterFollowPoints;
+  private int twitterPerPostLikePoints;
   private int instagramEngagement;
   private String instagramPhoto;
   private String instagramUserId;
   private String instagramUsername;
-  private long instagramFollowPoints;
+  private int instagramFollowPoints;
   private Timestamp createTime;
   private Timestamp updateTime;
 

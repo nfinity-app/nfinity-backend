@@ -24,7 +24,7 @@ public class CollectionRewardVO {
     private Integer nftRewards;
 
     @JsonProperty("nft_rewards_points")
-    private Long nftRewardsPoints;
+    private Integer nftRewardsPoints;
 
     @NotNull
     @JsonProperty("allow_repetitive_counting")
@@ -47,10 +47,10 @@ public class CollectionRewardVO {
     private String twitterUsername;
 
     @JsonProperty("twitter_follow_points")
-    private Long twitterFollowPoints;
+    private Integer twitterFollowPoints;
 
     @JsonProperty("twitter_per_post_like_points")
-    private Long twitterPerPostLikePoints;
+    private Integer twitterPerPostLikePoints;
 
     @NotNull
     @JsonProperty("instagram_engagement")
@@ -66,7 +66,7 @@ public class CollectionRewardVO {
     private String instagramUsername;
 
     @JsonProperty("instagram_follow_points")
-    private Long instagramFollowPoints;
+    private Integer instagramFollowPoints;
 
     @JsonProperty("instagram_hashtags")
     private List<InstagramHashtagVO> instagramHashtags;

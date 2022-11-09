@@ -35,36 +35,36 @@ public class LoyaltyProgramCollectionsVO {
   private Integer unlockablePoints;
 
   @JsonProperty("unlockable_per_claim_points")
-  private Long unlockablePerClaimPoints;
+  private Integer unlockablePerClaimPoints;
 
   @JsonProperty("unlockable_per_video_watch_points")
-  private Long unlockablePerVideoWatchPoints;
+  private Integer unlockablePerVideoWatchPoints;
 
   @NotNull
   @JsonProperty("youtube_video")
   private Integer youtubeVideo;
 
   @JsonProperty("youtube_per_video_watch_points")
-  private Long youtubePerVideoWatchPoints;
+  private Integer youtubePerVideoWatchPoints;
 
   @JsonProperty("youtube_per_event_check_points")
-  private Long youtubePerEventCheckPoints;
+  private Integer youtubePerEventCheckPoints;
 
   @NotNull
   @JsonProperty("max_unlockable_claim_per_month_points")
-  private Long maxUnlockableClaimPerMonthPoints;
+  private Integer maxUnlockableClaimPerMonthPoints;
 
   @NotNull
   @JsonProperty("max_video_watch_per_month_points")
-  private Long maxVideoWatchPerMonthPoints;
+  private Integer maxVideoWatchPerMonthPoints;
 
   @NotNull
   @JsonProperty("max_youtube_video_per_month_points")
-  private Long maxYoutubeVideoPerMonthPoints;
+  private Integer maxYoutubeVideoPerMonthPoints;
 
   @NotNull
   @JsonProperty("max_event_check_per_month_points")
-  private Long max_event_check_per_month_points;
+  private Integer max_event_check_per_month_points;
 
   @NotNull
   @JsonProperty("tiers_creation")
@@ -82,18 +82,18 @@ public class LoyaltyProgramCollectionsVO {
 
   @NotNull
   @JsonProperty("redeem_ticket_points")
-  private Long redeemTicketPoints;
+  private Integer redeemTicketPoints;
 
   @NotNull
   @JsonProperty("redeem_coupon_points")
-  private Long redeemCouponPoints;
+  private Integer redeemCouponPoints;
 
   @NotNull
   @JsonProperty("points_expiration")
   private Integer pointsExpiration;
 
   @JsonProperty("expirationMonths")
-  private Long expirationMonths;
+  private Integer expirationMonths;
 
   private Integer step;
 }
