@@ -145,5 +145,5 @@ public class LoyaltyProgramVO {
   @JsonProperty("expirationMonths")
   private Long expirationMonths;
 
-  private int step;
+  private Integer step;
 }
