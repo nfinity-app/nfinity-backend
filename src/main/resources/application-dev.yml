@@ -30,6 +30,8 @@ md5:
 jwt:
   secret:
     key: snmhH32qahOkXHrTSBySlA==
+  token:
+    expiration: 604800000
 
 website:
   url: http://localhost:3000/user/

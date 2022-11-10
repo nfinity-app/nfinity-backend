@@ -9,7 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
@@ -20,10 +19,13 @@ public class JwtUtil {
     @Value("${jwt.secret.key}")
     private String secretKey;
 
+    @Value("${jwt.token.expiration}")
+    private long tokenExpiration;
+
     public String generateToken(Map<String, Object> claims){
         return "Bearer " + Jwts.builder()
                 .setClaims(claims)
-                .setExpiration(new Date(Instant.now().toEpochMilli() + Duration.ofDays(7).toMillis()))//expire time is 7 days
+                .setExpiration(new Date(Instant.now().toEpochMilli() + tokenExpiration))//expire time is 7 days
                 .signWith(SignatureAlgorithm.HS512, secretKey)
                 .compact();
     }
