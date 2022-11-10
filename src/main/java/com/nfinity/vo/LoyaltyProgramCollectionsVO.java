@@ -92,7 +92,7 @@ public class LoyaltyProgramCollectionsVO {
   @JsonProperty("points_expiration")
   private Integer pointsExpiration;
 
-  @JsonProperty("expirationMonths")
+  @JsonProperty("expiration_months")
   private Integer expirationMonths;
 
   private Integer step;
