@@ -10,5 +10,5 @@ public class TierVO {
     private Long id;
     private String name;
     @JsonProperty("required_points")
-    private long requiredPoints;
+    private Integer requiredPoints;
 }

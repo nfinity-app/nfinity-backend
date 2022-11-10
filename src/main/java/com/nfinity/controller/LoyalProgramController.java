@@ -48,6 +48,13 @@ public class LoyalProgramController {
         return Result.succeed(ErrorCode.OK, programId);
     }
 
+    @DeleteMapping
+    public Result<Long> deleteLoyaltyProgram(@RequestHeader("Authorization") String token){
+        Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
+        Long programId = loyaltyProgramService.deleteLoyaltyProgram(userId);
+        return Result.succeed(ErrorCode.OK, programId);
+    }
+
     @GetMapping("/tier/members")
     public Result<PageModel<TierUserVO>> getTierMembers(@RequestHeader("Authorization") String token){
         Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));

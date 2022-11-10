@@ -17,7 +17,7 @@ public class TierEntity {
 
   private long programId;
   private String name;
-  private long requiredPoints;
+  private int requiredPoints;
   private Timestamp createTime;
   private Timestamp updateTime;
 }

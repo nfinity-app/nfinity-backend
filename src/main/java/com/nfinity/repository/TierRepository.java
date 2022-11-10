@@ -16,4 +16,6 @@ public interface TierRepository extends JpaRepository<TierEntity, Long> {
 
     @Query(name = "select count(*) from tier a, tier_user b where a.program_id = ?1 and a.id = b.tier_id", nativeQuery = true)
     long countAllByProgramId(Long programId);
+
+    void deleteAllByProgramId(Long programId);
 }

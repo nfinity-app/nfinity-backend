@@ -12,4 +12,6 @@ public interface InstagramHashtagRepository extends JpaRepository<InstagramHasht
     Optional<InstagramHashtagEntity> findByIdAndUsername(Long id, String username);
 
     List<InstagramHashtagEntity> findAllByUsername(String instagramUsername);
+
+    void deleteAllByProgramId(Long programId);
 }

@@ -137,6 +137,24 @@ public class LoyaltyProgramServiceImpl implements LoyaltyProgramService {
     }
 
     @Override
+    @Transactional
+    public Long deleteLoyaltyProgram(Long userId) {
+        Optional<LoyaltyProgramEntity> loyaltyProgramEntityOptional = loyaltyProgramRepository.findByUserId(userId);
+        if(loyaltyProgramEntityOptional.isEmpty()){
+            throw new BusinessException(ErrorCode.LOYALTY_PROGRAM_NOT_FOUND);
+        }
+
+        Long programId = loyaltyProgramEntityOptional.get().getId();
+
+        loyaltyProgramCollectionRepository.deleteAllByProgramId(programId);
+        instagramHashtagRepository.deleteAllByProgramId(programId);
+        tierRepository.deleteAllByProgramId(programId);
+        loyaltyProgramRepository.deleteById(programId);
+
+        return programId;
+    }
+
+    @Override
     public Long editLoyaltyProgram(LoyaltyProgramVO vo) {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
@@ -187,6 +205,7 @@ public class LoyaltyProgramServiceImpl implements LoyaltyProgramService {
                 Optional<InstagramHashtagEntity> instagramHashtagEntityOptional = instagramHashtagRepository.findByIdAndUsername(instagramHashtagVO.getId(), username);
                 instagramHashtagEntity = instagramHashtagEntityOptional.orElseGet(InstagramHashtagEntity::new);
 
+                instagramHashtagEntity.setProgramId(vo.getId());
                 instagramHashtagEntity.setName(instagramHashtagVO.getName());
                 instagramHashtagEntity.setPerLikePoints(instagramHashtagVO.getPerLikePoints());
                 instagramHashtagEntity.setUsername(username);

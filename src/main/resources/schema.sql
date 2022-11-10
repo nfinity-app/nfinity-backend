@@ -241,6 +241,7 @@ create index index_tier_user_user_id on tier_user (user_id);
 create table if not exists instagram_hashtag
 (
     id bigint primary key auto_increment,
+    program_id bigint not null,
     username varchar(64) comment 'instagram username',
     name varchar(64),
     per_like_points int,
@@ -248,3 +249,4 @@ create table if not exists instagram_hashtag
     update_time timestamp
 );
 create index index_instagram_hashtag_username on instagram_hashtag (username);
+create index index_instagram_hashtag_program_id on instagram_hashtag (program_id);

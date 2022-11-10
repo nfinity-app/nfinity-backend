@@ -12,4 +12,6 @@ public interface LoyaltyProgramCollectionRepository extends JpaRepository<Loyalt
     List<LoyaltyProgramCollectionEntity> findAllByProgramId(Long programId);
 
     Optional<LoyaltyProgramCollectionEntity> findByProgramIdAndCollectionId(Long id, Long collectionId);
+
+    void deleteAllByProgramId(Long programId);
 }

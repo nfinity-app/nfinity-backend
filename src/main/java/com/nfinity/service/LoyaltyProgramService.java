@@ -15,4 +15,6 @@ public interface LoyaltyProgramService {
     LoyaltyProgramCollectionsVO getLoyaltyProgram(Long userId);
 
     PageModel<TierUserVO> getTierMembers(Long userId);
+
+    Long deleteLoyaltyProgram(Long userId);
 }
