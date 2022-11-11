@@ -8,17 +8,19 @@ import java.util.List;
 
 @Getter
 @Setter
-public class TwitterVO {
+public class TwitterVO<T> {
 
-    private List<TwitterUserVO> data;
+    private List<T> data;
+    private MetaVO meta;
+
 
     @Getter
     @Setter
-    public static class TwitterUserVO {
-        private String id;
-        private String username;
-        private String name;
-        @JsonProperty("profile_image_url")
-        private String profileImageUrl;
+    public static class MetaVO{
+        @JsonProperty("result_count")
+        private long resultCount;
+
+        @JsonProperty("next_token")
+        private String nextToken;
     }
 }

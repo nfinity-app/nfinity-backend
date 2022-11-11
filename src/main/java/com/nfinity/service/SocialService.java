@@ -1,9 +1,12 @@
 package com.nfinity.service;
 
-import com.nfinity.vo.TwitterVO;
+import com.nfinity.vo.SocialVO;
+import com.nfinity.vo.TwitterUserVO;
 
 import java.util.List;
 
 public interface SocialService {
-    List<TwitterVO.TwitterUserVO> lookupTwitterUsers(String usernames);
+    List<TwitterUserVO> lookupTwitterUsers(String usernames);
+
+    List<SocialVO> getTwitterEngagement(Long userId);
 }
