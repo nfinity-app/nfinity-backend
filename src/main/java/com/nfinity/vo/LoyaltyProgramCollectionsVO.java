@@ -51,22 +51,6 @@ public class LoyaltyProgramCollectionsVO {
   private Integer youtubePerEventCheckPoints;
 
   @NotNull
-  @JsonProperty("max_unlockable_claim_per_month_points")
-  private Integer maxUnlockableClaimPerMonthPoints;
-
-  @NotNull
-  @JsonProperty("max_video_watch_per_month_points")
-  private Integer maxVideoWatchPerMonthPoints;
-
-  @NotNull
-  @JsonProperty("max_youtube_video_per_month_points")
-  private Integer maxYoutubeVideoPerMonthPoints;
-
-  @NotNull
-  @JsonProperty("max_event_check_per_month_points")
-  private Integer max_event_check_per_month_points;
-
-  @NotNull
   @JsonProperty("tiers_creation")
   private Integer tiersCreation;
 

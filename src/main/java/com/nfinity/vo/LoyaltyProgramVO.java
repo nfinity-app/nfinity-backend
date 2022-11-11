@@ -66,6 +66,9 @@ public class LoyaltyProgramVO {
   @JsonProperty("twitter_per_post_like_points")
   private Integer twitterPerPostLikePoints;
 
+  @JsonProperty("twitter_retweet_points")
+  private Integer twitterRetweetPoints;
+
   @NotNull
   @JsonProperty("instagram_engagement")
   private Integer instagramEngagement;
@@ -105,22 +108,6 @@ public class LoyaltyProgramVO {
 
   @JsonProperty("youtube_per_event_check_points")
   private Integer youtubePerEventCheckPoints;
-
-  @NotNull
-  @JsonProperty("max_unlockable_claim_per_month_points")
-  private Integer maxUnlockableClaimPerMonthPoints;
-
-  @NotNull
-  @JsonProperty("max_video_watch_per_month_points")
-  private Integer maxVideoWatchPerMonthPoints;
-
-  @NotNull
-  @JsonProperty("max_youtube_video_per_month_points")
-  private Integer maxYoutubeVideoPerMonthPoints;
-
-  @NotNull
-  @JsonProperty("max_event_check_per_month_points")
-  private Integer max_event_check_per_month_points;
 
   @NotNull
   @JsonProperty("tiers_creation")

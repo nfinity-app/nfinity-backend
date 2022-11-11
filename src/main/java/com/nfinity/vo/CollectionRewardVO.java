@@ -52,6 +52,9 @@ public class CollectionRewardVO {
     @JsonProperty("twitter_per_post_like_points")
     private Integer twitterPerPostLikePoints;
 
+    @JsonProperty("twitter_retweet_points")
+    private Integer twitterRetweetPoints;
+
     @NotNull
     @JsonProperty("instagram_engagement")
     private Integer instagramEngagement;

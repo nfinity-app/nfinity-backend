@@ -61,6 +61,7 @@ public class SocialServiceImpl implements SocialService {
         return Objects.requireNonNull(responseEntity.getBody()).getData();
     }
 
+    //TODO: too many request to twitter api, scheduler better
     @Override
     public List<SocialVO> getTwitterEngagement(Long userId) {
         Optional<LoyaltyProgramEntity> loyaltyProgramEntityOptional = loyaltyProgramRepository.findByUserId(userId);
@@ -99,8 +100,9 @@ public class SocialServiceImpl implements SocialService {
 
                 int followPoints = loyaltyProgramCollectionEntity.getTwitterFollowPoints();
                 int likePoints = loyaltyProgramCollectionEntity.getTwitterPerPostLikePoints();
-                //TODO: retweets points
-                long totalPoints = follows * followPoints + likes * likePoints;
+                int retweetPoints = loyaltyProgramCollectionEntity.getTwitterRetweetPoints();
+
+                long totalPoints = follows * followPoints + likes * likePoints + retweets * retweetPoints;
                 socialVO.setTotalPoints(totalPoints);
 
                 socials.add(socialVO);
@@ -120,7 +122,9 @@ public class SocialServiceImpl implements SocialService {
         ResponseEntity<TwitterVO<TwitterUserVO>> responseEntity = restTemplate.exchange(url, HttpMethod.GET, requestEntity, new ParameterizedTypeReference<>(){});
         TwitterVO<TwitterUserVO> twitterVO = responseEntity.getBody();
 
-        return Objects.requireNonNull(twitterVO).getMeta().getResultCount();
+        assert twitterVO != null;
+        assert twitterVO.getMeta() != null;
+        return twitterVO.getMeta().getResultCount();
     }
 
     @SneakyThrows

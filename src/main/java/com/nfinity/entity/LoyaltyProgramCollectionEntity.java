@@ -27,6 +27,7 @@ public class LoyaltyProgramCollectionEntity {
   private String twitterUsername;
   private int twitterFollowPoints;
   private int twitterPerPostLikePoints;
+  private int twitterRetweetPoints;
   private int instagramEngagement;
   private String instagramPhoto;
   private String instagramUserId;

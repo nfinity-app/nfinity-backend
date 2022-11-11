@@ -26,10 +26,6 @@ public class LoyaltyProgramEntity {
   private int youtubeVideo;
   private int youtubePerVideoWatchPoints;
   private int youtubePerEventCheckPoints;
-  private int maxUnlockableClaimPerMonthPoints;
-  private int maxVideoWatchPerMonthPoints;
-  private int maxYoutubeVideoPerMonthPoints;
-  private int max_event_check_per_month_points;
   private int tiersCreation;
   private int totalTier;
   private int pointsRedeemRequiredForTierUpgrade;
