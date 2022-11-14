@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -27,8 +29,9 @@ public class LoyaltyProgramCollectionsVO {
   @NotBlank
   private String description;
 
+  @NotEmpty
   @JsonProperty("collection_rewards")
-  private List<CollectionRewardVO> collectionRewards;
+  private List<@Valid CollectionRewardVO> collectionRewards;
 
   @NotNull
   @JsonProperty("unlockable_points")

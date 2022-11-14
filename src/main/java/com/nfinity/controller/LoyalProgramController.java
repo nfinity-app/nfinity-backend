@@ -18,7 +18,7 @@ public class LoyalProgramController {
     private final LoyaltyProgramService loyaltyProgramService;
 
     @PostMapping("/draft")
-    public Result<Long> saveLoyaltyProgram(@RequestHeader("Authorization") String token, @RequestBody LoyaltyProgramVO vo) {
+    public Result<Long> saveLoyaltyProgram(@RequestHeader("Authorization") String token, @RequestBody LoyaltyProgramCollectionsVO vo) {
         Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
         vo.setUserId(userId);
         Long programId = loyaltyProgramService.saveLoyaltyProgram(vo);
@@ -26,7 +26,7 @@ public class LoyalProgramController {
     }
 
     @PostMapping
-    public Result<Long> createLoyaltyProgram(@RequestHeader("Authorization") String token, @Valid @RequestBody LoyaltyProgramVO vo){
+    public Result<Long> createLoyaltyProgram(@RequestHeader("Authorization") String token, @Valid @RequestBody LoyaltyProgramCollectionsVO vo){
         Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
         vo.setUserId(userId);
         Long programId = loyaltyProgramService.createLoyaltyProgram(vo);
@@ -41,7 +41,7 @@ public class LoyalProgramController {
     }
 
     @PatchMapping
-    public Result<Long> editLoyaltyProgram(@RequestHeader("Authorization") String token, @RequestBody LoyaltyProgramVO vo) {
+    public Result<Long> editLoyaltyProgram(@RequestHeader("Authorization") String token, @RequestBody LoyaltyProgramCollectionsVO vo) {
         Long userId = Long.valueOf((Integer) jwtUtil.validateToken(token).get("id"));
         vo.setUserId(userId);
         Long programId = loyaltyProgramService.editLoyaltyProgram(vo);
